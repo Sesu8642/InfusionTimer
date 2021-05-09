@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:free_brew/tea.dart';
 
 void main() {
   runApp(FreeBrew());
@@ -46,16 +49,11 @@ class CollectionPage extends StatefulWidget {
 }
 
 class _CollectionPageState extends State<CollectionPage> {
-  int _counter = 0;
+  List<Tea> _teas = [];
 
-  void _incrementCounter() {
+  void _addTea() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _teas.add(new Tea("Test Tea", 45, [34, 45, 66], "Just some Tea"));
     });
   }
 
@@ -94,18 +92,18 @@ class _CollectionPageState extends State<CollectionPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'You have pushed the button this many times:',
+              'You have these teas:',
             ),
             Text(
-              '$_counter',
+              '${_teas.map((tea) => jsonEncode(tea))}',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: _addTea,
+        tooltip: 'Add Tea',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
