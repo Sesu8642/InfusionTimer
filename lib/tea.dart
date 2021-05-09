@@ -1,15 +1,15 @@
 class Tea {
-  String _name;
-  int _temperature;
-  List<int> _infusionsSeconds;
-  String _notes;
+  String name;
+  int temperature;
+  List<int> infusionsSeconds;
+  String notes;
 
-  Tea(this._name, this._temperature, this._infusionsSeconds, this._notes);
+  Tea(this.name, this.temperature, this.infusionsSeconds, this.notes);
 
   Map toJson() => {
-        'name': _name,
-        'temperature': _temperature,
-        'infusionsSeconds': _infusionsSeconds,
-        'notes': _notes
+        'name': name,
+        'temperature': temperature,
+        'infusionsSeconds': infusionsSeconds,
+        'notes': notes
       };
 }
