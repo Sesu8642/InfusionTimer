@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.free_brew">
+    package="com.sesu8642.free_brew">
    <application
         android:label="free_brew"
         android:icon="@mipmap/ic_launcher">
