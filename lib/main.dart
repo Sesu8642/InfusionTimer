@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:free_brew/tea.dart';
+import 'package:free_brew/tea_input_form.dart';
 
 void main() {
   runApp(FreeBrew());
@@ -51,12 +52,6 @@ class CollectionPage extends StatefulWidget {
 class _CollectionPageState extends State<CollectionPage> {
   List<Tea> _teas = [];
 
-  void _addTea() {
-    setState(() {
-      _teas.add(new Tea("Test Tea", 45, [34, 45, 66], "Just some Tea"));
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -80,10 +75,22 @@ class _CollectionPageState extends State<CollectionPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addTea,
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => _buildPopupDialog(context));
+        },
         tooltip: 'Add Tea',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Widget _buildPopupDialog(BuildContext context) {
+    return new TeaInputDialog((tea) => {
+          setState(() {
+            _teas.add(tea);
+          })
+        });
   }
 }
