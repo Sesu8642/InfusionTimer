@@ -5,8 +5,9 @@ import 'package:free_brew/tea.dart';
 class TeaInputDialog extends StatefulWidget {
   final Tea tea;
   final Function(Tea) saveCallback;
+  final Function(Tea) cancelCallback;
 
-  TeaInputDialog(this.tea, this.saveCallback);
+  TeaInputDialog(this.tea, this.saveCallback, this.cancelCallback);
 
   @override
   TeaInputFormFormState createState() {
@@ -167,7 +168,6 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
                 widget.saveCallback(widget.tea);
-                Navigator.of(context).pop();
               }
             });
           },
@@ -175,7 +175,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
         ),
         new TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            widget.cancelCallback(widget.tea);
           },
           child: const Text('Cancel'),
         ),

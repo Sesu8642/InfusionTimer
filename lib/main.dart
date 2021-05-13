@@ -70,6 +70,9 @@ class _CollectionPageState extends State<CollectionPage> {
           return TeaCard(
               _teas[i],
               (tea) => {
+                    // TODO
+                  },
+              (tea) => {
                     showModalBottomSheet(
                         context: context,
                         builder: (BuildContext context) =>
@@ -93,11 +96,16 @@ class _CollectionPageState extends State<CollectionPage> {
                                                             .map((tea) =>
                                                                 jsonEncode(tea))
                                                             .toList());
-                                                    Navigator.of(context).pop();
                                                   },
                                                 );
+                                                Navigator.of(context).pop();
+                                                Navigator.of(context).pop();
                                               },
                                             )
+                                          },
+                                          (tea) {
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context).pop();
                                           },
                                         ),
                                       )
@@ -124,7 +132,7 @@ class _CollectionPageState extends State<CollectionPage> {
             context: context,
             builder: (BuildContext context) => new TeaInputDialog(
               new Tea(null, null, null, [], null),
-              (tea) => {
+              (tea) {
                 setState(
                   () {
                     _teas.add(tea);
@@ -135,7 +143,11 @@ class _CollectionPageState extends State<CollectionPage> {
                       },
                     );
                   },
-                )
+                );
+                Navigator.of(context).pop();
+              },
+              (tea) {
+                Navigator.of(context).pop();
               },
             ),
           );

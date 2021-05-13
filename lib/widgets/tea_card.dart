@@ -4,9 +4,10 @@ import 'package:free_brew/tea.dart';
 
 class TeaCard extends StatelessWidget {
   final Tea tea;
+  final Function(Tea) tapCallback;
   final Function(Tea) longPressCallback;
 
-  TeaCard(this.tea, this.longPressCallback);
+  TeaCard(this.tea, this.tapCallback, this.longPressCallback);
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +15,7 @@ class TeaCard extends StatelessWidget {
       child: Card(
         child: GestureDetector(
           child: InkWell(
+            onTap: () => tapCallback(tea),
             onLongPress: () => longPressCallback(tea),
             child: Column(
               mainAxisSize: MainAxisSize.min,
