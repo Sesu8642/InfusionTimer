@@ -78,7 +78,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   hintText: 'Amount in g/100ml',
                 ),
                 onSaved: (value) {
-                  result.gPer100Ml = double.parse(value);
+                  result.gPer100Ml = double.parse(value.replaceAll(',', '.'));
                 },
               ),
               TextFormField(
