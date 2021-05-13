@@ -3,9 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:free_brew/tea.dart';
 
 class TeaInputDialog extends StatefulWidget {
+  final Tea tea;
   final Function(Tea) saveCallback;
 
-  TeaInputDialog(this.saveCallback);
+  TeaInputDialog(this.tea, this.saveCallback);
 
   @override
   TeaInputFormFormState createState() {
@@ -16,7 +17,6 @@ class TeaInputDialog extends StatefulWidget {
 class TeaInputFormFormState extends State<TeaInputDialog> {
   final _formKey = GlobalKey<FormState>();
 
-  Tea result = new Tea(null, null, null, [], "");
   TextEditingController newInfusionController = TextEditingController();
 
   @override
@@ -30,6 +30,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
+                initialValue: widget.tea.name,
                 decoration: InputDecoration(hintText: 'Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -39,10 +40,13 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   }
                 },
                 onSaved: (value) {
-                  result.name = value;
+                  widget.tea.name = value;
                 },
               ),
               TextFormField(
+                initialValue: widget.tea.temperature == null
+                    ? ""
+                    : widget.tea.temperature.toString(),
                 keyboardType: TextInputType.phone,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp('[0-9]')),
@@ -55,13 +59,16 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   }
                 },
                 onSaved: (value) {
-                  result.temperature = int.parse(value);
+                  widget.tea.temperature = int.parse(value);
                 },
                 decoration: InputDecoration(
                   hintText: 'Brewing Temperature in °C',
                 ),
               ),
               TextFormField(
+                initialValue: widget.tea.gPer100Ml == null
+                    ? ""
+                    : widget.tea.gPer100Ml.toString(),
                 keyboardType: TextInputType.phone,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
@@ -78,24 +85,26 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   hintText: 'Amount in g/100ml',
                 ),
                 onSaved: (value) {
-                  result.gPer100Ml = double.parse(value.replaceAll(',', '.'));
+                  widget.tea.gPer100Ml =
+                      double.parse(value.replaceAll(',', '.'));
                 },
               ),
               TextFormField(
+                initialValue: widget.tea.notes,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 decoration: InputDecoration(
                   hintText: 'Notes',
                 ),
                 onSaved: (value) {
-                  result.notes = value;
+                  widget.tea.notes = value;
                 },
               ),
               Text(
                 "\nInfusions",
                 style: Theme.of(context).textTheme.headline6,
               ),
-              ...result.infusions.map(
+              ...widget.tea.infusions.map(
                 (infusion) => ListTile(
                   trailing: IconButton(
                       icon: Icon(Icons.delete),
@@ -103,12 +112,12 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                       tooltip: 'delete',
                       onPressed: () {
                         setState(() {
-                          result.infusions
-                              .removeAt(result.infusions.indexOf(infusion));
+                          widget.tea.infusions
+                              .removeAt(widget.tea.infusions.indexOf(infusion));
                         });
                       }),
                   title: Text(
-                      (result.infusions.indexOf(infusion) + 1).toString() +
+                      (widget.tea.infusions.indexOf(infusion) + 1).toString() +
                           ".   " +
                           infusion.duration.toString() +
                           "s"),
@@ -132,7 +141,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                         int parsedInt =
                             int.tryParse(newInfusionController.text);
                         if (parsedInt != null) {
-                          result.infusions.add(new Infusion(parsedInt));
+                          widget.tea.infusions.add(new Infusion(parsedInt));
                         }
                       });
                       newInfusionController.clear();
@@ -140,7 +149,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   ),
                 ),
                 validator: (value) {
-                  if (result.infusions.isEmpty) {
+                  if (widget.tea.infusions.isEmpty) {
                     return "Add at least one infusion";
                   } else {
                     return null;
@@ -157,7 +166,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
             setState(() {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
-                widget.saveCallback(result);
+                widget.saveCallback(widget.tea);
                 Navigator.of(context).pop();
               }
             });

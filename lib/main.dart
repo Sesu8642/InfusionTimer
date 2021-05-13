@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:free_brew/tea.dart';
+import 'package:free_brew/widgets/tea_actions_bottom_sheet.dart';
 import 'package:free_brew/widgets/tea_card.dart';
 import 'package:free_brew/widgets/tea_input_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -66,7 +67,55 @@ class _CollectionPageState extends State<CollectionPage> {
       body: ListView.builder(
         itemCount: _teas.length,
         itemBuilder: (context, i) {
-          return TeaCard(_teas[i]);
+          return TeaCard(
+              _teas[i],
+              (tea) => {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            new TeaActionsBottomSheet(
+                                tea,
+                                (tea) => {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            new TeaInputDialog(
+                                          tea,
+                                          (tea) => {
+                                            setState(
+                                              () {
+                                                SharedPreferences.getInstance()
+                                                    .then(
+                                                  (prefs) {
+                                                    prefs.setStringList(
+                                                        TEAS_SAVE_KEY,
+                                                        _teas
+                                                            .map((tea) =>
+                                                                jsonEncode(tea))
+                                                            .toList());
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                );
+                                              },
+                                            )
+                                          },
+                                        ),
+                                      )
+                                    }, (tea) {
+                              setState(() {
+                                _teas.remove(tea);
+                                SharedPreferences.getInstance().then(
+                                  (prefs) {
+                                    prefs.setStringList(
+                                        TEAS_SAVE_KEY,
+                                        _teas
+                                            .map((tea) => jsonEncode(tea))
+                                            .toList());
+                                  },
+                                );
+                              });
+                            }))
+                  });
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -74,6 +123,7 @@ class _CollectionPageState extends State<CollectionPage> {
           showDialog(
             context: context,
             builder: (BuildContext context) => new TeaInputDialog(
+              new Tea(null, null, null, [], null),
               (tea) => {
                 setState(
                   () {
