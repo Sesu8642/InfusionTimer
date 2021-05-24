@@ -9,6 +9,85 @@ import 'package:free_brew/widgets/timer_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String TEAS_SAVE_KEY = "teas";
+List<Tea> DEFAULT_TEAS = [
+  new Tea("Generic White Tea", 85, 0.6, [new Infusion(180), new Infusion(240)],
+      "test"),
+  new Tea("Generic Green Tea", 80, 0.5, [new Infusion(120), new Infusion(180)],
+      "test"),
+  new Tea("Generic Yellow Tea", 85, 0.6, [new Infusion(120), new Infusion(180)],
+      "test"),
+  new Tea(
+      "Generic Oolong Tea (strip)",
+      99,
+      0.8,
+      [
+        new Infusion(120),
+        new Infusion(150),
+        new Infusion(180),
+        new Infusion(210)
+      ],
+      "test"),
+  new Tea(
+      "Generic Oolong Tea (ball)",
+      99,
+      1.0,
+      [
+        new Infusion(120),
+        new Infusion(150),
+        new Infusion(180),
+        new Infusion(210),
+        new Infusion(240)
+      ],
+      "test"),
+  new Tea(
+      "Generic Black Tea (small leaf)",
+      90,
+      0.8,
+      [
+        new Infusion(120),
+        new Infusion(180),
+        new Infusion(240),
+        new Infusion(320)
+      ],
+      "test"),
+  new Tea(
+      "Generic Black Tea (large leaf)",
+      95,
+      0.7,
+      [
+        new Infusion(120),
+        new Infusion(180),
+        new Infusion(240),
+        new Infusion(320)
+      ],
+      "test"),
+  new Tea(
+      "Generic PuErh Tea (raw)",
+      95,
+      0.9,
+      [
+        new Infusion(120),
+        new Infusion(150),
+        new Infusion(180),
+        new Infusion(210),
+        new Infusion(240),
+        new Infusion(270)
+      ],
+      "test"),
+  new Tea(
+      "Generic PuErh Tea (ripe)",
+      99,
+      0.9,
+      [
+        new Infusion(120),
+        new Infusion(150),
+        new Infusion(180),
+        new Infusion(210),
+        new Infusion(240),
+        new Infusion(270)
+      ],
+      "test")
+];
 
 class CollectionPage extends StatefulWidget {
   CollectionPage({Key key}) : super(key: key);
@@ -20,15 +99,25 @@ class CollectionPage extends StatefulWidget {
 class _CollectionPageState extends State<CollectionPage> {
   List<Tea> _teas = [];
 
+  void _saveTeas() async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setStringList(
+        TEAS_SAVE_KEY, _teas.map((tea) => jsonEncode(tea)).toList());
+  }
+
   @override
   void initState() {
     super.initState();
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
-        _teas = prefs
-            .getStringList(TEAS_SAVE_KEY)
-            .map((teaJson) => Tea.fromJson(jsonDecode(teaJson)))
-            .toList();
+        var saved_tea_strings = prefs.getStringList(TEAS_SAVE_KEY);
+        if (saved_tea_strings == null) {
+          _teas = DEFAULT_TEAS;
+        } else {
+          _teas = saved_tea_strings
+              .map((teaJson) => Tea.fromJson(jsonDecode(teaJson)))
+              .toList();
+        }
       });
     });
   }
@@ -47,6 +136,14 @@ class _CollectionPageState extends State<CollectionPage> {
               context,
               MaterialPageRoute(builder: (context) => TimerPage(tea: tea)),
             );
+            setState(
+              () {
+                // bring tea to the first position
+                _teas.remove(tea);
+                _teas.insert(0, tea);
+                _saveTeas();
+              },
+            );
           },
               (tea) => {
                     showModalBottomSheet(
@@ -63,17 +160,7 @@ class _CollectionPageState extends State<CollectionPage> {
                                           (tea) => {
                                             setState(
                                               () {
-                                                SharedPreferences.getInstance()
-                                                    .then(
-                                                  (prefs) {
-                                                    prefs.setStringList(
-                                                        TEAS_SAVE_KEY,
-                                                        _teas
-                                                            .map((tea) =>
-                                                                jsonEncode(tea))
-                                                            .toList());
-                                                  },
-                                                );
+                                                _saveTeas();
                                                 Navigator.of(context).pop();
                                                 Navigator.of(context).pop();
                                               },
@@ -88,15 +175,7 @@ class _CollectionPageState extends State<CollectionPage> {
                                     }, (tea) {
                               setState(() {
                                 _teas.remove(tea);
-                                SharedPreferences.getInstance().then(
-                                  (prefs) {
-                                    prefs.setStringList(
-                                        TEAS_SAVE_KEY,
-                                        _teas
-                                            .map((tea) => jsonEncode(tea))
-                                            .toList());
-                                  },
-                                );
+                                _saveTeas();
                               });
                             }))
                   });
@@ -112,12 +191,7 @@ class _CollectionPageState extends State<CollectionPage> {
                 setState(
                   () {
                     _teas.add(tea);
-                    SharedPreferences.getInstance().then(
-                      (prefs) {
-                        prefs.setStringList(TEAS_SAVE_KEY,
-                            _teas.map((tea) => jsonEncode(tea)).toList());
-                      },
-                    );
+                    _saveTeas();
                   },
                 );
                 Navigator.of(context).pop();
