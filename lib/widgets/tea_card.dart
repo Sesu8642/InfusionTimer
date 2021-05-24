@@ -15,8 +15,9 @@ class TeaCard extends StatelessWidget {
       child: Card(
         child: GestureDetector(
           child: InkWell(
-            onTap: () => tapCallback(tea),
-            onLongPress: () => longPressCallback(tea),
+            onTap: tapCallback == null ? null : () => tapCallback(tea),
+            onLongPress:
+                longPressCallback == null ? null : () => longPressCallback(tea),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[

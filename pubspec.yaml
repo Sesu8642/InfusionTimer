@@ -11,8 +11,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: ^2.0.5
+  liquid_progress_indicator: ^0.3.2
   cupertino_icons: ^1.0.2
+  audioplayers: ^0.19.0
+  android_alarm_manager: ^2.0.0
   flutter_launcher_icons: ^0.9.0
+  path_provider: ^2.0.1
 
 dev_dependencies:
   flutter_test:
@@ -22,6 +27,8 @@ flutter:
 
   uses-material-design: true
 
+  assets:
+    - "assets/hand-bell-ringing-sound.wav"
 
 flutter_icons:
   android: true
