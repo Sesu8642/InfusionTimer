@@ -22,9 +22,8 @@ class TeaCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
-                  leading: Icon(Icons.emoji_food_beverage_outlined),
-                  title: Text(tea.name),
-                  subtitle: Text(tea.notes),
+                  title: Center(child: Text(tea.name)),
+                  subtitle: Center(child: Text(tea.notes)),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
