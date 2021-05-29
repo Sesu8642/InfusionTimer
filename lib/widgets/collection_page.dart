@@ -125,8 +125,38 @@ class _CollectionPageState extends State<CollectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Tea Collection"),
+      appBar: AppBar(title: Text("Tea Collection")),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(color: Theme.of(context).accentColor),
+              child: Text(
+                "FreeBrew",
+                style: TextStyle(fontSize: 24, color: Colors.white),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text("Settings"),
+            ),
+            AboutListTile(
+              icon: Icon(Icons.favorite),
+              applicationIcon: Container(
+                height: IconTheme.of(context).resolve(context).size,
+                width: IconTheme.of(context).resolve(context).size,
+                child: Image.asset(
+                  "assets/icon_simple.png",
+                  color: Theme.of(context).primaryColorDark,
+                ),
+              ),
+              applicationVersion:
+                  "1.0.0", // TODO: at least take this from some contant or whatever
+              applicationLegalese: "Copyright (c) 2021 Sesu8642",
+            )
+          ],
+        ),
       ),
       body: ListView.builder(
         itemCount: _teas.length,
