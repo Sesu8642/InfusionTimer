@@ -23,7 +23,8 @@ class TeaCard extends StatelessWidget {
               children: <Widget>[
                 ListTile(
                   title: Center(child: Text(tea.name)),
-                  subtitle: Center(child: Text(tea.notes)),
+                  subtitle:
+                      tea.notes.isEmpty ? null : Center(child: Text(tea.notes)),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
