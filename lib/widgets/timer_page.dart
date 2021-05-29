@@ -212,14 +212,13 @@ class _TimerPageState extends State<TimerPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // the timer animation will pause if the application is paused or whatever by android so the state must be corrected when resumed
-    // note: cannot reproduce currently
     if (state == AppLifecycleState.resumed) {
       setState(() {
         Duration remainingDuration =
             infusionFinishTime.difference(DateTime.now());
-        // _animationController.value =
-        //     (_animationController.duration - remainingDuration).inMilliseconds /
-        //         _animationController.duration.inMilliseconds;
+        _animationController.value =
+            (_animationController.duration - remainingDuration).inMilliseconds /
+                _animationController.duration.inMilliseconds;
       });
     }
   }
