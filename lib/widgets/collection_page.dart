@@ -190,7 +190,7 @@ class _CollectionPageState extends State<CollectionPage> {
               (tea) {
                 setState(
                   () {
-                    _teas.add(tea);
+                    _teas.insert(0, tea);
                     _saveTeas();
                   },
                 );
