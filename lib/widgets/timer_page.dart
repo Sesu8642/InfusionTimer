@@ -216,9 +216,13 @@ class _TimerPageState extends State<TimerPage>
       setState(() {
         Duration remainingDuration =
             infusionFinishTime.difference(DateTime.now());
-        _animationController.value =
-            (_animationController.duration - remainingDuration).inMilliseconds /
-                _animationController.duration.inMilliseconds;
+        if (_animationController.isAnimating) {
+          _animationController.value =
+              (_animationController.duration - remainingDuration)
+                      .inMilliseconds /
+                  _animationController.duration.inMilliseconds;
+          _animationController.forward();
+        }
       });
     }
   }
