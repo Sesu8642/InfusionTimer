@@ -7,6 +7,7 @@ import 'package:free_brew/widgets/tea_card.dart';
 import 'package:free_brew/widgets/tea_input_dialog.dart';
 import 'package:free_brew/widgets/timer_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 const String TEAS_SAVE_KEY = "teas";
 List<Tea> DEFAULT_TEAS = [
@@ -98,6 +99,7 @@ class CollectionPage extends StatefulWidget {
 
 class _CollectionPageState extends State<CollectionPage> {
   List<Tea> _teas = [];
+  String _versionName = "";
 
   void _saveTeas() async {
     var prefs = await SharedPreferences.getInstance();
@@ -120,6 +122,7 @@ class _CollectionPageState extends State<CollectionPage> {
         }
       });
     });
+    PackageInfo.fromPlatform().then((value) => _versionName = value.version);
   }
 
   @override
@@ -151,8 +154,7 @@ class _CollectionPageState extends State<CollectionPage> {
                   color: Theme.of(context).primaryColorDark,
                 ),
               ),
-              applicationVersion:
-                  "1.0.0", // TODO: at least take this from some contant or whatever
+              applicationVersion: _versionName,
               applicationLegalese: "Copyright (c) 2021 Sesu8642",
             )
           ],
