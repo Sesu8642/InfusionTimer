@@ -92,7 +92,14 @@ class _CollectionPageState extends State<CollectionPage> {
                 ),
               ),
               applicationVersion: _versionName,
-              applicationLegalese: "Copyright (c) 2021 Sesu8642",
+              applicationLegalese:
+                  "Copyright (c) 2021 Sesu8642\n\nhttps://github.com/Sesu8642/InfusionTimer",
+              aboutBoxChildren: [
+                Text(
+                  "\nMany thanks to Mei Leaf (meileaf.com) for their permission to include data from their brewing guide!",
+                  style: TextStyle(fontSize: 14),
+                )
+              ],
             )
           ],
         ),
