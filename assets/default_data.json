@@ -11,7 +11,7 @@
         "duration": 240
       }
     ],
-    "notes": "western style"
+    "notes": "western style brewing"
   },
   {
     "name": "Green Tea",
@@ -25,7 +25,7 @@
         "duration": 180
       }
     ],
-    "notes": "western style"
+    "notes": "western style brewing"
   },
   {
     "name": "Oolong Tea (strip)",
@@ -45,7 +45,7 @@
         "duration": 210
       }
     ],
-    "notes": "western style"
+    "notes": "western style brewing"
   },
   {
     "name": "Oolong Tea (ball)",
@@ -68,7 +68,7 @@
         "duration": 240
       }
     ],
-    "notes": "western style"
+    "notes": "western style brewing"
   },
   {
     "name": "Black Tea (small leaf)",
@@ -88,7 +88,7 @@
         "duration": 320
       }
     ],
-    "notes": "western style"
+    "notes": "western style brewing"
   },
   {
     "name": "Black Tea (large leaf)",
@@ -108,7 +108,7 @@
         "duration": 320
       }
     ],
-    "notes": "western style"
+    "notes": "western style brewing"
   },
   {
     "name": "PuErh Tea (raw)",
@@ -134,7 +134,7 @@
         "duration": 270
       }
     ],
-    "notes": "western style"
+    "notes": "western style brewing"
   },
   {
     "name": "PuErh Tea (ripe)",
@@ -160,6 +160,6 @@
         "duration": 270
       }
     ],
-    "notes": "western style"
+    "notes": "western style brewing"
   }
 ]
