@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:free_brew/tea.dart';
+import 'package:free_brew/widgets/preferences_page.dart';
 import 'package:free_brew/widgets/tea_card.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
@@ -15,9 +16,9 @@ final String audioResourceName = "hand-bell-ringing-sound.wav";
 final int alarmId = 42;
 
 class TimerPage extends StatefulWidget {
-  TimerPage({Key key, this.tea}) : super(key: key);
-
   final Tea tea;
+
+  TimerPage({Key key, this.tea}) : super(key: key);
 
   @override
   _TimerPageState createState() => _TimerPageState();
@@ -152,7 +153,8 @@ class _TimerPageState extends State<TimerPage>
         child: SingleChildScrollView(
           child: Column(
             children: [
-              TeaCard(widget.tea, null, null),
+              TeaCard(
+                  widget.tea, null, null, PreferencesPage.teaVesselSizeMlPref),
               Container(
                 margin: EdgeInsets.all(30),
                 width: (MediaQuery.of(context).size.height - 100) * 0.5,

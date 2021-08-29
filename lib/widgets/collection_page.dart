@@ -111,6 +111,7 @@ class _CollectionPageState extends State<CollectionPage> {
   @override
   void initState() {
     super.initState();
+    PreferencesPage.loadSettings();
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
         var saved_tea_strings = prefs.getStringList(TEAS_SAVE_KEY);
@@ -145,8 +146,12 @@ class _CollectionPageState extends State<CollectionPage> {
               leading: Icon(Icons.settings),
               title: Text("Preferences"),
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => PreferencesPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PreferencesPage(
+                            key: null,
+                            savedCallback: () => {setState(() => {})})));
               },
             ),
             AboutListTile(
@@ -215,7 +220,8 @@ class _CollectionPageState extends State<CollectionPage> {
                                 _saveTeas();
                               });
                             }))
-                  });
+                  },
+              PreferencesPage.teaVesselSizeMlPref);
         },
       ),
       floatingActionButton: FloatingActionButton(

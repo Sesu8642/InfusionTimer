@@ -5,7 +5,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 const String TEA_VESSEL_SIZE_SAVE_KEY = "tea_vessel_size";
 
 class PreferencesPage extends StatefulWidget {
-  PreferencesPage({Key key}) : super(key: key);
+  PreferencesPage({Key key, this.savedCallback}) : super(key: key);
+
+  static int teaVesselSizeMlPref = 100;
+  final Function savedCallback;
+
+  static loadSettings() {
+    SharedPreferences.getInstance().then((prefs) {
+      var savedTeaVesselSizeMl = prefs.getInt(TEA_VESSEL_SIZE_SAVE_KEY);
+      if (savedTeaVesselSizeMl != null) {
+        teaVesselSizeMlPref = savedTeaVesselSizeMl;
+      }
+    });
+  }
 
   @override
   _PreferencesPageState createState() => _PreferencesPageState();
@@ -15,11 +27,10 @@ class _PreferencesPageState extends State<PreferencesPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _vesselSizeController = TextEditingController();
 
-  int _teaVesselSizeMl = 100;
-
   void _savePreferences() async {
     var prefs = await SharedPreferences.getInstance();
-    prefs.setInt(TEA_VESSEL_SIZE_SAVE_KEY, _teaVesselSizeMl);
+    prefs.setInt(TEA_VESSEL_SIZE_SAVE_KEY, PreferencesPage.teaVesselSizeMlPref);
+    widget.savedCallback();
   }
 
   @override
@@ -27,12 +38,8 @@ class _PreferencesPageState extends State<PreferencesPage> {
     super.initState();
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
-        var savedTeaVesselSizeMl = prefs.getInt(TEA_VESSEL_SIZE_SAVE_KEY);
-        if (savedTeaVesselSizeMl != null) {
-          _teaVesselSizeMl = savedTeaVesselSizeMl;
-        }
-        _vesselSizeController.value =
-            TextEditingValue(text: _teaVesselSizeMl.toString());
+        _vesselSizeController.value = TextEditingValue(
+            text: PreferencesPage.teaVesselSizeMlPref.toString());
       });
     });
   }
@@ -70,7 +77,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
                   },
                   onChanged: (value) {
                     if (_formKey.currentState.validate()) {
-                      _teaVesselSizeMl = int.parse(value);
+                      PreferencesPage.teaVesselSizeMlPref = int.parse(value);
                       _savePreferences();
                     }
                   },

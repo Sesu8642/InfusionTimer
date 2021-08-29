@@ -6,8 +6,10 @@ class TeaCard extends StatelessWidget {
   final Tea tea;
   final Function(Tea) tapCallback;
   final Function(Tea) longPressCallback;
+  final int teaVesselSize;
 
-  TeaCard(this.tea, this.tapCallback, this.longPressCallback);
+  TeaCard(
+      this.tea, this.tapCallback, this.longPressCallback, this.teaVesselSize);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,9 @@ class TeaCard extends StatelessWidget {
                     Text(tea.temperature.toString() + " °C"),
                     const SizedBox(width: 8),
                     Icon(Icons.grass),
-                    Text(tea.gPer100Ml.toString() + " g/100ml"),
+                    Text(teaVesselSize != null
+                        ? "${((tea.gPer100Ml * teaVesselSize).round() / 100).toString()} g/ ${teaVesselSize.toString()}ml"
+                        : "null"),
                     const SizedBox(width: 8),
                     Icon(Icons.repeat),
                     Text(tea.infusions.length.toString() + " infusions"),
