@@ -4,14 +4,14 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:free_brew/tea.dart';
-import 'package:free_brew/widgets/preferences_page.dart';
-import 'package:free_brew/widgets/tea_card.dart';
+import 'package:infusion_timer/tea.dart';
+import 'package:infusion_timer/widgets/preferences_page.dart';
+import 'package:infusion_timer/widgets/tea_card.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
 final String assetPrefix = "assets/";
-final String tempPrefix = "freeBrew_";
+final String tempPrefix = "InfusionTimer_";
 final String audioResourceName = "hand-bell-ringing-sound.wav";
 final int alarmId = 42;
 

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:free_brew/tea.dart';
-import 'package:free_brew/widgets/preferences_page.dart';
-import 'package:free_brew/widgets/tea_actions_bottom_sheet.dart';
-import 'package:free_brew/widgets/tea_card.dart';
-import 'package:free_brew/widgets/tea_input_dialog.dart';
-import 'package:free_brew/widgets/timer_page.dart';
+import 'package:infusion_timer/tea.dart';
+import 'package:infusion_timer/widgets/preferences_page.dart';
+import 'package:infusion_timer/widgets/tea_actions_bottom_sheet.dart';
+import 'package:infusion_timer/widgets/tea_card.dart';
+import 'package:infusion_timer/widgets/tea_input_dialog.dart';
+import 'package:infusion_timer/widgets/timer_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -65,7 +65,7 @@ class _CollectionPageState extends State<CollectionPage> {
             DrawerHeader(
               decoration: BoxDecoration(color: Theme.of(context).accentColor),
               child: Text(
-                "FreeBrew",
+                "InfusionTimer",
                 style: TextStyle(fontSize: 24, color: Colors.white),
               ),
             ),

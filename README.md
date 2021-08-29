@@ -1,4 +1,4 @@
-# free_brew
+# Infusion Timer
 
 A new Flutter project.
 

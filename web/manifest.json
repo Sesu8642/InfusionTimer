@@ -1,6 +1,6 @@
 {
-    "name": "free_brew",
-    "short_name": "free_brew",
+    "name": "infusion_timer",
+    "short_name": "infusion_timer",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

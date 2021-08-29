@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:free_brew/tea.dart';
+import 'package:infusion_timer/tea.dart';
 
 class TeaInputDialog extends StatefulWidget {
   final Tea tea;

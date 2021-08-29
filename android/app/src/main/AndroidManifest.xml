@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sesu8642.free_brew">
+    package="com.sesu8642.infusion_timer">
    <application
-        android:label="free_brew"
+        android:label="Infusion Timer"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

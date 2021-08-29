@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "free_brew",
+            "name": "infusion_timer",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "free_brew (profile mode)",
+            "name": "infusion_timer (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "free_brew (release mode)",
+            "name": "infusion_timer (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

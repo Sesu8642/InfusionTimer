@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:free_brew/tea.dart';
+import 'package:infusion_timer/tea.dart';
 
 class TeaCard extends StatelessWidget {
   final Tea tea;

@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "free_brew")
-set(APPLICATION_ID "com.sesu8642.free_brew")
+set(BINARY_NAME "infusion_timer")
+set(APPLICATION_ID "com.sesu8642.infusion_timer")
 
 cmake_policy(SET CMP0063 NEW)
 
