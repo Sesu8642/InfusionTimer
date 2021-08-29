@@ -9,87 +9,9 @@ import 'package:free_brew/widgets/tea_input_dialog.dart';
 import 'package:free_brew/widgets/timer_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 const String TEAS_SAVE_KEY = "teas";
-final List<Tea> DEFAULT_TEAS = [
-  new Tea("Generic White Tea", 85, 0.6, [new Infusion(180), new Infusion(240)],
-      "test"),
-  new Tea("Generic Green Tea", 80, 0.5, [new Infusion(120), new Infusion(180)],
-      "test"),
-  new Tea("Generic Yellow Tea", 85, 0.6, [new Infusion(120), new Infusion(180)],
-      "test"),
-  new Tea(
-      "Generic Oolong Tea (strip)",
-      99,
-      0.8,
-      [
-        new Infusion(120),
-        new Infusion(150),
-        new Infusion(180),
-        new Infusion(210)
-      ],
-      "test"),
-  new Tea(
-      "Generic Oolong Tea (ball)",
-      99,
-      1.0,
-      [
-        new Infusion(120),
-        new Infusion(150),
-        new Infusion(180),
-        new Infusion(210),
-        new Infusion(240)
-      ],
-      "test"),
-  new Tea(
-      "Generic Black Tea (small leaf)",
-      90,
-      0.8,
-      [
-        new Infusion(120),
-        new Infusion(180),
-        new Infusion(240),
-        new Infusion(320)
-      ],
-      "test"),
-  new Tea(
-      "Generic Black Tea (large leaf)",
-      95,
-      0.7,
-      [
-        new Infusion(120),
-        new Infusion(180),
-        new Infusion(240),
-        new Infusion(320)
-      ],
-      "test"),
-  new Tea(
-      "Generic PuErh Tea (raw)",
-      95,
-      0.9,
-      [
-        new Infusion(120),
-        new Infusion(150),
-        new Infusion(180),
-        new Infusion(210),
-        new Infusion(240),
-        new Infusion(270)
-      ],
-      "test"),
-  new Tea(
-      "Generic PuErh Tea (ripe)",
-      99,
-      0.9,
-      [
-        new Infusion(120),
-        new Infusion(150),
-        new Infusion(180),
-        new Infusion(210),
-        new Infusion(240),
-        new Infusion(270)
-      ],
-      "test")
-];
 
 class CollectionPage extends StatefulWidget {
   CollectionPage({Key key}) : super(key: key);
@@ -112,17 +34,22 @@ class _CollectionPageState extends State<CollectionPage> {
   void initState() {
     super.initState();
     PreferencesPage.loadSettings();
-    SharedPreferences.getInstance().then((prefs) {
-      setState(() {
-        var saved_tea_strings = prefs.getStringList(TEAS_SAVE_KEY);
-        if (saved_tea_strings == null) {
-          _teas = DEFAULT_TEAS;
-        } else {
-          _teas = saved_tea_strings
+    SharedPreferences.getInstance().then((prefs) async {
+      var savedTeaStrings = prefs.getStringList(TEAS_SAVE_KEY);
+      if (savedTeaStrings == null) {
+        var teasJsonString =
+            (await rootBundle.loadString('assets/default_data.json'));
+        var teasJson = json.decode(teasJsonString) as List;
+        setState(() {
+          _teas = teasJson.map((jsonTea) => Tea.fromJson(jsonTea)).toList();
+        });
+      } else {
+        setState(() {
+          _teas = savedTeaStrings
               .map((teaJson) => Tea.fromJson(jsonDecode(teaJson)))
               .toList();
-        }
-      });
+        });
+      }
     });
     PackageInfo.fromPlatform().then((value) => _versionName = value.version);
   }

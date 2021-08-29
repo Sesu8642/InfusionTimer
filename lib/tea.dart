@@ -10,7 +10,9 @@ class Tea {
   Tea.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         temperature = json['temperature'],
-        gPer100Ml = json['gPer100Ml'],
+        gPer100Ml = json['gPer100Ml'] is double
+            ? json['gPer100Ml']
+            : double.parse(json['gPer100Ml'].toString()),
         infusions = List<Infusion>.from(
             json['infusions'].map((i) => Infusion.fromJson(i))),
         notes = json['notes'];

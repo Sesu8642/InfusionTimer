@@ -31,6 +31,7 @@ flutter:
   assets:
     - "assets/hand-bell-ringing-sound.wav"
     - "assets/icon_simple.png"
+    - "assets/default_data.json"
 
 flutter_icons:
   android: true
