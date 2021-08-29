@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:free_brew/tea.dart';
+import 'package:free_brew/widgets/preferences_page.dart';
 import 'package:free_brew/widgets/tea_actions_bottom_sheet.dart';
 import 'package:free_brew/widgets/tea_card.dart';
 import 'package:free_brew/widgets/tea_input_dialog.dart';
@@ -10,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 const String TEAS_SAVE_KEY = "teas";
-List<Tea> DEFAULT_TEAS = [
+final List<Tea> DEFAULT_TEAS = [
   new Tea("Generic White Tea", 85, 0.6, [new Infusion(180), new Infusion(240)],
       "test"),
   new Tea("Generic Green Tea", 80, 0.5, [new Infusion(120), new Infusion(180)],
@@ -142,7 +143,11 @@ class _CollectionPageState extends State<CollectionPage> {
             ),
             ListTile(
               leading: Icon(Icons.settings),
-              title: Text("Settings"),
+              title: Text("Preferences"),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PreferencesPage()));
+              },
             ),
             AboutListTile(
               icon: Icon(Icons.favorite),
