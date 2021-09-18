@@ -38,4 +38,4 @@ flutter_icons:
   ios: false
   image_path: "assets/icon_simple.png"
   adaptive_icon_foreground: "assets/icon_simple_padding.png"
-  adaptive_icon_background: "#2196f3"
+  adaptive_icon_background: "#009688"

@@ -33,7 +33,7 @@ class AppState extends State<InfusionTimer> {
     return MaterialApp(
       title: 'Infusion Timer',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
       ),
       home: CollectionPage(),
     );
