@@ -12,3 +12,9 @@ Assets in this repository are licensed under variious other licenses:
 - **assets/icon_simple***: Gaiwan Icon © 2021 by [Sesu8642](https://github.com/sesu8642) is licensed under [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1)
 - **assets/hand-bell-ringing-sound.wav**: CC BY 4.0 (see assets/hand-bell-ringing-sound.txt)
 - **assets/default_data.json**: copyright meileaf 2016
+
+## Creating Release Artifacts
+### Android
+- create a file key.properties in /android/key.properties (template should be there)
+- modify flutter path in build_release.sh
+- run build_release.sh
