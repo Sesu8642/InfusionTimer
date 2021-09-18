@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:infusion_timer/widgets/additional_license_factory.dart';
+import 'package:infusion_timer/additional_license_factory.dart';
 import 'package:infusion_timer/widgets/collection_page.dart';
 
 void main() async {
