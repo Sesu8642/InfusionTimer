@@ -1,7 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import 'dart:io';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:infusion_timer/widgets/additional_license_factory.dart';
 import 'package:infusion_timer/widgets/collection_page.dart';
 
 void main() async {
@@ -9,6 +13,10 @@ void main() async {
   if (Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
   }
+
+  // register additional licenses
+  LicenseRegistry.addLicense(AdditionalLicenseFactory.create);
+
   runApp(InfusionTimer());
 }
 
