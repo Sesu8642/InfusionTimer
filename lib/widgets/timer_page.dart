@@ -166,7 +166,7 @@ class _TimerPageState extends State<TimerPage>
                     aspectRatio: 1,
                     child: LiquidCircularProgressIndicator(
                       value: _animationController.value,
-                      borderColor: Theme.of(context).accentColor,
+                      borderColor: Theme.of(context).colorScheme.secondary,
                       borderWidth: 5.0,
                       direction: Axis.vertical,
                       center: Text(
