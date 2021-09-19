@@ -91,13 +91,8 @@ class _TimerPageState extends State<TimerPage>
         if (Platform.isAndroid) {
           infusionFinishTime =
               DateTime.now().add(Duration(milliseconds: remainingMs));
-          AndroidAlarmManager.oneShotAt(
-              DateTime.now().add(Duration(milliseconds: remainingMs)),
-              alarmId,
-              _ring,
-              allowWhileIdle: true,
-              exact: true,
-              alarmClock: true);
+          AndroidAlarmManager.oneShotAt(infusionFinishTime, alarmId, _ring,
+              allowWhileIdle: true, exact: true, alarmClock: true);
         }
       } else {
         // pausing
