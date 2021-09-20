@@ -34,13 +34,12 @@ class _TimerPageState extends State<TimerPage>
   int displaySeconds;
   AnimationController _animationController;
   static AudioCache _audioCache = AudioCache();
-  static AudioPlayer _audioPlayer;
   // for correcting the animation status when the app was in the background
   DateTime infusionFinishTime;
   File audioFile;
 
   static _ring() async {
-    _audioPlayer = await _audioCache.play(audioResourceName);
+    await _audioCache.play(audioResourceName);
   }
 
   _skipForwardIteration() {
