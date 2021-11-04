@@ -37,4 +37,5 @@
             android:name="io.flutter.plugins.androidalarmmanager.AlarmBroadcastReceiver"
             android:exported="false"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 </manifest>
