@@ -1,0 +1,2 @@
+removed unused RECEIVE_BOOT_COMPLETED permission
+added SCHEDULE_EXACT_ALARM for android 12 exact alarm scheduling
