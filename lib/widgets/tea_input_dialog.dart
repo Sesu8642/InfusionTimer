@@ -50,9 +50,9 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                 initialValue: widget.tea.temperature == null
                     ? ""
                     : widget.tea.temperature.toString(),
-                keyboardType: TextInputType.phone,
+                keyboardType: TextInputType.number,
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                  FilteringTextInputFormatter.digitsOnly,
                 ],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -72,10 +72,8 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                 initialValue: widget.tea.gPer100Ml == null
                     ? ""
                     : widget.tea.gPer100Ml.toString(),
-                keyboardType: TextInputType.phone,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
-                ],
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   num parsed = num.tryParse(value.replaceAll(',', '.'));
                   if (parsed == null) {
@@ -132,7 +130,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
               ),
               TextFormField(
                 controller: newInfusionController,
-                keyboardType: TextInputType.phone,
+                keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   hintText: 'Infusion time in s',

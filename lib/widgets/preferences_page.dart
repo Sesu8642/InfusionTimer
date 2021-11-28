@@ -65,11 +65,9 @@ class _PreferencesPageState extends State<PreferencesPage> {
                 TextFormField(
                   controller: _vesselSizeController,
                   decoration: InputDecoration(icon: Icon(Icons.free_breakfast)),
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.number,
                   maxLength: 5,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                  ],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Enter a value";
