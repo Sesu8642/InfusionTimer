@@ -65,7 +65,8 @@ class _CollectionPageState extends State<CollectionPage> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(color: Theme.of(context).accentColor),
+              decoration:
+                  BoxDecoration(color: Theme.of(context).colorScheme.secondary),
               child: Text(
                 "InfusionTimer",
                 style: TextStyle(fontSize: 24, color: Colors.white),
