@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:android_alarm_manager/android_alarm_manager.dart';
@@ -11,9 +12,15 @@ import 'package:infusion_timer/widgets/preferences_page.dart';
 import 'package:infusion_timer/widgets/tea_card.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final String assetPrefix = "assets/";
 final String tempPrefix = "InfusionTimer_";
+final String androidProgressNotificationChannelId = "brewingProgress";
+final String androidProgressNotificationChannelName = "Brewing Progress";
+final String androidProgressNotificationChannelDescription =
+    "Progress of the current infusion.";
+final int progressNotificationId = 42;
 final String audioResourceName = "hand-bell-ringing-sound.wav";
 final int alarmId = 42;
 
@@ -29,17 +36,75 @@ class TimerPage extends StatefulWidget {
 class _TimerPageState extends State<TimerPage>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   int currentInfusion = 1;
-  bool paused = false;
-  bool started = false;
-  int displaySeconds;
   AnimationController _animationController;
+  Timer _notificationUpdateTimer;
   static AudioCache _audioCache = AudioCache();
-  // for correcting the animation status when the app was in the background
+  static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  // for correcting the animation status when the app was in the background + notification progress
   DateTime infusionFinishTime;
   File audioFile;
 
   static _ring() async {
     await _audioCache.play(audioResourceName);
+  }
+
+  _updateProgressNotification() async {
+    int remainingDurationMs =
+        infusionFinishTime.difference(DateTime.now()).inMilliseconds;
+    bool finished = remainingDurationMs <= 0;
+    if (finished) {
+      // stop updating the notification when done so the user can dismiss it without it reappearing again instantly
+      _stopDisplayingProgressNotification();
+    }
+    String remainingDurationText = finished
+        ? "finished"
+        : "${(remainingDurationMs / 1000).toStringAsFixed(0)}\u200As";
+    // setting a short timeout to make the notification disappear if we dont need it anymore (paused, stopped brewing)
+    // but when the brewing is finished, it should stay for a while so the user can still see it
+    int timeout = finished ? Duration(minutes: 30).inMilliseconds : 1000;
+    AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(androidProgressNotificationChannelId,
+            androidProgressNotificationChannelName,
+            channelDescription: androidProgressNotificationChannelDescription,
+            importance: Importance.low,
+            priority: Priority.defaultPriority,
+            enableVibration: false,
+            autoCancel: false,
+            showProgress: true,
+            progress:
+                widget.tea.infusions[currentInfusion - 1].duration * 1000 -
+                    remainingDurationMs,
+            timeoutAfter: timeout,
+            maxProgress:
+                widget.tea.infusions[currentInfusion - 1].duration * 1000);
+    NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        progressNotificationId,
+        'Brewing ${widget.tea.name}, Infusion $currentInfusion',
+        remainingDurationText,
+        platformChannelSpecifics,
+        payload: widget.tea.name);
+  }
+
+  _startDisplayingProgressNotification() {
+    if (Platform.isAndroid) {
+      if (_notificationUpdateTimer == null ||
+          !_notificationUpdateTimer.isActive) {
+        // if the timer is null or canceled, we need a new one
+        _notificationUpdateTimer = Timer.periodic(Duration(milliseconds: 500),
+            (Timer t) => _updateProgressNotification());
+      }
+    }
+  }
+
+  _stopDisplayingProgressNotification() {
+    if (Platform.isAndroid) {
+      if (_notificationUpdateTimer != null) {
+        _notificationUpdateTimer.cancel();
+      }
+    }
   }
 
   _skipForwardIteration() {
@@ -55,6 +120,7 @@ class _TimerPageState extends State<TimerPage>
     if (Platform.isAndroid) {
       AndroidAlarmManager.cancel(alarmId);
     }
+    _stopDisplayingProgressNotification();
   }
 
   _skipBackwardIteration() {
@@ -70,6 +136,7 @@ class _TimerPageState extends State<TimerPage>
     if (Platform.isAndroid) {
       AndroidAlarmManager.cancel(alarmId);
     }
+    _stopDisplayingProgressNotification();
   }
 
   _startPause() {
@@ -86,16 +153,19 @@ class _TimerPageState extends State<TimerPage>
                   _animationController.duration.inMilliseconds)
               .round();
         }
+        // all cases including starting the first time
         _animationController.forward();
+        _startDisplayingProgressNotification();
+        infusionFinishTime =
+            DateTime.now().add(Duration(milliseconds: remainingMs));
         if (Platform.isAndroid) {
-          infusionFinishTime =
-              DateTime.now().add(Duration(milliseconds: remainingMs));
           AndroidAlarmManager.oneShotAt(infusionFinishTime, alarmId, _ring,
-              allowWhileIdle: true, exact: true, alarmClock: true);
+              allowWhileIdle: true, exact: true);
         }
       } else {
         // pausing
         _animationController.stop();
+        _stopDisplayingProgressNotification();
         if (Platform.isAndroid) {
           AndroidAlarmManager.cancel(alarmId);
         }
@@ -115,6 +185,7 @@ class _TimerPageState extends State<TimerPage>
     _animationController.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
         if (Platform.isLinux) {
+          _updateProgressNotification();
           // progress to next iteration
           _skipForwardIteration();
           // to ring: write the audio file to a temporary directory and then play is using aplay
@@ -231,6 +302,9 @@ class _TimerPageState extends State<TimerPage>
     if (Platform.isAndroid) {
       AndroidAlarmManager.cancel(alarmId);
     }
+    // cancel any "finished" notification
+    flutterLocalNotificationsPlugin.cancel(progressNotificationId);
+    _stopDisplayingProgressNotification();
     if (audioFile != null) {
       // no need to await
       audioFile.delete();
