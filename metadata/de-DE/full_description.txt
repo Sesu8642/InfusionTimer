@@ -1,1 +1,1 @@
-Infusion Timer ist eine mit Flutter entwickelte Tee-Timer-App. Das Alleinstellungsmerkmal der App ist die Unterstützung für mehrere Infusionen. Die App enthält eine vordefinierte Liste verschiedener Tees, es können aber auch eigene hinzugefügt werden.
+Infusion Timer ist eine mit Flutter entwickelte Tee-Timer-App. Das Alleinstellungsmerkmal der App ist die Unterstützung für mehrere Aufgüsse. Die App enthält eine vordefinierte Liste verschiedener Tees, es können aber auch eigene hinzugefügt werden.
