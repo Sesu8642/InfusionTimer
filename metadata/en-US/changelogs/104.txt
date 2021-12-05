@@ -1,0 +1,3 @@
+brewing progress notification (Linux: only a single notification when finished)
+changed display name to "Infusion Tea Timer"
+other minor fixes and improvements
