@@ -68,7 +68,7 @@ class _CollectionPageState extends State<CollectionPage> {
               decoration:
                   BoxDecoration(color: Theme.of(context).colorScheme.secondary),
               child: Text(
-                "InfusionTimer",
+                "Infusion Tea Timer",
                 style: TextStyle(fontSize: 24, color: Colors.white),
               ),
             ),
