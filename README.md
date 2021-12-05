@@ -2,6 +2,13 @@
 
 This is a tea timer app made with Flutter. Its unique feature is that it supports multiple infusions. The app comes with a defaul list of teas but you can also add your own. Many thanks to [Mei Leaf](https://meileaf.com/) for their permission to include default data from their brewing guide!
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/com.sesu8642.infusion_timer/)
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=com.sesu8642.infusion_timer)
+
 ## Screenshots
 ![Tea Collection](metadata/en-US/images/phoneScreenshots/1.png)
 ![Tea Timer](metadata/en-US/images/phoneScreenshots/2.png)
