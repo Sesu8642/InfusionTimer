@@ -73,7 +73,9 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                     ? ""
                     : widget.tea.gPer100Ml.toString(),
                 keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp('[0-9,.]')),
+                ],
                 validator: (value) {
                   num parsed = num.tryParse(value.replaceAll(',', '.'));
                   if (parsed == null) {
