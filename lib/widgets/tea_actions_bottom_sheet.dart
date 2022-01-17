@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:infusion_timer/tea.dart';
 
 class TeaActionsBottomSheet extends StatelessWidget {
