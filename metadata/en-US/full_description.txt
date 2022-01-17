@@ -1,1 +1,1 @@
-Infusion Tea Timer is a tea timer app made with Flutter. Its unique feature is that it supports multiple infusions. The app comes with a defaul list of teas but you can also add your own.
+Infusion Tea Timer is a tea timer app made with Flutter. Its unique feature is that it supports multiple infusions. The app comes with a defaul list of teas, but you can also add your own.
