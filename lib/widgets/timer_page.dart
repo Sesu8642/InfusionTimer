@@ -159,8 +159,9 @@ class _TimerPageState extends State<TimerPage>
         infusionFinishTime =
             DateTime.now().add(Duration(milliseconds: remainingMs));
         if (Platform.isAndroid) {
+          // not using wakeup true will cause long delays and potentially no sound at all
           AndroidAlarmManager.oneShotAt(infusionFinishTime, alarmId, _ring,
-              allowWhileIdle: true, exact: true);
+              allowWhileIdle: true, exact: true, wakeup: true);
         }
       } else {
         // pausing
