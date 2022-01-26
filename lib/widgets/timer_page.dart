@@ -212,6 +212,8 @@ class _TimerPageState extends State<TimerPage>
   @override
   Widget build(BuildContext context) {
     final percentage = _animationController.value * 100;
+    final progressIndicatorDiameter =
+        (MediaQuery.of(context).size.height) * 0.45;
     return Scaffold(
       appBar: AppBar(
         title: Text("Tea Timer"),
@@ -225,7 +227,7 @@ class _TimerPageState extends State<TimerPage>
                   widget.tea, null, null, PreferencesPage.teaVesselSizeMlPref),
               Container(
                 margin: EdgeInsets.all(30),
-                width: (MediaQuery.of(context).size.height - 100) * 0.5,
+                width: progressIndicatorDiameter,
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: AspectRatio(
@@ -235,20 +237,47 @@ class _TimerPageState extends State<TimerPage>
                       borderColor: Theme.of(context).colorScheme.secondary,
                       borderWidth: 5.0,
                       direction: Axis.vertical,
-                      center: Text(
-                        "${(widget.tea.infusions[currentInfusion - 1].duration - widget.tea.infusions[currentInfusion - 1].duration * percentage / 100).toStringAsFixed(0)}\u200As",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 50),
+                      center: FittedBox(
+                        child: Stack(
+                          alignment: _animationController.isAnimating
+                              ? Alignment.center
+                              : Alignment.bottomCenter,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(
+                                  bottom: _animationController.isAnimating
+                                      ? 0
+                                      : progressIndicatorDiameter * 0.06),
+                              child: Text(
+                                "${(widget.tea.infusions[currentInfusion - 1].duration - widget.tea.infusions[currentInfusion - 1].duration * percentage / 100).toStringAsFixed(0)}\u200As",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: progressIndicatorDiameter * 0.2,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              height: progressIndicatorDiameter,
+                              width: progressIndicatorDiameter,
+                              child: IconButton(
+                                // didnt find a proper way to remove the splash effect
+                                splashRadius: 0.0001,
+                                icon: Icon(_animationController.isCompleted ||
+                                        !_animationController.isAnimating
+                                    ? Icons.play_arrow
+                                    : null),
+                                color: Colors.white.withOpacity(0.5),
+                                onPressed: _startPause,
+                                iconSize: progressIndicatorDiameter * 0.70,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Text(
-                "Infusion $currentInfusion/${widget.tea.infusions.length}",
-                style: TextStyle(fontSize: 20),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -258,12 +287,10 @@ class _TimerPageState extends State<TimerPage>
                       onPressed:
                           currentInfusion == 1 ? null : _skipBackwardIteration),
                   const SizedBox(width: 10),
-                  IconButton(
-                      icon: Icon(_animationController.isCompleted ||
-                              !_animationController.isAnimating
-                          ? Icons.play_arrow
-                          : Icons.pause),
-                      onPressed: _startPause),
+                  Text(
+                    "Infusion $currentInfusion/${widget.tea.infusions.length}",
+                    style: TextStyle(fontSize: 20),
+                  ),
                   const SizedBox(width: 10),
                   IconButton(
                       icon: Icon(Icons.skip_next),
