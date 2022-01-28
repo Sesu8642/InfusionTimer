@@ -22,6 +22,16 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
 
   TextEditingController newInfusionController = TextEditingController();
 
+  _addInfusion() {
+    setState(() {
+      int parsedInt = int.tryParse(newInfusionController.text);
+      if (parsedInt != null) {
+        widget.tea.infusions.add(new Infusion(parsedInt));
+      }
+    });
+    newInfusionController.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -127,9 +137,6 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   contentPadding: EdgeInsets.all(0),
                 ),
               ),
-              Row(
-                children: [],
-              ),
               TextFormField(
                 controller: newInfusionController,
                 keyboardType: TextInputType.number,
@@ -140,14 +147,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                     splashRadius: Material.defaultSplashRadius / 1.5,
                     icon: Icon(Icons.add),
                     onPressed: () {
-                      setState(() {
-                        int parsedInt =
-                            int.tryParse(newInfusionController.text);
-                        if (parsedInt != null) {
-                          widget.tea.infusions.add(new Infusion(parsedInt));
-                        }
-                      });
-                      newInfusionController.clear();
+                      _addInfusion();
                     },
                   ),
                 ),
@@ -166,6 +166,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
       actions: <Widget>[
         new TextButton(
           onPressed: () {
+            _addInfusion();
             setState(() {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
