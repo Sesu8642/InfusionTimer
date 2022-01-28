@@ -139,14 +139,21 @@ class _TimerPageState extends State<TimerPage>
     _stopDisplayingProgressNotification();
   }
 
-  _startPause() {
+  _startPauseNext() {
     int remainingMs;
     setState(() {
       if (!_animationController.isAnimating) {
         if (_animationController.isCompleted) {
-          // restarting
-          _animationController.reset();
-          remainingMs = _animationController.duration.inMilliseconds;
+          if (currentInfusion == widget.tea.infusions.length) {
+            // finished; back to tea collection
+            Navigator.pop(context);
+            return;
+          } else {
+            // starting next iteration
+            _skipForwardIteration();
+            _animationController.reset();
+            remainingMs = _animationController.duration.inMilliseconds;
+          }
         } else {
           // resuming from pause
           remainingMs = ((1 - _animationController.value) *
@@ -187,8 +194,6 @@ class _TimerPageState extends State<TimerPage>
       if (status == AnimationStatus.completed) {
         if (Platform.isLinux) {
           _updateProgressNotification();
-          // progress to next iteration
-          _skipForwardIteration();
           // to ring: write the audio file to a temporary directory and then play is using aplay
           var tempDir = await getTemporaryDirectory();
           final soundBytes =
@@ -213,7 +218,7 @@ class _TimerPageState extends State<TimerPage>
   Widget build(BuildContext context) {
     final percentage = _animationController.value * 100;
     final progressIndicatorDiameter =
-        (MediaQuery.of(context).size.height) * 0.45;
+        (MediaQuery.of(context).size.height) * 0.4;
     return Scaffold(
       appBar: AppBar(
         title: Text("Tea Timer"),
@@ -263,13 +268,23 @@ class _TimerPageState extends State<TimerPage>
                               child: IconButton(
                                 // didnt find a proper way to remove the splash effect
                                 splashRadius: 0.0001,
-                                icon: Icon(_animationController.isCompleted ||
-                                        !_animationController.isAnimating
-                                    ? Icons.play_arrow
-                                    : null),
+                                icon: Icon(() {
+                                  if (_animationController.isCompleted) {
+                                    if (currentInfusion ==
+                                        widget.tea.infusions.length) {
+                                      return Icons.arrow_back;
+                                    } else {
+                                      return Icons.skip_next;
+                                    }
+                                  } else if (_animationController.isAnimating) {
+                                    return null;
+                                  } else {
+                                    return Icons.play_arrow;
+                                  }
+                                }()),
                                 color: Colors.white.withOpacity(0.5),
-                                onPressed: _startPause,
-                                iconSize: progressIndicatorDiameter * 0.70,
+                                onPressed: _startPauseNext,
+                                iconSize: progressIndicatorDiameter * 0.65,
                               ),
                             ),
                           ],
