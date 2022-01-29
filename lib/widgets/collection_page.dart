@@ -28,7 +28,7 @@ class _CollectionPageState extends State<CollectionPage> {
 
   void _saveTeas() async {
     var prefs = await SharedPreferences.getInstance();
-    prefs.setStringList(
+    await prefs.setStringList(
         TEAS_SAVE_KEY, _teas.map((tea) => jsonEncode(tea)).toList());
   }
 

@@ -14,15 +14,15 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final String assetPrefix = "assets/";
-final String tempPrefix = "InfusionTimer_";
-final String androidProgressNotificationChannelId = "brewingProgress";
-final String androidProgressNotificationChannelName = "Brewing Progress";
-final String androidProgressNotificationChannelDescription =
+const String ASSET_PREFIX = "assets/";
+const String TEMP_FILE_PREFIX = "InfusionTimer_";
+const String ANDROID_PROGRESS_NOTIFICATION_CHANNEL_ID = "brewingProgress";
+const String ANDROID_PROGRESS_NOTIFICATION_CHANNEL_NAME = "Brewing Progress";
+const String ANDROID_PROGRESS_NOTIFICATION_CHANNEL_DESCRIPTION =
     "Progress of the current infusion.";
-final int progressNotificationId = 42;
-final String audioResourceName = "hand-bell-ringing-sound.wav";
-final int alarmId = 42;
+const int PROGRESS_NOTIFICATION_ID = 42;
+const String AUDIO_RESOURCE_NAME = "hand-bell-ringing-sound.wav";
+const int ALARM_ID = 42;
 
 class TimerPage extends StatefulWidget {
   final Tea tea;
@@ -46,7 +46,7 @@ class _TimerPageState extends State<TimerPage>
   File audioFile;
 
   static _ring() async {
-    await _audioCache.play(audioResourceName);
+    await _audioCache.play(AUDIO_RESOURCE_NAME);
   }
 
   _updateProgressNotification() async {
@@ -64,9 +64,10 @@ class _TimerPageState extends State<TimerPage>
     // but when the brewing is finished, it should stay for a while so the user can still see it
     int timeout = finished ? Duration(minutes: 30).inMilliseconds : 1000;
     AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(androidProgressNotificationChannelId,
-            androidProgressNotificationChannelName,
-            channelDescription: androidProgressNotificationChannelDescription,
+        AndroidNotificationDetails(ANDROID_PROGRESS_NOTIFICATION_CHANNEL_ID,
+            ANDROID_PROGRESS_NOTIFICATION_CHANNEL_NAME,
+            channelDescription:
+                ANDROID_PROGRESS_NOTIFICATION_CHANNEL_DESCRIPTION,
             importance: Importance.low,
             priority: Priority.defaultPriority,
             enableVibration: false,
@@ -81,7 +82,7 @@ class _TimerPageState extends State<TimerPage>
     NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
-        progressNotificationId,
+        PROGRESS_NOTIFICATION_ID,
         'Brewing ${widget.tea.name}, Infusion $currentInfusion',
         remainingDurationText,
         platformChannelSpecifics,
@@ -118,7 +119,7 @@ class _TimerPageState extends State<TimerPage>
       _animationController.reset();
     });
     if (Platform.isAndroid) {
-      AndroidAlarmManager.cancel(alarmId);
+      AndroidAlarmManager.cancel(ALARM_ID);
     }
     _stopDisplayingProgressNotification();
   }
@@ -134,7 +135,7 @@ class _TimerPageState extends State<TimerPage>
       _animationController.reset();
     });
     if (Platform.isAndroid) {
-      AndroidAlarmManager.cancel(alarmId);
+      AndroidAlarmManager.cancel(ALARM_ID);
     }
     _stopDisplayingProgressNotification();
   }
@@ -167,7 +168,7 @@ class _TimerPageState extends State<TimerPage>
             DateTime.now().add(Duration(milliseconds: remainingMs));
         if (Platform.isAndroid) {
           // not using wakeup true will cause long delays and potentially no sound at all
-          AndroidAlarmManager.oneShotAt(infusionFinishTime, alarmId, _ring,
+          AndroidAlarmManager.oneShotAt(infusionFinishTime, ALARM_ID, _ring,
               allowWhileIdle: true, exact: true, wakeup: true);
         }
       } else {
@@ -175,7 +176,7 @@ class _TimerPageState extends State<TimerPage>
         _animationController.stop();
         _stopDisplayingProgressNotification();
         if (Platform.isAndroid) {
-          AndroidAlarmManager.cancel(alarmId);
+          AndroidAlarmManager.cancel(ALARM_ID);
         }
       }
     });
@@ -197,12 +198,12 @@ class _TimerPageState extends State<TimerPage>
           // to ring: write the audio file to a temporary directory and then play is using aplay
           var tempDir = await getTemporaryDirectory();
           final soundBytes =
-              await rootBundle.load(assetPrefix + audioResourceName);
+              await rootBundle.load(ASSET_PREFIX + AUDIO_RESOURCE_NAME);
           final buffer = soundBytes.buffer;
           final byteList = buffer.asUint8List(
               soundBytes.offsetInBytes, soundBytes.lengthInBytes);
-          audioFile =
-              new File(tempDir.path + "/" + tempPrefix + audioResourceName);
+          audioFile = new File(
+              tempDir.path + "/" + TEMP_FILE_PREFIX + AUDIO_RESOURCE_NAME);
           if (!await audioFile.exists()) {
             await audioFile.writeAsBytes(byteList);
           }
@@ -343,10 +344,10 @@ class _TimerPageState extends State<TimerPage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     if (Platform.isAndroid) {
-      AndroidAlarmManager.cancel(alarmId);
+      AndroidAlarmManager.cancel(ALARM_ID);
     }
     // cancel any "finished" notification
-    flutterLocalNotificationsPlugin.cancel(progressNotificationId);
+    flutterLocalNotificationsPlugin.cancel(PROGRESS_NOTIFICATION_ID);
     _stopDisplayingProgressNotification();
     if (audioFile != null) {
       // no need to await
