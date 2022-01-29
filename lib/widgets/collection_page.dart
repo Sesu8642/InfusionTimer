@@ -52,6 +52,8 @@ class _CollectionPageState extends State<CollectionPage> {
               .toList();
         });
       }
+      // save to persist generated ids
+      _saveTeas();
     });
     PackageInfo.fromPlatform().then((value) => _versionName = value.version);
   }
@@ -166,7 +168,7 @@ class _CollectionPageState extends State<CollectionPage> {
           showDialog(
             context: context,
             builder: (BuildContext context) => new TeaInputDialog(
-              new Tea(null, null, null, [], null),
+              new Tea.withGeneratedId(null, null, null, [], null),
               (tea) {
                 setState(
                   () {
