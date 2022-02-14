@@ -24,7 +24,29 @@ class CollectionPage extends StatefulWidget {
 
 class _CollectionPageState extends State<CollectionPage> {
   List<Tea> _teas = [];
+  Map<double, int> _savedSessions = {};
   String _versionName = "";
+
+  void _deleteTea(Tea tea) async {
+    var prefs = await SharedPreferences.getInstance();
+    // delete active session if any
+    setState(() {
+      _teas.remove(tea);
+    });
+    await prefs.remove(SESSION_SAVE_PREFIX + tea.id.toString());
+    await _saveTeas();
+  }
+
+  void _updateTea(Tea tea) async {
+    // tea was changed already and the change needs to be handled
+    var prefs = await SharedPreferences.getInstance();
+    var savedInfusion = prefs.getInt(SESSION_SAVE_PREFIX + tea.id.toString());
+    if (savedInfusion != null && savedInfusion >= tea.infusions.length) {
+      await prefs.remove(SESSION_SAVE_PREFIX + tea.id.toString());
+    }
+    _loadSessions();
+    _saveTeas();
+  }
 
   void _saveTeas() async {
     var prefs = await SharedPreferences.getInstance();
@@ -32,29 +54,47 @@ class _CollectionPageState extends State<CollectionPage> {
         TEAS_SAVE_KEY, _teas.map((tea) => jsonEncode(tea)).toList());
   }
 
+  void _loadSessions() async {
+    var prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _teas.forEach((tea) {
+        var teaSession = prefs.getInt(SESSION_SAVE_PREFIX + tea.id.toString());
+        if (teaSession != null) {
+          _savedSessions[tea.id] = teaSession;
+        } else {
+          _savedSessions.remove(tea.id);
+        }
+      });
+    });
+  }
+
+  void _loadTeas() async {
+    var prefs = await SharedPreferences.getInstance();
+    var savedTeaStrings = prefs.getStringList(TEAS_SAVE_KEY);
+    if (savedTeaStrings == null) {
+      var teasJsonString =
+          (await rootBundle.loadString('assets/default_data.json'));
+      var teasJson = json.decode(teasJsonString) as List;
+      setState(() {
+        _teas = teasJson.map((jsonTea) => Tea.fromJson(jsonTea)).toList();
+      });
+    } else {
+      setState(() {
+        _teas = savedTeaStrings
+            .map((teaJson) => Tea.fromJson(jsonDecode(teaJson)))
+            .toList();
+      });
+    }
+    // save to persist generated ids
+    _saveTeas();
+  }
+
   @override
   void initState() {
     super.initState();
     PreferencesPage.loadSettings();
-    SharedPreferences.getInstance().then((prefs) async {
-      var savedTeaStrings = prefs.getStringList(TEAS_SAVE_KEY);
-      if (savedTeaStrings == null) {
-        var teasJsonString =
-            (await rootBundle.loadString('assets/default_data.json'));
-        var teasJson = json.decode(teasJsonString) as List;
-        setState(() {
-          _teas = teasJson.map((jsonTea) => Tea.fromJson(jsonTea)).toList();
-        });
-      } else {
-        setState(() {
-          _teas = savedTeaStrings
-              .map((teaJson) => Tea.fromJson(jsonDecode(teaJson)))
-              .toList();
-        });
-      }
-      // save to persist generated ids
-      _saveTeas();
-    });
+    _loadTeas();
+    _loadSessions();
     PackageInfo.fromPlatform().then((value) => _versionName = value.version);
   }
 
@@ -112,8 +152,8 @@ class _CollectionPageState extends State<CollectionPage> {
       body: ListView.builder(
         itemCount: _teas.length,
         itemBuilder: (context, i) {
-          return TeaCard(_teas[i], (tea) {
-            Navigator.push(
+          return TeaCard(_teas[i], (tea) async {
+            var future = Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => TimerPage(tea: tea)),
             );
@@ -125,6 +165,9 @@ class _CollectionPageState extends State<CollectionPage> {
                 _saveTeas();
               },
             );
+            await future;
+            // load sessions again because there might be a change
+            await _loadSessions();
           },
               (tea) => {
                     showModalBottomSheet(
@@ -138,14 +181,10 @@ class _CollectionPageState extends State<CollectionPage> {
                                         builder: (BuildContext context) =>
                                             new TeaInputDialog(
                                           tea,
-                                          (tea) => {
-                                            setState(
-                                              () {
-                                                _saveTeas();
-                                                Navigator.of(context).pop();
-                                                Navigator.of(context).pop();
-                                              },
-                                            )
+                                          (tea) {
+                                            _updateTea(tea);
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context).pop();
                                           },
                                           (tea) {
                                             Navigator.of(context).pop();
@@ -154,13 +193,11 @@ class _CollectionPageState extends State<CollectionPage> {
                                         ),
                                       )
                                     }, (tea) {
-                              setState(() {
-                                _teas.remove(tea);
-                                _saveTeas();
-                              });
+                              _deleteTea(tea);
                             }))
                   },
-              PreferencesPage.teaVesselSizeMlPref);
+              PreferencesPage.teaVesselSizeMlPref,
+              _savedSessions[_teas[i].id]);
         },
       ),
       floatingActionButton: FloatingActionButton(

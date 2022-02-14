@@ -13,6 +13,7 @@ import 'package:infusion_timer/widgets/tea_card.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String ASSET_PREFIX = "assets/";
 const String TEMP_FILE_PREFIX = "InfusionTimer_";
@@ -23,6 +24,7 @@ const String ANDROID_PROGRESS_NOTIFICATION_CHANNEL_DESCRIPTION =
 const int PROGRESS_NOTIFICATION_ID = 42;
 const String AUDIO_RESOURCE_NAME = "hand-bell-ringing-sound.wav";
 const int ALARM_ID = 42;
+const String SESSION_SAVE_PREFIX = "session:";
 
 class TimerPage extends StatefulWidget {
   final Tea tea;
@@ -38,12 +40,34 @@ class _TimerPageState extends State<TimerPage>
   int currentInfusion = 1;
   AnimationController _animationController;
   Timer _notificationUpdateTimer;
+  String sessionKey;
   static AudioCache _audioCache = AudioCache();
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   // for correcting the animation status when the app was in the background + notification progress
   DateTime infusionFinishTime;
   File audioFile;
+
+  // need to return a future here to use .then()
+  Future _loadSession() async {
+    var prefs = await SharedPreferences.getInstance();
+    var savedInfusion = await prefs.getInt(sessionKey);
+    if (savedInfusion != null) {
+      setState(() {
+        currentInfusion = savedInfusion;
+      });
+    }
+  }
+
+  void _saveSession(int infusion) async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(sessionKey, infusion);
+  }
+
+  void _deleteSession() async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.remove(sessionKey);
+  }
 
   static _ring() async {
     await _audioCache.play(AUDIO_RESOURCE_NAME);
@@ -114,6 +138,7 @@ class _TimerPageState extends State<TimerPage>
     }
     setState(() {
       currentInfusion++;
+      _saveSession(currentInfusion);
       _animationController.duration =
           Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
       _animationController.reset();
@@ -130,6 +155,11 @@ class _TimerPageState extends State<TimerPage>
     }
     setState(() {
       currentInfusion--;
+      if (currentInfusion == 1) {
+        _deleteSession();
+      } else {
+        _saveSession(currentInfusion);
+      }
       _animationController.duration =
           Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
       _animationController.reset();
@@ -156,12 +186,20 @@ class _TimerPageState extends State<TimerPage>
             remainingMs = _animationController.duration.inMilliseconds;
           }
         } else {
-          // resuming from pause
+          if (_animationController.isDismissed) {
+            // starting from the beginning
+            if (currentInfusion >= widget.tea.infusions.length - 1) {
+              _deleteSession();
+            } else {
+              _saveSession(currentInfusion + 1);
+            }
+          }
+          // starting the beginning or resuming from pause
           remainingMs = ((1 - _animationController.value) *
                   _animationController.duration.inMilliseconds)
               .round();
         }
-        // all cases including starting the first time
+        // all cases
         _animationController.forward();
         _startDisplayingProgressNotification();
         infusionFinishTime =
@@ -185,11 +223,15 @@ class _TimerPageState extends State<TimerPage>
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+    sessionKey = SESSION_SAVE_PREFIX + widget.tea.id.toString();
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: widget.tea.infusions[0].duration),
     );
+
+    // would be better to do before initializing the animation controller but cannot be awaited here
+    _loadSession().then((value) => _animationController.duration =
+        Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration));
 
     _animationController.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
@@ -229,8 +271,8 @@ class _TimerPageState extends State<TimerPage>
         child: SingleChildScrollView(
           child: Column(
             children: [
-              TeaCard(
-                  widget.tea, null, null, PreferencesPage.teaVesselSizeMlPref),
+              TeaCard(widget.tea, null, null,
+                  PreferencesPage.teaVesselSizeMlPref, null),
               Container(
                 margin: EdgeInsets.all(30),
                 width: progressIndicatorDiameter,

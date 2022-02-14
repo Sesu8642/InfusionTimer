@@ -8,9 +8,10 @@ class TeaCard extends StatelessWidget {
   final Function(Tea) tapCallback;
   final Function(Tea) longPressCallback;
   final int teaVesselSize;
+  final int infusionOfActiveSession;
 
-  TeaCard(
-      this.tea, this.tapCallback, this.longPressCallback, this.teaVesselSize);
+  TeaCard(this.tea, this.tapCallback, this.longPressCallback,
+      this.teaVesselSize, this.infusionOfActiveSession);
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +44,15 @@ class TeaCard extends StatelessWidget {
                     Icon(Icons.repeat),
                     Text(tea.infusions.length.toString() + " infusions"),
                   ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: infusionOfActiveSession == null
+                      ? []
+                      : [
+                          Text(
+                              "Current brew: ${tea.infusions.length - infusionOfActiveSession + 1} more infusion(s) to go.")
+                        ],
                 ),
               ],
             ),
