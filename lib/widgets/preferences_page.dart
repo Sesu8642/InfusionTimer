@@ -7,10 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 const String TEA_VESSEL_SIZE_SAVE_KEY = "tea_vessel_size";
 
 class PreferencesPage extends StatefulWidget {
-  PreferencesPage({Key key, this.savedCallback}) : super(key: key);
+  PreferencesPage({Key key}) : super(key: key);
 
   static int teaVesselSizeMlPref = 100;
-  final Function savedCallback;
 
   static loadSettings() {
     SharedPreferences.getInstance().then((prefs) {
@@ -32,7 +31,6 @@ class _PreferencesPageState extends State<PreferencesPage> {
   void _savePreferences() async {
     var prefs = await SharedPreferences.getInstance();
     prefs.setInt(TEA_VESSEL_SIZE_SAVE_KEY, PreferencesPage.teaVesselSizeMlPref);
-    widget.savedCallback();
   }
 
   @override

@@ -117,13 +117,13 @@ class _CollectionPageState extends State<CollectionPage> {
             ListTile(
               leading: Icon(Icons.settings),
               title: Text("Preferences"),
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => PreferencesPage(
-                            key: null,
-                            savedCallback: () => {setState(() => {})})));
+                        builder: (context) => PreferencesPage(key: null)));
+                // when returning from preferences, update vessel size
+                setState(() {});
               },
             ),
             AboutListTile(
