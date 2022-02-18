@@ -188,7 +188,7 @@ class _TimerPageState extends State<TimerPage>
         } else {
           if (_animationController.isDismissed) {
             // starting from the beginning
-            if (currentInfusion >= widget.tea.infusions.length - 1) {
+            if (currentInfusion == widget.tea.infusions.length) {
               _deleteSession();
             } else {
               _saveSession(currentInfusion + 1);
