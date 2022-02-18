@@ -51,7 +51,7 @@ class TeaCard extends StatelessWidget {
                       ? []
                       : [
                           Text(
-                              "Current brew: ${tea.infusions.length - infusionOfActiveSession + 1} more infusion(s) to go.")
+                              "Current brew: ${tea.infusions.length - infusionOfActiveSession + 1} more infusion(s) remaining.")
                         ],
                 ),
               ],
