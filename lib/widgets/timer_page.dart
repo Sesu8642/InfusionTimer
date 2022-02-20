@@ -342,16 +342,16 @@ class _TimerPageState extends State<TimerPage>
                 children: [
                   IconButton(
                       icon: Icon(Icons.skip_previous),
+                      iconSize: progressIndicatorDiameter * 0.15,
                       onPressed:
                           currentInfusion == 1 ? null : _skipBackwardIteration),
-                  const SizedBox(width: 10),
                   Text(
                     "Infusion $currentInfusion/${widget.tea.infusions.length}",
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(fontSize: progressIndicatorDiameter * 0.1),
                   ),
-                  const SizedBox(width: 10),
                   IconButton(
                       icon: Icon(Icons.skip_next),
+                      iconSize: progressIndicatorDiameter * 0.15,
                       onPressed: currentInfusion == widget.tea.infusions.length
                           ? null
                           : _skipForwardIteration)
