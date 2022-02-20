@@ -269,6 +269,8 @@ class _TimerPageState extends State<TimerPage>
       body: Align(
         alignment: Alignment.topCenter,
         child: SingleChildScrollView(
+          // reverse to hide the tea card on top by default
+          reverse: true,
           child: Column(
             children: [
               TeaCard(widget.tea, null, null,
