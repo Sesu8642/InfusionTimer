@@ -276,7 +276,11 @@ class _TimerPageState extends State<TimerPage>
               TeaCard(widget.tea, null, null,
                   PreferencesPage.teaVesselSizeMlPref, null),
               Container(
-                margin: EdgeInsets.all(30),
+                margin: EdgeInsets.only(
+                    left: progressIndicatorDiameter * 0.08,
+                    right: progressIndicatorDiameter * 0.08,
+                    top: progressIndicatorDiameter * 0.08,
+                    bottom: progressIndicatorDiameter * 0.05),
                 width: progressIndicatorDiameter,
                 child: Align(
                   alignment: Alignment.topCenter,
