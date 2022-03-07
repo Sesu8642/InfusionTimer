@@ -2,7 +2,7 @@
     package="com.sesu8642.infusion_timer">
    <application
         android:label="Infusion Tea Timer"
-        android:name="${applicationName}"
+        android:name="io.flutter.app.FlutterApplication"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
