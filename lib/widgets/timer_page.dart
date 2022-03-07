@@ -184,6 +184,10 @@ class _TimerPageState extends State<TimerPage>
             _skipForwardIteration();
             _animationController.reset();
             remainingMs = _animationController.duration.inMilliseconds;
+            // if the last infusion is started, delete the saved info
+            if (currentInfusion == widget.tea.infusions.length) {
+              _deleteSession();
+            }
           }
         } else {
           if (_animationController.isDismissed) {
