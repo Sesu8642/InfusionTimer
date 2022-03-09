@@ -182,6 +182,8 @@ class _TimerPageState extends State<TimerPage>
           } else {
             // starting next iteration
             _skipForwardIteration();
+            // need to save one higher because the next infusion is already started
+            _saveSession(currentInfusion + 1);
             _animationController.reset();
             remainingMs = _animationController.duration.inMilliseconds;
             // if the last infusion is started, delete the saved info
