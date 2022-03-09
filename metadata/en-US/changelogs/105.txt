@@ -1,3 +1,3 @@
-fix being unable to input decimal numbers for the tea amount
-fix audio not playing on Android 12
-fix audio delay / not playing at all when the screen is off on some devices
+fixed being unable to input decimal numbers for the tea amount
+fixed audio not playing on Android 12
+fixed audio delay / not playing at all when the screen is off on some devices
