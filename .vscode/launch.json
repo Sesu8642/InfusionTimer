@@ -5,9 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "infusion_timer",
+            "name": "infusion_timer (debug mode)",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "flutterMode": "debug"
         },
         {
             "name": "infusion_timer (profile mode)",
