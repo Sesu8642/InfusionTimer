@@ -3,7 +3,6 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:infusion_timer/additional_license_factory.dart';
@@ -11,9 +10,6 @@ import 'package:infusion_timer/widgets/collection_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isAndroid) {
-    await AndroidAlarmManager.initialize();
-  }
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
