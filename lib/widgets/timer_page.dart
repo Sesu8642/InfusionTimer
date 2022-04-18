@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,6 @@ class _TimerPageState extends State<TimerPage>
   int currentInfusion = 1;
   AnimationController _animationController;
   Timer _notificationUpdateTimer;
-  Timer _ringTimer;
   String sessionKey;
   static AudioCache _audioCache = AudioCache();
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -69,36 +69,8 @@ class _TimerPageState extends State<TimerPage>
     await prefs.remove(sessionKey);
   }
 
-  void _ring() async {
-    if (Platform.isLinux) {
-      _updateProgressNotification();
-      // to ring: write the audio file to a temporary directory and then play is using aplay
-      var tempDir = await getTemporaryDirectory();
-      final soundBytes =
-          await rootBundle.load(ASSET_PREFIX + AUDIO_RESOURCE_NAME);
-      final buffer = soundBytes.buffer;
-      final byteList = buffer.asUint8List(
-          soundBytes.offsetInBytes, soundBytes.lengthInBytes);
-      audioFile =
-          new File(tempDir.path + "/" + TEMP_FILE_PREFIX + AUDIO_RESOURCE_NAME);
-      if (!await audioFile.exists()) {
-        await audioFile.writeAsBytes(byteList);
-      }
-      Process.run("aplay", [audioFile.path]);
-    } else if (Platform.isAndroid) {
-      await _audioCache.play(AUDIO_RESOURCE_NAME);
-    }
-  }
-
-  void _cancelAlarm() {
-    if (_ringTimer != null && _ringTimer.isActive) {
-      _ringTimer.cancel();
-    }
-  }
-
-  void _scheduleAlarm(Duration targetDuration) {
-    _cancelAlarm();
-    _ringTimer = Timer(targetDuration, () => {_ring()});
+  static _ring() async {
+    await _audioCache.play(AUDIO_RESOURCE_NAME);
   }
 
   _updateProgressNotification() async {
@@ -171,7 +143,9 @@ class _TimerPageState extends State<TimerPage>
           Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
       _animationController.reset();
     });
-    _cancelAlarm();
+    if (Platform.isAndroid) {
+      AndroidAlarmManager.cancel(ALARM_ID);
+    }
     _stopDisplayingProgressNotification();
   }
 
@@ -190,7 +164,9 @@ class _TimerPageState extends State<TimerPage>
           Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
       _animationController.reset();
     });
-    _cancelAlarm();
+    if (Platform.isAndroid) {
+      AndroidAlarmManager.cancel(ALARM_ID);
+    }
     _stopDisplayingProgressNotification();
   }
 
@@ -230,16 +206,25 @@ class _TimerPageState extends State<TimerPage>
               .round();
         }
         // all cases
-        infusionFinishTime =
-            DateTime.now().add(Duration(milliseconds: remainingMs));
         _animationController.forward();
         _startDisplayingProgressNotification();
-        _scheduleAlarm(Duration(milliseconds: remainingMs));
+        infusionFinishTime =
+            DateTime.now().add(Duration(milliseconds: remainingMs));
+        if (Platform.isAndroid) {
+          // not using wakeup true will cause long delays and potentially no sound at all
+          AndroidAlarmManager.oneShotAt(infusionFinishTime, ALARM_ID, _ring,
+              allowWhileIdle: true,
+              exact: true,
+              wakeup: true,
+              alarmClock: true);
+        }
       } else {
         // pausing
         _animationController.stop();
         _stopDisplayingProgressNotification();
-        _cancelAlarm();
+        if (Platform.isAndroid) {
+          AndroidAlarmManager.cancel(ALARM_ID);
+        }
       }
     });
   }
@@ -256,6 +241,27 @@ class _TimerPageState extends State<TimerPage>
     // would be better to do before initializing the animation controller but cannot be awaited here
     _loadSession().then((value) => _animationController.duration =
         Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration));
+
+    _animationController.addStatusListener((status) async {
+      if (status == AnimationStatus.completed) {
+        if (Platform.isLinux) {
+          _updateProgressNotification();
+          // to ring: write the audio file to a temporary directory and then play is using aplay
+          var tempDir = await getTemporaryDirectory();
+          final soundBytes =
+              await rootBundle.load(ASSET_PREFIX + AUDIO_RESOURCE_NAME);
+          final buffer = soundBytes.buffer;
+          final byteList = buffer.asUint8List(
+              soundBytes.offsetInBytes, soundBytes.lengthInBytes);
+          audioFile = new File(
+              tempDir.path + "/" + TEMP_FILE_PREFIX + AUDIO_RESOURCE_NAME);
+          if (!await audioFile.exists()) {
+            await audioFile.writeAsBytes(byteList);
+          }
+          Process.run("aplay", [audioFile.path]);
+        }
+      }
+    });
     _animationController.addListener(() => setState(() {}));
     super.initState();
   }
@@ -394,7 +400,9 @@ class _TimerPageState extends State<TimerPage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _cancelAlarm();
+    if (Platform.isAndroid) {
+      AndroidAlarmManager.cancel(ALARM_ID);
+    }
     // cancel any "finished" notification
     flutterLocalNotificationsPlugin.cancel(PROGRESS_NOTIFICATION_ID);
     _stopDisplayingProgressNotification();
