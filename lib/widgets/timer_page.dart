@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:infusion_timer/tea.dart';
@@ -47,6 +48,8 @@ class _TimerPageState extends State<TimerPage>
   // for correcting the animation status when the app was in the background + notification progress
   DateTime infusionFinishTime;
   File audioFile;
+  // timer for scheduling an alert and doing cleanup (on android only used for cleanup)
+  Timer alertTimer;
 
   // need to return a future here to use .then()
   Future _loadSession() async {
@@ -70,7 +73,9 @@ class _TimerPageState extends State<TimerPage>
   }
 
   static _ring() async {
-    await _audioCache.play(AUDIO_RESOURCE_NAME);
+    if (Platform.isAndroid) {
+      await _audioCache.play(AUDIO_RESOURCE_NAME);
+    }
   }
 
   _updateProgressNotification() async {
@@ -143,9 +148,7 @@ class _TimerPageState extends State<TimerPage>
           Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
       _animationController.reset();
     });
-    if (Platform.isAndroid) {
-      AndroidAlarmManager.cancel(ALARM_ID);
-    }
+    _cancelAlarm();
     _stopDisplayingProgressNotification();
   }
 
@@ -164,10 +167,52 @@ class _TimerPageState extends State<TimerPage>
           Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
       _animationController.reset();
     });
+    _cancelAlarm();
+    _stopDisplayingProgressNotification();
+  }
+
+  _scheduleAlarm() {
+    if (Platform.isAndroid) {
+      // on Android, the alarm manager with all those accurary options needs to be used + disables battery optimization + show notification + CPU wakelock
+      AndroidAlarmManager.oneShotAt(infusionFinishTime, ALARM_ID, _ring,
+          allowWhileIdle: true, exact: true, wakeup: true);
+    }
+    alertTimer =
+        new Timer(infusionFinishTime.difference(DateTime.now()), () async {
+      if (Platform.isLinux) {
+        // on Linux, this timer is reliable so we can trigger the ringing with it
+        _updateProgressNotification();
+        // to ring: write the audio file to a temporary directory and then play is using aplay
+        var tempDir = await getTemporaryDirectory();
+        final soundBytes =
+            await rootBundle.load(ASSET_PREFIX + AUDIO_RESOURCE_NAME);
+        final buffer = soundBytes.buffer;
+        final byteList = buffer.asUint8List(
+            soundBytes.offsetInBytes, soundBytes.lengthInBytes);
+        audioFile = new File(
+            tempDir.path + "/" + TEMP_FILE_PREFIX + AUDIO_RESOURCE_NAME);
+        if (!await audioFile.exists()) {
+          await audioFile.writeAsBytes(byteList);
+        }
+        Process.run("aplay", [audioFile.path]);
+      } else if (Platform.isAndroid &&
+          FlutterBackground.isBackgroundExecutionEnabled) {
+        // on Android, we need to stop running in the background after the ringing has happened; this is only possible in this contect and not in the alarm manager context
+        // stop the background running things
+        // need to wait a little longer for it to be reliable for some reason
+        sleep(new Duration(seconds: 5));
+        FlutterBackground.disableBackgroundExecution();
+      }
+    });
+  }
+
+  _cancelAlarm() {
     if (Platform.isAndroid) {
       AndroidAlarmManager.cancel(ALARM_ID);
     }
-    _stopDisplayingProgressNotification();
+    if (alertTimer != null) {
+      alertTimer.cancel();
+    }
   }
 
   _startPauseNext() {
@@ -210,21 +255,12 @@ class _TimerPageState extends State<TimerPage>
         _startDisplayingProgressNotification();
         infusionFinishTime =
             DateTime.now().add(Duration(milliseconds: remainingMs));
-        if (Platform.isAndroid) {
-          // not using wakeup true will cause long delays and potentially no sound at all
-          AndroidAlarmManager.oneShotAt(infusionFinishTime, ALARM_ID, _ring,
-              allowWhileIdle: true,
-              exact: true,
-              wakeup: true,
-              alarmClock: true);
-        }
+        _scheduleAlarm();
       } else {
         // pausing
         _animationController.stop();
         _stopDisplayingProgressNotification();
-        if (Platform.isAndroid) {
-          AndroidAlarmManager.cancel(ALARM_ID);
-        }
+        _cancelAlarm();
       }
     });
   }
@@ -238,30 +274,12 @@ class _TimerPageState extends State<TimerPage>
       vsync: this,
     );
 
+    // FlutterBackground.enableBackgroundExecution();
+
     // would be better to do before initializing the animation controller but cannot be awaited here
     _loadSession().then((value) => _animationController.duration =
         Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration));
 
-    _animationController.addStatusListener((status) async {
-      if (status == AnimationStatus.completed) {
-        if (Platform.isLinux) {
-          _updateProgressNotification();
-          // to ring: write the audio file to a temporary directory and then play is using aplay
-          var tempDir = await getTemporaryDirectory();
-          final soundBytes =
-              await rootBundle.load(ASSET_PREFIX + AUDIO_RESOURCE_NAME);
-          final buffer = soundBytes.buffer;
-          final byteList = buffer.asUint8List(
-              soundBytes.offsetInBytes, soundBytes.lengthInBytes);
-          audioFile = new File(
-              tempDir.path + "/" + TEMP_FILE_PREFIX + AUDIO_RESOURCE_NAME);
-          if (!await audioFile.exists()) {
-            await audioFile.writeAsBytes(byteList);
-          }
-          Process.run("aplay", [audioFile.path]);
-        }
-      }
-    });
     _animationController.addListener(() => setState(() {}));
     super.initState();
   }
@@ -381,12 +399,12 @@ class _TimerPageState extends State<TimerPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // the timer animation will pause if the application is paused or whatever by android so the state must be corrected when resumed
     if (state == AppLifecycleState.resumed) {
       setState(() {
-        Duration remainingDuration =
-            infusionFinishTime.difference(DateTime.now());
+        // the timer animation will pause if the application is paused or whatever by android so the state must be corrected when resumed
         if (_animationController.isAnimating) {
+          Duration remainingDuration =
+              infusionFinishTime.difference(DateTime.now());
           _animationController.value =
               (_animationController.duration - remainingDuration)
                       .inMilliseconds /
@@ -394,15 +412,23 @@ class _TimerPageState extends State<TimerPage>
           _animationController.forward();
         }
       });
+      // stop the background running things
+      if (FlutterBackground.isBackgroundExecutionEnabled) {
+        FlutterBackground.disableBackgroundExecution();
+      }
+    } else {
+      // start the background running things
+      if (_animationController.isAnimating &&
+          !FlutterBackground.isBackgroundExecutionEnabled) {
+        FlutterBackground.enableBackgroundExecution();
+      }
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    if (Platform.isAndroid) {
-      AndroidAlarmManager.cancel(ALARM_ID);
-    }
+    _cancelAlarm();
     // cancel any "finished" notification
     flutterLocalNotificationsPlugin.cancel(PROGRESS_NOTIFICATION_ID);
     _stopDisplayingProgressNotification();

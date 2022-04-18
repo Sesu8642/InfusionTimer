@@ -15,11 +15,13 @@ void main() async {
     await AndroidAlarmManager.initialize();
   }
 
+  const String notificationIconName = 'notification_icon';
+
+// initialize FlutterLocalNotificationsPlugin
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('notification_icon');
+      AndroidInitializationSettings(notificationIconName);
   const LinuxInitializationSettings initializationSettingsLinux =
       LinuxInitializationSettings(defaultActionName: 'Test');
   final InitializationSettings initializationSettings = InitializationSettings(

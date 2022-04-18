@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:infusion_timer/tea.dart';
 import 'package:infusion_timer/widgets/preferences_page.dart';
 import 'package:infusion_timer/widgets/tea_actions_bottom_sheet.dart';
@@ -96,6 +98,48 @@ class _CollectionPageState extends State<CollectionPage> {
     _loadTeas();
     _loadSessions();
     PackageInfo.fromPlatform().then((value) => _versionName = value.version);
+
+    // initialize FlutterBackground plugin
+    const FLUTTER_BACKGROUND_ANDROID_CONFIG = FlutterBackgroundAndroidConfig(
+      notificationTitle: "Infusion Tea Timer",
+      notificationText: "Infusion Tea Timer is running in the background.",
+      notificationImportance: AndroidNotificationImportance.Default,
+      notificationIcon:
+          AndroidResource(name: 'notification_icon', defType: 'drawable'),
+      enableWifiLock: false,
+    );
+
+    if (Platform.isAndroid) {
+      FlutterBackground.hasPermissions.then((hasPermissions) {
+        if (!hasPermissions) {
+          showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Permission needed'),
+              content: const Text(
+                  'Please allow this app to run in the background for accurate timing. It will only do so while a timer is running.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, 'OK');
+                    FlutterBackground.initialize(
+                            androidConfig: FLUTTER_BACKGROUND_ANDROID_CONFIG);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          FlutterBackground.initialize(
+                  androidConfig: FLUTTER_BACKGROUND_ANDROID_CONFIG);
+        }
+      });
+    }
   }
 
   @override
