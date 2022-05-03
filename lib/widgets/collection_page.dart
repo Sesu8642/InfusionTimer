@@ -28,6 +28,7 @@ class _CollectionPageState extends State<CollectionPage> {
   List<Tea> _teas = [];
   Map<double, int> _savedSessions = {};
   String _versionName = "";
+  bool searchBarShown = false;
 
   void _deleteTea(Tea tea) async {
     var prefs = await SharedPreferences.getInstance();
@@ -127,7 +128,7 @@ class _CollectionPageState extends State<CollectionPage> {
                   onPressed: () {
                     Navigator.pop(context, 'OK');
                     FlutterBackground.initialize(
-                            androidConfig: FLUTTER_BACKGROUND_ANDROID_CONFIG);
+                        androidConfig: FLUTTER_BACKGROUND_ANDROID_CONFIG);
                   },
                   child: const Text('OK'),
                 ),
@@ -136,7 +137,7 @@ class _CollectionPageState extends State<CollectionPage> {
           );
         } else {
           FlutterBackground.initialize(
-                  androidConfig: FLUTTER_BACKGROUND_ANDROID_CONFIG);
+              androidConfig: FLUTTER_BACKGROUND_ANDROID_CONFIG);
         }
       });
     }
@@ -145,129 +146,178 @@ class _CollectionPageState extends State<CollectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Tea Collection")),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration:
-                  BoxDecoration(color: Theme.of(context).colorScheme.secondary),
-              child: Text(
-                "Infusion Tea Timer",
-                style: TextStyle(fontSize: 24, color: Colors.white),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Preferences"),
-              onTap: () async {
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PreferencesPage(key: null)));
-                // when returning from preferences, update vessel size
-                setState(() {});
-              },
-            ),
-            AboutListTile(
-              icon: Icon(Icons.favorite),
-              applicationIcon: Container(
-                height: IconTheme.of(context).resolve(context).size,
-                width: IconTheme.of(context).resolve(context).size,
-                child: Image.asset(
-                  "assets/icon_simple.png",
-                  color: Theme.of(context).primaryColorDark,
+        appBar: AppBar(title: Text("Tea Collection")),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary),
+                child: Text(
+                  "Infusion Tea Timer",
+                  style: TextStyle(fontSize: 24, color: Colors.white),
                 ),
               ),
-              applicationVersion: _versionName,
-              applicationLegalese:
-                  "Copyright (c) 2021 Sesu8642\n\nhttps://github.com/Sesu8642/InfusionTimer",
-              aboutBoxChildren: [
-                Text(
-                  "\nMany thanks to Mei Leaf (meileaf.com) for their permission to include data from their brewing guide!",
-                  style: TextStyle(fontSize: 14),
-                )
-              ],
-            )
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text("Preferences"),
+                onTap: () async {
+                  await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PreferencesPage(key: null)));
+                  // when returning from preferences, update vessel size
+                  setState(() {});
+                },
+              ),
+              AboutListTile(
+                icon: Icon(Icons.favorite),
+                applicationIcon: Container(
+                  height: IconTheme.of(context).resolve(context).size,
+                  width: IconTheme.of(context).resolve(context).size,
+                  child: Image.asset(
+                    "assets/icon_simple.png",
+                    color: Theme.of(context).primaryColorDark,
+                  ),
+                ),
+                applicationVersion: _versionName,
+                applicationLegalese:
+                    "Copyright (c) 2021 Sesu8642\n\nhttps://github.com/Sesu8642/InfusionTimer",
+                aboutBoxChildren: [
+                  Text(
+                    "\nMany thanks to Mei Leaf (meileaf.com) for their permission to include data from their brewing guide!",
+                    style: TextStyle(fontSize: 14),
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+        body: Column(
+          children: [
+            searchBarShown
+                ? Row(
+                    children: [
+                      Flexible(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Search for a tea',
+                            prefixIcon: Icon(Icons.search),
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    searchBarShown = false;
+                                  });
+                                },
+                                icon: Icon(Icons.close)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : SizedBox(),
+            Flexible(
+              child: ListView.builder(
+                itemCount: _teas.length,
+                itemBuilder: (context, i) {
+                  return TeaCard(_teas[i], (tea) async {
+                    var future = Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TimerPage(tea: tea)),
+                    );
+                    setState(
+                      () {
+                        // bring tea to the first position
+                        _teas.remove(tea);
+                        _teas.insert(0, tea);
+                        _saveTeas();
+                      },
+                    );
+                    await future;
+                    // load sessions again because there might be a change
+                    await _loadSessions();
+                  },
+                      (tea) => {
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    new TeaActionsBottomSheet(
+                                        tea,
+                                        (tea) => {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        new TeaInputDialog(
+                                                  tea,
+                                                  (tea) {
+                                                    _updateTea(tea);
+                                                    Navigator.of(context).pop();
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  (tea) {
+                                                    Navigator.of(context).pop();
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              )
+                                            }, (tea) {
+                                      _deleteTea(tea);
+                                    }))
+                          },
+                      PreferencesPage.teaVesselSizeMlPref,
+                      _savedSessions[_teas[i].id]);
+                },
+              ),
+            ),
           ],
         ),
-      ),
-      body: ListView.builder(
-        itemCount: _teas.length,
-        itemBuilder: (context, i) {
-          return TeaCard(_teas[i], (tea) async {
-            var future = Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TimerPage(tea: tea)),
-            );
-            setState(
-              () {
-                // bring tea to the first position
-                _teas.remove(tea);
-                _teas.insert(0, tea);
-                _saveTeas();
-              },
-            );
-            await future;
-            // load sessions again because there might be a change
-            await _loadSessions();
-          },
-              (tea) => {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            new TeaActionsBottomSheet(
-                                tea,
-                                (tea) => {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            new TeaInputDialog(
-                                          tea,
-                                          (tea) {
-                                            _updateTea(tea);
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context).pop();
-                                          },
-                                          (tea) {
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      )
-                                    }, (tea) {
-                              _deleteTea(tea);
-                            }))
-                  },
-              PreferencesPage.teaVesselSizeMlPref,
-              _savedSessions[_teas[i].id]);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) => new TeaInputDialog(
-              new Tea.withGeneratedId(null, null, null, [], null),
-              (tea) {
-                setState(
-                  () {
-                    _teas.insert(0, tea);
-                    _saveTeas();
-                  },
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            searchBarShown
+                ? SizedBox()
+                : Padding(
+                    padding: EdgeInsets.only(bottom: 16.0),
+                    child: FloatingActionButton(
+                      heroTag: "FloatingActionButtonSearchCollection",
+                      onPressed: () {
+                        setState(() {
+                          searchBarShown = true;
+                        });
+                      },
+                      tooltip: 'Search Collection',
+                      child: Icon(Icons.search),
+                    ),
+                  ),
+            FloatingActionButton(
+              heroTag: "FloatingActionButtonAddTea",
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => new TeaInputDialog(
+                    new Tea.withGeneratedId(null, null, null, [], null),
+                    (tea) {
+                      setState(
+                        () {
+                          _teas.insert(0, tea);
+                          _saveTeas();
+                        },
+                      );
+                      Navigator.of(context).pop();
+                    },
+                    (tea) {
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 );
-                Navigator.of(context).pop();
               },
-              (tea) {
-                Navigator.of(context).pop();
-              },
+              tooltip: 'Add Tea',
+              child: Icon(Icons.add),
             ),
-          );
-        },
-        tooltip: 'Add Tea',
-        child: Icon(Icons.add),
-      ),
-    );
+          ],
+        ));
   }
 }
