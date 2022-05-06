@@ -180,7 +180,10 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
               }
             });
           },
-          child: const Text('Save'),
+          child: Text(
+            'Save',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
       ],
     );
