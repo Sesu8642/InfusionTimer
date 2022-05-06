@@ -166,6 +166,12 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
       actions: <Widget>[
         new TextButton(
           onPressed: () {
+            widget.cancelCallback(widget.tea);
+          },
+          child: const Text('Cancel'),
+        ),
+        new TextButton(
+          onPressed: () {
             _addInfusion();
             setState(() {
               if (_formKey.currentState.validate()) {
@@ -175,12 +181,6 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
             });
           },
           child: const Text('Save'),
-        ),
-        new TextButton(
-          onPressed: () {
-            widget.cancelCallback(widget.tea);
-          },
-          child: const Text('Cancel'),
         ),
       ],
     );
