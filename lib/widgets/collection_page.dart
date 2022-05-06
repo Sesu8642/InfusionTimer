@@ -248,6 +248,7 @@ class _CollectionPageState extends State<CollectionPage> {
                                         (tea) => {
                                               showDialog(
                                                 context: context,
+                                                barrierDismissible: false,
                                                 builder:
                                                     (BuildContext context) =>
                                                         new TeaInputDialog(
@@ -297,6 +298,7 @@ class _CollectionPageState extends State<CollectionPage> {
               onPressed: () {
                 showDialog(
                   context: context,
+                  barrierDismissible: false,
                   builder: (BuildContext context) => new TeaInputDialog(
                     new Tea.withGeneratedId(null, null, null, [], null),
                     (tea) {
