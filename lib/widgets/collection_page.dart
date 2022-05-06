@@ -26,6 +26,8 @@ class CollectionPage extends StatefulWidget {
 
 class _CollectionPageState extends State<CollectionPage> {
   List<Tea> _teas = [];
+  List<Tea> _filteredTeas = [];
+  final searchController = TextEditingController();
   Map<double, int> _savedSessions = {};
   String _versionName = "";
   bool searchBarShown = false;
@@ -36,6 +38,7 @@ class _CollectionPageState extends State<CollectionPage> {
     setState(() {
       _teas.remove(tea);
     });
+    await _updateFilteredTeas();
     await prefs.remove(SESSION_SAVE_PREFIX + tea.id.toString());
     await _saveTeas();
   }
@@ -47,6 +50,7 @@ class _CollectionPageState extends State<CollectionPage> {
     if (savedInfusion != null && savedInfusion >= tea.infusions.length) {
       await prefs.remove(SESSION_SAVE_PREFIX + tea.id.toString());
     }
+    await _updateFilteredTeas();
     _loadSessions();
     _saveTeas();
   }
@@ -55,6 +59,18 @@ class _CollectionPageState extends State<CollectionPage> {
     var prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
         TEAS_SAVE_KEY, _teas.map((tea) => jsonEncode(tea)).toList());
+  }
+
+  void _updateFilteredTeas() async {
+    setState(() {
+      _filteredTeas = _teas
+          .where(
+              (tea) => tea.name.toLowerCase().contains(searchController.text))
+          .followedBy(_teas.where((tea) =>
+              !tea.name.toLowerCase().contains(searchController.text) &&
+              tea.notes.toLowerCase().contains(searchController.text)))
+          .toList();
+    });
   }
 
   void _loadSessions() async {
@@ -90,6 +106,7 @@ class _CollectionPageState extends State<CollectionPage> {
     }
     // save to persist generated ids
     _saveTeas();
+    await _updateFilteredTeas();
   }
 
   @override
@@ -141,6 +158,12 @@ class _CollectionPageState extends State<CollectionPage> {
         }
       });
     }
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -201,6 +224,9 @@ class _CollectionPageState extends State<CollectionPage> {
                     children: [
                       Flexible(
                         child: TextField(
+                          controller: searchController,
+                          autofocus: true,
+                          onChanged: (value) => _updateFilteredTeas(),
                           decoration: InputDecoration(
                             hintText: 'Search for a tea',
                             prefixIcon: Icon(Icons.search),
@@ -208,6 +234,8 @@ class _CollectionPageState extends State<CollectionPage> {
                                 onPressed: () {
                                   setState(() {
                                     searchBarShown = false;
+                                    searchController.text = "";
+                                    _updateFilteredTeas();
                                   });
                                 },
                                 icon: Icon(Icons.close)),
@@ -219,9 +247,9 @@ class _CollectionPageState extends State<CollectionPage> {
                 : SizedBox(),
             Flexible(
               child: ListView.builder(
-                itemCount: _teas.length,
+                itemCount: _filteredTeas.length,
                 itemBuilder: (context, i) {
-                  return TeaCard(_teas[i], (tea) async {
+                  return TeaCard(_filteredTeas[i], (tea) async {
                     var future = Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -233,6 +261,7 @@ class _CollectionPageState extends State<CollectionPage> {
                         _teas.remove(tea);
                         _teas.insert(0, tea);
                         _saveTeas();
+                        _updateFilteredTeas();
                       },
                     );
                     await future;
@@ -306,6 +335,7 @@ class _CollectionPageState extends State<CollectionPage> {
                         () {
                           _teas.insert(0, tea);
                           _saveTeas();
+                          _updateFilteredTeas();
                         },
                       );
                       Navigator.of(context).pop();
