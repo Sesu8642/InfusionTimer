@@ -218,8 +218,8 @@ class _CollectionPageState extends State<CollectionPage> {
                                     }))
                           },
                       PersistenceService.teaVesselSizeMlPref,
-                      PersistenceService
-                          .savedSessions[PersistenceService.teas[i].id]);
+                      PersistenceService.savedSessions[
+                          _getFilteredTeas(searchController.text)[i].id]);
                 },
               ),
             ),
