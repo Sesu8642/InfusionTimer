@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:infusion_timer/backup_data.dart';
 import 'package:infusion_timer/tea.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -105,6 +106,14 @@ class PersistenceService {
     await _saveTeas();
   }
 
+// cannot use regular setter because this must be async
+  static setSavedSessions(Map<double, int> savedSessions) async {
+    _savedSessions = savedSessions;
+    savedSessions.forEach((key, value) async {
+      await _prefs.setInt(_SESSION_SAVE_PREFIX + key.toString(), value);
+    });
+  }
+
   static Map<double, int> get savedSessions {
     return _savedSessions;
   }
@@ -121,5 +130,16 @@ class PersistenceService {
   static Future<void> deleteSession(Tea tea) async {
     _savedSessions.remove(tea.id);
     await _prefs.remove(_SESSION_SAVE_PREFIX + tea.id.toString());
+  }
+
+  static BackupData getBackupData() {
+    return BackupData(_teaVesselSizeMlPref, _teas, _savedSessions);
+  }
+
+  static Future<void> restoreFomBackup(BackupData backup) async {
+    backup.validate();
+    await setTeaVesselSizeMlPref(backup.teaVesselSizeMlPref);
+    await setTeas(backup.teas);
+    await setSavedSessions(backup.savedSessions);
   }
 }

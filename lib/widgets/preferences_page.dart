@@ -62,6 +62,33 @@ class _PreferencesPageState extends State<PreferencesPage> {
                     }
                   },
                 ),
+                Text(
+                  "Data backup/restore",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+                Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) =>
+                                new DataBackupDialog(),
+                          );
+                        },
+                        child: Text("Data Backup"))),
+                ElevatedButton(
+                    onPressed: () async {
+                      await showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) =>
+                            new DataRestoreDialog(),
+                      );
+                      setState(() {});
+                    },
+                    child: Text("Data Restore")),
               ],
             ),
           ),

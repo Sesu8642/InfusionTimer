@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:infusion_timer/tea.dart';
+import 'package:infusion_timer/widgets/confirm_dialog.dart';
 
 class TeaActionsBottomSheet extends StatelessWidget {
   final Tea tea;
@@ -25,33 +26,15 @@ class TeaActionsBottomSheet extends StatelessWidget {
             return showDialog<void>(
               context: context,
               builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('Confirm Deletion'),
-                  content: SingleChildScrollView(
-                    child: ListBody(
-                      children: <Widget>[
-                        Text('Are you sure you want to delete "${tea.name}?"'),
-                      ],
-                    ),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('Yes'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                        deleteCallback(tea);
-                      },
-                    ),
-                    TextButton(
-                      child: Text('No'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
+                return ConfirmDialog("Are you sure?",
+                    '"${tea.name}" will be deleted permanently.', () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  deleteCallback(tea);
+                }, () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                });
               },
             );
           },

@@ -36,6 +36,27 @@ class Tea {
         'infusions': infusions,
         'notes': notes
       };
+
+  validate() {
+    if (id == null) {
+      throw FormatException("Tea '${name}' has no ID.");
+    }
+    if (name == null) {
+      throw FormatException("Tea has no name.");
+    }
+    if (temperature == null) {
+      throw FormatException("Tea '${name}' has no brewing temperature.");
+    }
+    if (gPer100Ml == null) {
+      throw FormatException("Tea ${name} has no tea amount.");
+    }
+    if (infusions == null || infusions.isEmpty) {
+      throw FormatException("Tea ${name} has no infusions.");
+    }
+    if (notes == null) {
+      throw FormatException("Tea ${name} has no notes.");
+    }
+  }
 }
 
 class Infusion {
