@@ -2,23 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-const String TEA_VESSEL_SIZE_SAVE_KEY = "tea_vessel_size";
+import 'package:infusion_timer/persistence_service.dart';
+import 'package:infusion_timer/widgets/data_backup_dialog.dart';
+import 'package:infusion_timer/widgets/data_restore_dialog.dart';
 
 class PreferencesPage extends StatefulWidget {
   PreferencesPage({Key key}) : super(key: key);
-
-  static int teaVesselSizeMlPref = 100;
-
-  static loadSettings() {
-    SharedPreferences.getInstance().then((prefs) {
-      var savedTeaVesselSizeMl = prefs.getInt(TEA_VESSEL_SIZE_SAVE_KEY);
-      if (savedTeaVesselSizeMl != null) {
-        teaVesselSizeMlPref = savedTeaVesselSizeMl;
-      }
-    });
-  }
 
   @override
   _PreferencesPageState createState() => _PreferencesPageState();
@@ -28,19 +17,12 @@ class _PreferencesPageState extends State<PreferencesPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _vesselSizeController = TextEditingController();
 
-  void _savePreferences() async {
-    var prefs = await SharedPreferences.getInstance();
-    prefs.setInt(TEA_VESSEL_SIZE_SAVE_KEY, PreferencesPage.teaVesselSizeMlPref);
-  }
-
   @override
   void initState() {
     super.initState();
-    SharedPreferences.getInstance().then((prefs) {
-      setState(() {
-        _vesselSizeController.value = TextEditingValue(
-            text: PreferencesPage.teaVesselSizeMlPref.toString());
-      });
+    setState(() {
+      _vesselSizeController.value = TextEditingValue(
+          text: PersistenceService.teaVesselSizeMlPref.toString());
     });
   }
 
@@ -73,10 +55,10 @@ class _PreferencesPageState extends State<PreferencesPage> {
                       return null;
                     }
                   },
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     if (_formKey.currentState.validate()) {
-                      PreferencesPage.teaVesselSizeMlPref = int.parse(value);
-                      _savePreferences();
+                      await PersistenceService.setTeaVesselSizeMlPref(
+                          int.parse(value));
                     }
                   },
                 ),

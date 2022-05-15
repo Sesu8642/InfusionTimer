@@ -6,15 +6,14 @@ import 'dart:io';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_background/flutter_background.dart';
+import 'package:infusion_timer/persistence_service.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:infusion_timer/tea.dart';
-import 'package:infusion_timer/widgets/preferences_page.dart';
 import 'package:infusion_timer/widgets/tea_card.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const String ASSET_PREFIX = "assets/";
 const String TEMP_FILE_PREFIX = "InfusionTimer_";
@@ -52,24 +51,13 @@ class _TimerPageState extends State<TimerPage>
   Timer alertTimer;
 
   // need to return a future here to use .then()
-  Future _loadSession() async {
-    var prefs = await SharedPreferences.getInstance();
-    var savedInfusion = await prefs.getInt(sessionKey);
+  Future<void> _loadSession() async {
+    var savedInfusion = await PersistenceService.getSession(widget.tea);
     if (savedInfusion != null) {
       setState(() {
         currentInfusion = savedInfusion;
       });
     }
-  }
-
-  void _saveSession(int infusion) async {
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(sessionKey, infusion);
-  }
-
-  void _deleteSession() async {
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.remove(sessionKey);
   }
 
   static _ring() async {
@@ -143,7 +131,7 @@ class _TimerPageState extends State<TimerPage>
     }
     setState(() {
       currentInfusion++;
-      _saveSession(currentInfusion);
+      PersistenceService.saveSession(widget.tea, currentInfusion);
       _animationController.duration =
           Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
       _animationController.reset();
@@ -159,9 +147,9 @@ class _TimerPageState extends State<TimerPage>
     setState(() {
       currentInfusion--;
       if (currentInfusion == 1) {
-        _deleteSession();
+        PersistenceService.deleteSession(widget.tea);
       } else {
-        _saveSession(currentInfusion);
+        PersistenceService.saveSession(widget.tea, currentInfusion);
       }
       _animationController.duration =
           Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
@@ -228,21 +216,21 @@ class _TimerPageState extends State<TimerPage>
             // starting next iteration
             _skipForwardIteration();
             // need to save one higher because the next infusion is already started
-            _saveSession(currentInfusion + 1);
+            PersistenceService.saveSession(widget.tea, currentInfusion + 1);
             _animationController.reset();
             remainingMs = _animationController.duration.inMilliseconds;
             // if the last infusion is started, delete the saved info
             if (currentInfusion == widget.tea.infusions.length) {
-              _deleteSession();
+              PersistenceService.deleteSession(widget.tea);
             }
           }
         } else {
           if (_animationController.isDismissed) {
             // starting from the beginning
             if (currentInfusion == widget.tea.infusions.length) {
-              _deleteSession();
+              PersistenceService.deleteSession(widget.tea);
             } else {
-              _saveSession(currentInfusion + 1);
+              PersistenceService.saveSession(widget.tea, currentInfusion + 1);
             }
           }
           // starting the beginning or resuming from pause
@@ -301,7 +289,7 @@ class _TimerPageState extends State<TimerPage>
           child: Column(
             children: [
               TeaCard(widget.tea, null, null,
-                  PreferencesPage.teaVesselSizeMlPref, null),
+                  PersistenceService.teaVesselSizeMlPref, null),
               Container(
                 margin: EdgeInsets.only(
                     left: progressIndicatorDiameter * 0.08,

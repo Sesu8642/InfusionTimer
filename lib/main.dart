@@ -7,6 +7,7 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:infusion_timer/additional_license_factory.dart';
+import 'package:infusion_timer/persistence_service.dart';
 import 'package:infusion_timer/widgets/collection_page.dart';
 
 void main() async {
@@ -31,6 +32,9 @@ void main() async {
 
   // register additional licenses
   LicenseRegistry.addLicense(AdditionalLicenseFactory.create);
+
+  // init persistence service
+  await PersistenceService.init();
 
   runApp(InfusionTimer());
 }

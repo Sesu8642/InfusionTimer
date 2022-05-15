@@ -1,21 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
+import 'package:infusion_timer/persistence_service.dart';
 import 'package:infusion_timer/tea.dart';
 import 'package:infusion_timer/widgets/preferences_page.dart';
 import 'package:infusion_timer/widgets/tea_actions_bottom_sheet.dart';
 import 'package:infusion_timer/widgets/tea_card.dart';
 import 'package:infusion_timer/widgets/tea_input_dialog.dart';
 import 'package:infusion_timer/widgets/timer_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter/services.dart' show rootBundle;
-
-const String TEAS_SAVE_KEY = "teas";
 
 class CollectionPage extends StatefulWidget {
   CollectionPage({Key key}) : super(key: key);
@@ -25,96 +21,22 @@ class CollectionPage extends StatefulWidget {
 }
 
 class _CollectionPageState extends State<CollectionPage> {
-  List<Tea> _teas = [];
-  List<Tea> _filteredTeas = [];
   final searchController = TextEditingController();
-  Map<double, int> _savedSessions = {};
   String _versionName = "";
   bool searchBarShown = false;
 
-  void _deleteTea(Tea tea) async {
-    var prefs = await SharedPreferences.getInstance();
-    // delete active session if any
-    setState(() {
-      _teas.remove(tea);
-    });
-    await _updateFilteredTeas();
-    await prefs.remove(SESSION_SAVE_PREFIX + tea.id.toString());
-    await _saveTeas();
-  }
-
-  void _updateTea(Tea tea) async {
-    // tea was changed already and the change needs to be handled
-    var prefs = await SharedPreferences.getInstance();
-    var savedInfusion = prefs.getInt(SESSION_SAVE_PREFIX + tea.id.toString());
-    if (savedInfusion != null && savedInfusion >= tea.infusions.length) {
-      await prefs.remove(SESSION_SAVE_PREFIX + tea.id.toString());
-    }
-    await _updateFilteredTeas();
-    _loadSessions();
-    _saveTeas();
-  }
-
-  void _saveTeas() async {
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-        TEAS_SAVE_KEY, _teas.map((tea) => jsonEncode(tea)).toList());
-  }
-
-  void _updateFilteredTeas() async {
-    setState(() {
-      _filteredTeas = _teas
-          .where(
-              (tea) => tea.name.toLowerCase().contains(searchController.text))
-          .followedBy(_teas.where((tea) =>
-              !tea.name.toLowerCase().contains(searchController.text) &&
-              tea.notes.toLowerCase().contains(searchController.text)))
-          .toList();
-    });
-  }
-
-  void _loadSessions() async {
-    var prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _teas.forEach((tea) {
-        var teaSession = prefs.getInt(SESSION_SAVE_PREFIX + tea.id.toString());
-        if (teaSession != null) {
-          _savedSessions[tea.id] = teaSession;
-        } else {
-          _savedSessions.remove(tea.id);
-        }
-      });
-    });
-  }
-
-  void _loadTeas() async {
-    var prefs = await SharedPreferences.getInstance();
-    var savedTeaStrings = prefs.getStringList(TEAS_SAVE_KEY);
-    if (savedTeaStrings == null) {
-      var teasJsonString =
-          (await rootBundle.loadString('assets/default_data.json'));
-      var teasJson = json.decode(teasJsonString) as List;
-      setState(() {
-        _teas = teasJson.map((jsonTea) => Tea.fromJson(jsonTea)).toList();
-      });
-    } else {
-      setState(() {
-        _teas = savedTeaStrings
-            .map((teaJson) => Tea.fromJson(jsonDecode(teaJson)))
-            .toList();
-      });
-    }
-    // save to persist generated ids
-    _saveTeas();
-    await _updateFilteredTeas();
+  List<Tea> _getFilteredTeas(String filterText) {
+    return PersistenceService.teas
+        .where((tea) => tea.name.toLowerCase().contains(filterText))
+        .followedBy(PersistenceService.teas.where((tea) =>
+            !tea.name.toLowerCase().contains(filterText) &&
+            tea.notes.toLowerCase().contains(filterText)))
+        .toList();
   }
 
   @override
   void initState() {
     super.initState();
-    PreferencesPage.loadSettings();
-    _loadTeas();
-    _loadSessions();
     PackageInfo.fromPlatform().then((value) => _versionName = value.version);
 
     // initialize FlutterBackground plugin
@@ -226,7 +148,9 @@ class _CollectionPageState extends State<CollectionPage> {
                         child: TextField(
                           controller: searchController,
                           autofocus: true,
-                          onChanged: (value) => _updateFilteredTeas(),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
                           decoration: InputDecoration(
                             hintText: 'Search for a tea',
                             prefixIcon: Icon(Icons.search),
@@ -235,7 +159,6 @@ class _CollectionPageState extends State<CollectionPage> {
                                   setState(() {
                                     searchBarShown = false;
                                     searchController.text = "";
-                                    _updateFilteredTeas();
                                   });
                                 },
                                 icon: Icon(Icons.close)),
@@ -247,26 +170,20 @@ class _CollectionPageState extends State<CollectionPage> {
                 : SizedBox(),
             Flexible(
               child: ListView.builder(
-                itemCount: _filteredTeas.length,
+                itemCount: _getFilteredTeas(searchController.text).length,
                 itemBuilder: (context, i) {
-                  return TeaCard(_filteredTeas[i], (tea) async {
+                  return TeaCard(_getFilteredTeas(searchController.text)[i],
+                      (tea) async {
                     var future = Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => TimerPage(tea: tea)),
                     );
-                    setState(
-                      () {
-                        // bring tea to the first position
-                        _teas.remove(tea);
-                        _teas.insert(0, tea);
-                        _saveTeas();
-                        _updateFilteredTeas();
-                      },
-                    );
+                    PersistenceService.bringTeaToFirstPosition(tea);
                     await future;
-                    // load sessions again because there might be a change
-                    await _loadSessions();
+                    setState(() {
+                      // update session info
+                    });
                   },
                       (tea) => {
                             showModalBottomSheet(
@@ -282,8 +199,10 @@ class _CollectionPageState extends State<CollectionPage> {
                                                     (BuildContext context) =>
                                                         new TeaInputDialog(
                                                   tea,
-                                                  (tea) {
-                                                    _updateTea(tea);
+                                                  (tea) async {
+                                                    await PersistenceService
+                                                        .updateTea(tea);
+                                                    setState(() {});
                                                     Navigator.of(context).pop();
                                                     Navigator.of(context).pop();
                                                   },
@@ -293,12 +212,14 @@ class _CollectionPageState extends State<CollectionPage> {
                                                   },
                                                 ),
                                               )
-                                            }, (tea) {
-                                      _deleteTea(tea);
+                                            }, (tea) async {
+                                      await PersistenceService.deleteTea(tea);
+                                      setState(() {});
                                     }))
                           },
-                      PreferencesPage.teaVesselSizeMlPref,
-                      _savedSessions[_teas[i].id]);
+                      PersistenceService.teaVesselSizeMlPref,
+                      PersistenceService
+                          .savedSessions[PersistenceService.teas[i].id]);
                 },
               ),
             ),
@@ -333,9 +254,7 @@ class _CollectionPageState extends State<CollectionPage> {
                     (tea) {
                       setState(
                         () {
-                          _teas.insert(0, tea);
-                          _saveTeas();
-                          _updateFilteredTeas();
+                          PersistenceService.addTea(tea);
                         },
                       );
                       Navigator.of(context).pop();
