@@ -262,8 +262,6 @@ class _TimerPageState extends State<TimerPage>
       vsync: this,
     );
 
-    // FlutterBackground.enableBackgroundExecution();
-
     // would be better to do before initializing the animation controller but cannot be awaited here
     _loadSession().then((value) => _animationController.duration =
         Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration));
