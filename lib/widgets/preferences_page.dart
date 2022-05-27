@@ -86,7 +86,11 @@ class _PreferencesPageState extends State<PreferencesPage> {
                         builder: (BuildContext context) =>
                             new DataRestoreDialog(),
                       );
-                      setState(() {});
+                      setState(() {
+                        _vesselSizeController.value = TextEditingValue(
+                            text: PersistenceService.teaVesselSizeMlPref
+                                .toString());
+                      });
                     },
                     child: Text("Data Restore")),
               ],
