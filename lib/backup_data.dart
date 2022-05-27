@@ -45,6 +45,20 @@ class BackupData {
       if (key == null || value == null) {
         throw FormatException("savedSessions contains a null value.");
       }
+      if (value <= 1) {
+        throw FormatException(
+            "savedSessions contains a too small infusion index.");
+      }
+      try {
+        Tea matchingTea = _teas.firstWhere((tea) => tea.id == key);
+        if (value > matchingTea.infusions.length) {
+          throw FormatException(
+              "savedSessions contains a session that is too large.");
+        }
+      } on StateError catch (e) {
+        throw FormatException(
+            "savedSessions contains a session for a nonexistent tea.");
+      }
     });
   }
 

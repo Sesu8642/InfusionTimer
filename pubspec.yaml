@@ -23,8 +23,7 @@ dependencies:
   flutter_background: ^1.1.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  test: 1.21.1
 
 flutter:
 

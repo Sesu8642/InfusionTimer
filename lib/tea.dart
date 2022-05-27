@@ -53,6 +53,12 @@ class Tea {
     if (infusions == null || infusions.isEmpty) {
       throw FormatException("Tea ${name} has no infusions.");
     }
+    infusions.forEach((infusion) {
+      if (infusion.duration == null || infusion.duration.isNegative) {
+        throw FormatException(
+            "Tea ${name} has an infusion with invalid duration.");
+      }
+    });
     if (notes == null) {
       throw FormatException("Tea ${name} has no notes.");
     }
