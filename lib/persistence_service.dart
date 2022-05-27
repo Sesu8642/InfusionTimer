@@ -138,6 +138,7 @@ class PersistenceService {
 
   static Future<void> restoreFomBackup(BackupData backup) async {
     backup.validate();
+    await _prefs.clear();
     await setTeaVesselSizeMlPref(backup.teaVesselSizeMlPref);
     await setTeas(backup.teas);
     await setSavedSessions(backup.savedSessions);
