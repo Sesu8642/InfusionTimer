@@ -1,0 +1,4 @@
+improved timer accuracy and reliability by running in the background
+added collection search/filter functionality
+added data backup & restore functionality
+minor UI improvements to tea input dialog
