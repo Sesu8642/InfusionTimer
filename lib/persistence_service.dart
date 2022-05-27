@@ -84,10 +84,10 @@ class PersistenceService {
   }
 
   static Future<void> deleteTea(Tea tea) async {
-    // delete active session if any
     _teas.remove(tea);
     await _saveTeas();
-    await _prefs.remove(_SESSION_SAVE_PREFIX + tea.id.toString());
+    // delete active session if any
+    deleteSession(tea);
   }
 
   static Future<void> updateTea(Tea tea) async {
@@ -96,7 +96,7 @@ class PersistenceService {
     // make sure the saved infusion is not bigger than the number of infusions the tea has now
     var savedInfusion = _prefs.getInt(_SESSION_SAVE_PREFIX + tea.id.toString());
     if (savedInfusion != null && savedInfusion >= tea.infusions.length) {
-      await _prefs.remove(_SESSION_SAVE_PREFIX + tea.id.toString());
+      deleteSession(tea);
     }
   }
 
