@@ -14,23 +14,23 @@ import 'package:infusion_timer/widgets/timer_page.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class CollectionPage extends StatefulWidget {
-  CollectionPage({Key key}) : super(key: key);
+  const CollectionPage({Key? key}) : super(key: key);
 
   @override
-  _CollectionPageState createState() => _CollectionPageState();
+  CollectionPageState createState() => CollectionPageState();
 }
 
-class _CollectionPageState extends State<CollectionPage> {
+class CollectionPageState extends State<CollectionPage> {
   final searchController = TextEditingController();
   String _versionName = "";
   bool searchBarShown = false;
 
   List<Tea> _getFilteredTeas(String filterText) {
     return PersistenceService.teas
-        .where((tea) => tea.name.toLowerCase().contains(filterText))
+        .where((tea) => tea.name!.toLowerCase().contains(filterText))
         .followedBy(PersistenceService.teas.where((tea) =>
-            !tea.name.toLowerCase().contains(filterText) &&
-            tea.notes.toLowerCase().contains(filterText)))
+            !tea.name!.toLowerCase().contains(filterText) &&
+            tea.notes!.toLowerCase().contains(filterText)))
         .toList();
   }
 
@@ -40,13 +40,14 @@ class _CollectionPageState extends State<CollectionPage> {
     PackageInfo.fromPlatform().then((value) => _versionName = value.version);
 
     // initialize FlutterBackground plugin
-    const FLUTTER_BACKGROUND_ANDROID_CONFIG = FlutterBackgroundAndroidConfig(
+    const flutterBackgroundAndroidConfig = FlutterBackgroundAndroidConfig(
       notificationTitle: "Infusion Tea Timer",
       notificationText: "Infusion Tea Timer is running in the background.",
       notificationImportance: AndroidNotificationImportance.Default,
       notificationIcon:
           AndroidResource(name: 'notification_icon', defType: 'drawable'),
       enableWifiLock: false,
+      showBadge: false,
     );
 
     if (Platform.isAndroid) {
@@ -67,7 +68,7 @@ class _CollectionPageState extends State<CollectionPage> {
                   onPressed: () {
                     Navigator.pop(context, 'OK');
                     FlutterBackground.initialize(
-                        androidConfig: FLUTTER_BACKGROUND_ANDROID_CONFIG);
+                        androidConfig: flutterBackgroundAndroidConfig);
                   },
                   child: const Text('OK'),
                 ),
@@ -76,7 +77,7 @@ class _CollectionPageState extends State<CollectionPage> {
           );
         } else {
           FlutterBackground.initialize(
-              androidConfig: FLUTTER_BACKGROUND_ANDROID_CONFIG);
+              androidConfig: flutterBackgroundAndroidConfig);
         }
       });
     }
@@ -91,7 +92,7 @@ class _CollectionPageState extends State<CollectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Tea Collection")),
+        appBar: AppBar(title: const Text("Tea Collection")),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -99,26 +100,27 @@ class _CollectionPageState extends State<CollectionPage> {
               DrawerHeader(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.secondary),
-                child: Text(
+                child: const Text(
                   "Infusion Tea Timer",
                   style: TextStyle(fontSize: 24, color: Colors.white),
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.settings),
-                title: Text("Preferences"),
+                leading: const Icon(Icons.settings),
+                title: const Text("Preferences"),
                 onTap: () async {
                   await Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PreferencesPage(key: null)));
+                          builder: (context) =>
+                              const PreferencesPage(key: null)));
                   // when returning from preferences, update vessel size
                   setState(() {});
                 },
               ),
               AboutListTile(
-                icon: Icon(Icons.favorite),
-                applicationIcon: Container(
+                icon: const Icon(Icons.favorite),
+                applicationIcon: SizedBox(
                   height: IconTheme.of(context).resolve(context).size,
                   width: IconTheme.of(context).resolve(context).size,
                   child: Image.asset(
@@ -129,7 +131,7 @@ class _CollectionPageState extends State<CollectionPage> {
                 applicationVersion: _versionName,
                 applicationLegalese:
                     "Copyright (c) 2021 Sesu8642\n\nhttps://github.com/Sesu8642/InfusionTimer",
-                aboutBoxChildren: [
+                aboutBoxChildren: const [
                   Text(
                     "\nMany thanks to Mei Leaf (meileaf.com) for their permission to include data from their brewing guide!",
                     style: TextStyle(fontSize: 14),
@@ -153,7 +155,7 @@ class _CollectionPageState extends State<CollectionPage> {
                           },
                           decoration: InputDecoration(
                             hintText: 'Search for a tea',
-                            prefixIcon: Icon(Icons.search),
+                            prefixIcon: const Icon(Icons.search),
                             suffixIcon: IconButton(
                                 onPressed: () {
                                   setState(() {
@@ -161,13 +163,13 @@ class _CollectionPageState extends State<CollectionPage> {
                                     searchController.text = "";
                                   });
                                 },
-                                icon: Icon(Icons.close)),
+                                icon: const Icon(Icons.close)),
                           ),
                         ),
                       ),
                     ],
                   )
-                : SizedBox(),
+                : const SizedBox(),
             Flexible(
               child: ListView.builder(
                 itemCount: _getFilteredTeas(searchController.text).length,
@@ -189,7 +191,7 @@ class _CollectionPageState extends State<CollectionPage> {
                             showModalBottomSheet(
                                 context: context,
                                 builder: (BuildContext context) =>
-                                    new TeaActionsBottomSheet(
+                                    TeaActionsBottomSheet(
                                         tea,
                                         (tea) => {
                                               showDialog(
@@ -197,14 +199,18 @@ class _CollectionPageState extends State<CollectionPage> {
                                                 barrierDismissible: false,
                                                 builder:
                                                     (BuildContext context) =>
-                                                        new TeaInputDialog(
+                                                        TeaInputDialog(
                                                   tea,
-                                                  (tea) async {
-                                                    await PersistenceService
-                                                        .updateTea(tea);
-                                                    setState(() {});
-                                                    Navigator.of(context).pop();
-                                                    Navigator.of(context).pop();
+                                                  (tea) {
+                                                    PersistenceService
+                                                            .updateTea(tea)
+                                                        .then((value) {
+                                                      setState(() {});
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    });
                                                   },
                                                   (tea) {
                                                     Navigator.of(context).pop();
@@ -229,9 +235,9 @@ class _CollectionPageState extends State<CollectionPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             searchBarShown
-                ? SizedBox()
+                ? const SizedBox()
                 : Padding(
-                    padding: EdgeInsets.only(bottom: 16.0),
+                    padding: const EdgeInsets.only(bottom: 16.0),
                     child: FloatingActionButton(
                       heroTag: "FloatingActionButtonSearchCollection",
                       onPressed: () {
@@ -240,7 +246,7 @@ class _CollectionPageState extends State<CollectionPage> {
                         });
                       },
                       tooltip: 'Search Collection',
-                      child: Icon(Icons.search),
+                      child: const Icon(Icons.search),
                     ),
                   ),
             FloatingActionButton(
@@ -249,8 +255,8 @@ class _CollectionPageState extends State<CollectionPage> {
                 showDialog(
                   context: context,
                   barrierDismissible: false,
-                  builder: (BuildContext context) => new TeaInputDialog(
-                    new Tea.withGeneratedId(null, null, null, [], null),
+                  builder: (BuildContext context) => TeaInputDialog(
+                    Tea.withGeneratedId(null, null, null, [], null),
                     (tea) {
                       setState(
                         () {
@@ -266,7 +272,7 @@ class _CollectionPageState extends State<CollectionPage> {
                 );
               },
               tooltip: 'Add Tea',
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add),
             ),
           ],
         ));

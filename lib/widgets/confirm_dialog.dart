@@ -8,8 +8,9 @@ class ConfirmDialog extends StatelessWidget {
   final Function() okCallback;
   final Function() cancelCallback;
 
-  ConfirmDialog(
-      this.title, this.confirmText, this.okCallback, this.cancelCallback);
+  const ConfirmDialog(
+      this.title, this.confirmText, this.okCallback, this.cancelCallback,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +24,11 @@ class ConfirmDialog extends StatelessWidget {
         ),
       ),
       actions: <Widget>[
-        new TextButton(
+        TextButton(
           onPressed: () => cancelCallback(),
           child: const Text('Cancel'),
         ),
-        new TextButton(
+        TextButton(
           onPressed: () => okCallback(),
           child: const Text('OK'),
         ),

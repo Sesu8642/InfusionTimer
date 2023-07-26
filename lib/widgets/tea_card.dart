@@ -5,13 +5,14 @@ import 'package:infusion_timer/tea.dart';
 
 class TeaCard extends StatelessWidget {
   final Tea tea;
-  final Function(Tea) tapCallback;
-  final Function(Tea) longPressCallback;
+  final Function(Tea)? tapCallback;
+  final Function(Tea)? longPressCallback;
   final int teaVesselSize;
-  final int infusionOfActiveSession;
+  final int? infusionOfActiveSession;
 
-  TeaCard(this.tea, this.tapCallback, this.longPressCallback,
-      this.teaVesselSize, this.infusionOfActiveSession);
+  const TeaCard(this.tea, this.tapCallback, this.longPressCallback,
+      this.teaVesselSize, this.infusionOfActiveSession,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,30 +20,31 @@ class TeaCard extends StatelessWidget {
       child: Card(
         child: GestureDetector(
           child: InkWell(
-            onTap: tapCallback == null ? null : () => tapCallback(tea),
-            onLongPress:
-                longPressCallback == null ? null : () => longPressCallback(tea),
+            onTap: tapCallback == null ? null : () => tapCallback!(tea),
+            onLongPress: longPressCallback == null
+                ? null
+                : () => longPressCallback!(tea),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
-                  title: Center(child: Text(tea.name)),
-                  subtitle:
-                      tea.notes.isEmpty ? null : Center(child: Text(tea.notes)),
+                  title: Center(child: Text(tea.name!)),
+                  subtitle: tea.notes!.isEmpty
+                      ? null
+                      : Center(child: Text(tea.notes!)),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(Icons.thermostat_outlined),
-                    Text(tea.temperature.toString() + " °C"),
+                    const Icon(Icons.thermostat_outlined),
+                    Text("${tea.temperature} °C"),
                     const SizedBox(width: 8),
-                    Icon(Icons.grass),
-                    Text(teaVesselSize != null
-                        ? "${((tea.gPer100Ml * teaVesselSize).round() / 100).toString()} g/ ${teaVesselSize.toString()}ml"
-                        : "null"),
+                    const Icon(Icons.grass),
+                    Text(
+                        "${((tea.gPer100Ml! * teaVesselSize).round() / 100).toString()} g/ ${teaVesselSize.toString()}ml"),
                     const SizedBox(width: 8),
-                    Icon(Icons.repeat),
-                    Text(tea.infusions.length.toString() + " infusions"),
+                    const Icon(Icons.repeat),
+                    Text("${tea.infusions.length} infusions"),
                   ],
                 ),
                 Row(
@@ -51,7 +53,7 @@ class TeaCard extends StatelessWidget {
                       ? []
                       : [
                           Text(
-                              "Current brew: ${tea.infusions.length - infusionOfActiveSession + 1} more infusion(s) remaining.")
+                              "Current brew: ${tea.infusions.length - infusionOfActiveSession! + 1} more infusion(s) remaining.")
                         ],
                 ),
               ],

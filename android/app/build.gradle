@@ -32,7 +32,9 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
+    namespace "com.sesu8642.infusion_timer"
     compileSdkVersion flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -49,7 +51,7 @@ android {
 
     defaultConfig {
         applicationId "com.sesu8642.infusion_timer"
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 19 // changed from flutter.minSdkVersion because needed by android_alarm_manager_plus
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

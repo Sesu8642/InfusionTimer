@@ -9,7 +9,8 @@ class TeaInputDialog extends StatefulWidget {
   final Function(Tea) saveCallback;
   final Function(Tea) cancelCallback;
 
-  TeaInputDialog(this.tea, this.saveCallback, this.cancelCallback);
+  const TeaInputDialog(this.tea, this.saveCallback, this.cancelCallback,
+      {super.key});
 
   @override
   TeaInputFormFormState createState() {
@@ -24,9 +25,9 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
 
   _addInfusion() {
     setState(() {
-      int parsedInt = int.tryParse(newInfusionController.text);
+      int? parsedInt = int.tryParse(newInfusionController.text);
       if (parsedInt != null) {
-        widget.tea.infusions.add(new Infusion(parsedInt));
+        widget.tea.infusions.add(Infusion(parsedInt));
       }
     });
     newInfusionController.clear();
@@ -44,7 +45,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
             children: <Widget>[
               TextFormField(
                 initialValue: widget.tea.name,
-                decoration: InputDecoration(hintText: 'Name'),
+                decoration: const InputDecoration(hintText: 'Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Enter a name";
@@ -53,7 +54,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   }
                 },
                 onSaved: (value) {
-                  widget.tea.name = value;
+                  widget.tea.name = value!;
                 },
               ),
               TextFormField(
@@ -72,9 +73,9 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   }
                 },
                 onSaved: (value) {
-                  widget.tea.temperature = int.parse(value);
+                  widget.tea.temperature = int.parse(value!);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Brewing Temperature in °C',
                 ),
               ),
@@ -87,40 +88,40 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   FilteringTextInputFormatter.allow(RegExp('[0-9,.]')),
                 ],
                 validator: (value) {
-                  num parsed = num.tryParse(value.replaceAll(',', '.'));
+                  num? parsed = num.tryParse(value?.replaceAll(',', '.') ?? '');
                   if (parsed == null) {
                     return "Invalid Amount";
                   } else {
                     return null;
                   }
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Amount in g/100ml',
                 ),
                 onSaved: (value) {
                   widget.tea.gPer100Ml =
-                      double.parse(value.replaceAll(',', '.'));
+                      double.parse(value?.replaceAll(',', '.') ?? '');
                 },
               ),
               TextFormField(
                 initialValue: widget.tea.notes,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Notes',
                 ),
                 onSaved: (value) {
-                  widget.tea.notes = value;
+                  widget.tea.notes = value ?? "";
                 },
               ),
               Text(
                 "\nInfusions",
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               ...widget.tea.infusions.map(
                 (infusion) => ListTile(
                   trailing: IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       splashRadius: Material.defaultSplashRadius / 1.5,
                       tooltip: 'delete',
                       onPressed: () {
@@ -130,11 +131,8 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                         });
                       }),
                   title: Text(
-                      (widget.tea.infusions.indexOf(infusion) + 1).toString() +
-                          ".   " +
-                          infusion.duration.toString() +
-                          "s"),
-                  contentPadding: EdgeInsets.all(0),
+                      "${widget.tea.infusions.indexOf(infusion) + 1}.   ${infusion.duration}s"),
+                  contentPadding: const EdgeInsets.all(0),
                 ),
               ),
               TextFormField(
@@ -145,7 +143,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   hintText: 'Infusion time in s',
                   suffixIcon: IconButton(
                     splashRadius: Material.defaultSplashRadius / 1.5,
-                    icon: Icon(Icons.add),
+                    icon: const Icon(Icons.add),
                     onPressed: () {
                       _addInfusion();
                     },
@@ -164,23 +162,23 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
         ),
       ),
       actions: <Widget>[
-        new TextButton(
+        TextButton(
           onPressed: () {
             widget.cancelCallback(widget.tea);
           },
           child: const Text('Cancel'),
         ),
-        new TextButton(
+        TextButton(
           onPressed: () {
             _addInfusion();
             setState(() {
-              if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
                 widget.saveCallback(widget.tea);
               }
             });
           },
-          child: Text(
+          child: const Text(
             'Save',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),

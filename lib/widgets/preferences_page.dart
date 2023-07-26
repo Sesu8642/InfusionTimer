@@ -7,15 +7,15 @@ import 'package:infusion_timer/widgets/data_backup_dialog.dart';
 import 'package:infusion_timer/widgets/data_restore_dialog.dart';
 
 class PreferencesPage extends StatefulWidget {
-  PreferencesPage({Key key}) : super(key: key);
+  const PreferencesPage({Key? key}) : super(key: key);
 
   @override
-  _PreferencesPageState createState() => _PreferencesPageState();
+  PreferencesPageState createState() => PreferencesPageState();
 }
 
-class _PreferencesPageState extends State<PreferencesPage> {
+class PreferencesPageState extends State<PreferencesPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _vesselSizeController = TextEditingController();
+  final TextEditingController _vesselSizeController = TextEditingController();
 
   @override
   void initState() {
@@ -29,22 +29,23 @@ class _PreferencesPageState extends State<PreferencesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Preferences")),
+      appBar: AppBar(title: const Text("Preferences")),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Size of your tea brewing vessel in ml",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 TextFormField(
                   controller: _vesselSizeController,
-                  decoration: InputDecoration(icon: Icon(Icons.free_breakfast)),
+                  decoration:
+                      const InputDecoration(icon: Icon(Icons.free_breakfast)),
                   keyboardType: TextInputType.number,
                   maxLength: 5,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -56,35 +57,34 @@ class _PreferencesPageState extends State<PreferencesPage> {
                     }
                   },
                   onChanged: (value) async {
-                    if (_formKey.currentState.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       await PersistenceService.setTeaVesselSizeMlPref(
                           int.parse(value));
                     }
                   },
                 ),
-                Text(
+                const Text(
                   "Data backup/restore",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: ElevatedButton(
                         onPressed: () {
                           showDialog(
                             context: context,
                             barrierDismissible: false,
                             builder: (BuildContext context) =>
-                                new DataBackupDialog(),
+                                const DataBackupDialog(),
                           );
                         },
-                        child: Text("Data Backup"))),
+                        child: const Text("Data Backup"))),
                 ElevatedButton(
                     onPressed: () async {
                       await showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (BuildContext context) =>
-                            new DataRestoreDialog(),
+                        builder: (BuildContext context) => DataRestoreDialog(),
                       );
                       setState(() {
                         _vesselSizeController.value = TextEditingValue(
@@ -92,7 +92,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
                                 .toString());
                       });
                     },
-                    child: Text("Data Restore")),
+                    child: const Text("Data Restore")),
               ],
             ),
           ),

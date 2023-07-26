@@ -25,7 +25,7 @@ void main() async {
       AndroidInitializationSettings(notificationIconName);
   const LinuxInitializationSettings initializationSettingsLinux =
       LinuxInitializationSettings(defaultActionName: 'Test');
-  final InitializationSettings initializationSettings = InitializationSettings(
+  const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       linux: initializationSettingsLinux);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -36,10 +36,12 @@ void main() async {
   // init persistence service
   await PersistenceService.init();
 
-  runApp(InfusionTimer());
+  runApp(const InfusionTimer());
 }
 
 class InfusionTimer extends StatefulWidget {
+  const InfusionTimer({super.key});
+
   @override
   AppState createState() {
     return AppState();
@@ -54,7 +56,7 @@ class AppState extends State<InfusionTimer> {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      home: CollectionPage(),
+      home: const CollectionPage(),
     );
   }
 }

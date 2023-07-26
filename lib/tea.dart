@@ -3,30 +3,30 @@ import 'package:infusion_timer/id_generator.dart';
 
 class Tea {
   double id;
-  String name;
-  int temperature;
-  double gPer100Ml;
+  String? name;
+  int? temperature;
+  double? gPer100Ml;
   List<Infusion> infusions;
-  String notes;
+  String? notes;
 
   Tea(this.id, this.name, this.temperature, this.gPer100Ml, this.infusions,
       this.notes);
 
   Tea.withGeneratedId(
       this.name, this.temperature, this.gPer100Ml, this.infusions, this.notes)
-      : this.id = IdGenerator.nextdouble();
+      : id = IdGenerator.nextdouble();
 
   Tea.fromJson(Map<String, dynamic> json)
-      : this.id =
-            json.containsKey('id') ? json['id'] : IdGenerator.nextdouble(),
-        this.name = json['name'],
-        this.temperature = json['temperature'],
-        this.gPer100Ml = json['gPer100Ml'] is double
+      : id = json.containsKey('id') ? json['id'] : IdGenerator.nextdouble(),
+        name = json['name'],
+        temperature = json['temperature'],
+        gPer100Ml = json['gPer100Ml'] is double
             ? json['gPer100Ml']
             : double.parse(json['gPer100Ml'].toString()),
-        this.infusions = List<Infusion>.from(
-            json['infusions'].map((i) => Infusion.fromJson(i))),
-        this.notes = json['notes'];
+        infusions = List<Infusion>.from(
+            json['infusions']?.map((i) => Infusion.fromJson(i)) ??
+                List.empty()),
+        notes = json['notes'];
 
   Map toJson() => {
         'id': id,
@@ -38,29 +38,26 @@ class Tea {
       };
 
   validate() {
-    if (id == null) {
-      throw FormatException("Tea '${name}' has no ID.");
-    }
     if (name == null) {
-      throw FormatException("Tea has no name.");
+      throw const FormatException("Tea has no name.");
     }
     if (temperature == null) {
-      throw FormatException("Tea '${name}' has no brewing temperature.");
+      throw FormatException("Tea '$name' has no brewing temperature.");
     }
     if (gPer100Ml == null) {
-      throw FormatException("Tea ${name} has no tea amount.");
+      throw FormatException("Tea '$name' has no tea amount.");
     }
-    if (infusions == null || infusions.isEmpty) {
-      throw FormatException("Tea ${name} has no infusions.");
+    if (infusions.isEmpty) {
+      throw FormatException("Tea '$name' has no infusions.");
     }
-    infusions.forEach((infusion) {
-      if (infusion.duration == null || infusion.duration.isNegative) {
+    for (var infusion in infusions) {
+      if (infusion.duration.isNegative) {
         throw FormatException(
-            "Tea ${name} has an infusion with invalid duration.");
+            "Tea '$name' has an infusion with invalid duration.");
       }
-    });
+    }
     if (notes == null) {
-      throw FormatException("Tea ${name} has no notes.");
+      throw FormatException("Tea '$name' has no notes.");
     }
   }
 }

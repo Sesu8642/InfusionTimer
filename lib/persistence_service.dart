@@ -7,12 +7,12 @@ import 'package:infusion_timer/tea.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-const String _TEA_VESSEL_SIZE_SAVE_KEY = "tea_vessel_size";
-const String _TEAS_SAVE_KEY = "teas";
-const String _SESSION_SAVE_PREFIX = "session:";
+const String _teaVesselSizeSaveKey = "tea_vessel_size";
+const String _teasSaveKey = "teas";
+const String _sessionSavePrefix = "session:";
 
 class PersistenceService {
-  static SharedPreferences _prefs;
+  static late SharedPreferences _prefs;
   static int _teaVesselSizeMlPref = 100;
   static List<Tea> _teas = [];
   static Map<double, int> _savedSessions = {};
@@ -22,13 +22,13 @@ class PersistenceService {
     _prefs = await SharedPreferences.getInstance();
 
     // read preferences
-    var savedTeaVesselSizeMlPref = _prefs.getInt(_TEA_VESSEL_SIZE_SAVE_KEY);
+    var savedTeaVesselSizeMlPref = _prefs.getInt(_teaVesselSizeSaveKey);
     if (savedTeaVesselSizeMlPref != null) {
       _teaVesselSizeMlPref = savedTeaVesselSizeMlPref;
     }
 
     // read teas
-    var savedTeasJson = _prefs.getStringList(_TEAS_SAVE_KEY);
+    var savedTeasJson = _prefs.getStringList(_teasSaveKey);
     if (savedTeasJson == null) {
       // if there in no saved data, load the default included teas
       var defaultTeasJson =
@@ -43,14 +43,14 @@ class PersistenceService {
     }
 
     // read sessions
-    _teas.forEach((tea) {
-      var teaSession = _prefs.getInt(_SESSION_SAVE_PREFIX + tea.id.toString());
+    for (var tea in _teas) {
+      var teaSession = _prefs.getInt(_sessionSavePrefix + tea.id.toString());
       if (teaSession != null) {
         _savedSessions[tea.id] = teaSession;
       } else {
         _savedSessions.remove(tea.id);
       }
-    });
+    }
   }
 
   static int get teaVesselSizeMlPref {
@@ -60,7 +60,7 @@ class PersistenceService {
 // cannot use regular setter because this must be async
   static Future<void> setTeaVesselSizeMlPref(int teaVesselSizeMl) async {
     _teaVesselSizeMlPref = teaVesselSizeMl;
-    await _prefs.setInt(_TEA_VESSEL_SIZE_SAVE_KEY, teaVesselSizeMl);
+    await _prefs.setInt(_teaVesselSizeSaveKey, teaVesselSizeMl);
   }
 
   static List<Tea> get teas {
@@ -75,7 +75,7 @@ class PersistenceService {
 
   static Future<void> _saveTeas() async {
     await _prefs.setStringList(
-        _TEAS_SAVE_KEY, _teas.map((tea) => jsonEncode(tea)).toList());
+        _teasSaveKey, _teas.map((tea) => jsonEncode(tea)).toList());
   }
 
   static Future<void> addTea(Tea tea) async {
@@ -94,7 +94,7 @@ class PersistenceService {
     // tea was changed already and the change needs to be handled
     await _saveTeas();
     // make sure the saved infusion is not bigger than the number of infusions the tea has now
-    var savedInfusion = _prefs.getInt(_SESSION_SAVE_PREFIX + tea.id.toString());
+    var savedInfusion = _prefs.getInt(_sessionSavePrefix + tea.id.toString());
     if (savedInfusion != null && savedInfusion >= tea.infusions.length) {
       deleteSession(tea);
     }
@@ -110,7 +110,7 @@ class PersistenceService {
   static setSavedSessions(Map<double, int> savedSessions) async {
     _savedSessions = savedSessions;
     savedSessions.forEach((key, value) async {
-      await _prefs.setInt(_SESSION_SAVE_PREFIX + key.toString(), value);
+      await _prefs.setInt(_sessionSavePrefix + key.toString(), value);
     });
   }
 
@@ -118,18 +118,18 @@ class PersistenceService {
     return _savedSessions;
   }
 
-  static Future<int> getSession(Tea tea) async {
-    return await _prefs.getInt(_SESSION_SAVE_PREFIX + tea.id.toString());
+  static Future<int?> getSession(Tea tea) async {
+    return _prefs.getInt(_sessionSavePrefix + tea.id.toString());
   }
 
   static Future<void> saveSession(Tea tea, int infusion) async {
     _savedSessions[tea.id] = infusion;
-    await _prefs.setInt(_SESSION_SAVE_PREFIX + tea.id.toString(), infusion);
+    await _prefs.setInt(_sessionSavePrefix + tea.id.toString(), infusion);
   }
 
   static Future<void> deleteSession(Tea tea) async {
     _savedSessions.remove(tea.id);
-    await _prefs.remove(_SESSION_SAVE_PREFIX + tea.id.toString());
+    await _prefs.remove(_sessionSavePrefix + tea.id.toString());
   }
 
   static BackupData getBackupData() {

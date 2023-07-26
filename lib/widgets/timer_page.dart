@@ -7,48 +7,43 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:infusion_timer/persistence_service.dart';
-import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:infusion_timer/tea.dart';
 import 'package:infusion_timer/widgets/tea_card.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-const String ASSET_PREFIX = "assets/";
-const String TEMP_FILE_PREFIX = "InfusionTimer_";
-const String ANDROID_PROGRESS_NOTIFICATION_CHANNEL_ID = "brewingProgress";
-const String ANDROID_PROGRESS_NOTIFICATION_CHANNEL_NAME = "Brewing Progress";
-const String ANDROID_PROGRESS_NOTIFICATION_CHANNEL_DESCRIPTION =
+const String androidProgressNotificationChannelId = "brewingProgress";
+const String androidProgressNotificationChannelName = "Brewing Progress";
+const String androidProgressNotificationChannelDescripion =
     "Progress of the current infusion.";
-const int PROGRESS_NOTIFICATION_ID = 42;
-const String AUDIO_RESOURCE_NAME = "hand-bell-ringing-sound.wav";
-const int ALARM_ID = 42;
-const String SESSION_SAVE_PREFIX = "session:";
+const int progressNotificationId = 42;
+const String audioResourceName = "hand-bell-ringing-sound.wav";
+const int alarmId = 42;
+const String sessionSavePrefix = "session:";
 
 class TimerPage extends StatefulWidget {
   final Tea tea;
 
-  TimerPage({Key key, this.tea}) : super(key: key);
+  const TimerPage({Key? key, required this.tea}) : super(key: key);
 
   @override
-  _TimerPageState createState() => _TimerPageState();
+  TimerPageState createState() => TimerPageState();
 }
 
-class _TimerPageState extends State<TimerPage>
+class TimerPageState extends State<TimerPage>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   int currentInfusion = 1;
-  AnimationController _animationController;
-  Timer _notificationUpdateTimer;
-  String sessionKey;
-  static AudioCache _audioCache = AudioCache();
+  late AnimationController _animationController;
+  Timer? _notificationUpdateTimer;
+  late String sessionKey;
+  static final AudioPlayer _audioPlayer = AudioPlayer();
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   // for correcting the animation status when the app was in the background + notification progress
-  DateTime infusionFinishTime;
-  File audioFile;
+  DateTime? infusionFinishTime;
   // timer for scheduling an alert and doing cleanup (on android only used for cleanup)
-  Timer alertTimer;
+  Timer? alertTimer;
 
   // need to return a future here to use .then()
   Future<void> _loadSession() async {
@@ -61,14 +56,12 @@ class _TimerPageState extends State<TimerPage>
   }
 
   static _ring() async {
-    if (Platform.isAndroid) {
-      await _audioCache.play(AUDIO_RESOURCE_NAME);
-    }
+    await _audioPlayer.play(AssetSource(audioResourceName));
   }
 
   _updateProgressNotification() async {
     int remainingDurationMs =
-        infusionFinishTime.difference(DateTime.now()).inMilliseconds;
+        infusionFinishTime!.difference(DateTime.now()).inMilliseconds;
     bool finished = remainingDurationMs <= 0;
     if (finished) {
       // stop updating the notification when done so the user can dismiss it without it reappearing again instantly
@@ -79,12 +72,11 @@ class _TimerPageState extends State<TimerPage>
         : "${(remainingDurationMs / 1000).toStringAsFixed(0)}\u200As";
     // setting a short timeout to make the notification disappear if we dont need it anymore (paused, stopped brewing)
     // but when the brewing is finished, it should stay for a while so the user can still see it
-    int timeout = finished ? Duration(minutes: 30).inMilliseconds : 1000;
+    int timeout = finished ? const Duration(minutes: 30).inMilliseconds : 1000;
     AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(ANDROID_PROGRESS_NOTIFICATION_CHANNEL_ID,
-            ANDROID_PROGRESS_NOTIFICATION_CHANNEL_NAME,
-            channelDescription:
-                ANDROID_PROGRESS_NOTIFICATION_CHANNEL_DESCRIPTION,
+        AndroidNotificationDetails(androidProgressNotificationChannelId,
+            androidProgressNotificationChannelName,
+            channelDescription: androidProgressNotificationChannelDescripion,
             importance: Importance.low,
             priority: Priority.defaultPriority,
             enableVibration: false,
@@ -99,7 +91,7 @@ class _TimerPageState extends State<TimerPage>
     NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
-        PROGRESS_NOTIFICATION_ID,
+        progressNotificationId,
         'Brewing ${widget.tea.name}, Infusion $currentInfusion',
         remainingDurationText,
         platformChannelSpecifics,
@@ -108,10 +100,10 @@ class _TimerPageState extends State<TimerPage>
 
   _startDisplayingProgressNotification() {
     if (Platform.isAndroid) {
-      if (_notificationUpdateTimer == null ||
-          !_notificationUpdateTimer.isActive) {
+      if (!(_notificationUpdateTimer?.isActive ?? false)) {
         // if the timer is null or canceled, we need a new one
-        _notificationUpdateTimer = Timer.periodic(Duration(milliseconds: 500),
+        _notificationUpdateTimer = Timer.periodic(
+            const Duration(milliseconds: 500),
             (Timer t) => _updateProgressNotification());
       }
     }
@@ -119,9 +111,7 @@ class _TimerPageState extends State<TimerPage>
 
   _stopDisplayingProgressNotification() {
     if (Platform.isAndroid) {
-      if (_notificationUpdateTimer != null) {
-        _notificationUpdateTimer.cancel();
-      }
+      _notificationUpdateTimer?.cancel();
     }
   }
 
@@ -162,33 +152,21 @@ class _TimerPageState extends State<TimerPage>
   _scheduleAlarm() {
     if (Platform.isAndroid) {
       // on Android, the alarm manager with all those accurary options needs to be used + disables battery optimization + show notification + CPU wakelock
-      AndroidAlarmManager.oneShotAt(infusionFinishTime, ALARM_ID, _ring,
+      AndroidAlarmManager.oneShotAt(infusionFinishTime!, alarmId, _ring,
           allowWhileIdle: true, exact: true, wakeup: true);
     }
     alertTimer =
-        new Timer(infusionFinishTime.difference(DateTime.now()), () async {
+        Timer(infusionFinishTime!.difference(DateTime.now()), () async {
       if (Platform.isLinux) {
         // on Linux, this timer is reliable so we can trigger the ringing with it
         _updateProgressNotification();
-        // to ring: write the audio file to a temporary directory and then play is using aplay
-        var tempDir = await getTemporaryDirectory();
-        final soundBytes =
-            await rootBundle.load(ASSET_PREFIX + AUDIO_RESOURCE_NAME);
-        final buffer = soundBytes.buffer;
-        final byteList = buffer.asUint8List(
-            soundBytes.offsetInBytes, soundBytes.lengthInBytes);
-        audioFile = new File(
-            tempDir.path + "/" + TEMP_FILE_PREFIX + AUDIO_RESOURCE_NAME);
-        if (!await audioFile.exists()) {
-          await audioFile.writeAsBytes(byteList);
-        }
-        Process.run("aplay", [audioFile.path]);
+        _ring();
       } else if (Platform.isAndroid &&
           FlutterBackground.isBackgroundExecutionEnabled) {
-        // on Android, we need to stop running in the background after the ringing has happened; this is only possible in this contect and not in the alarm manager context
+        // on Android, we need to stop running in the background after the ringing has happened; this is only possible in this context and not in the alarm manager context
         // stop the background running things
         // need to wait a little longer for it to be reliable for some reason
-        sleep(new Duration(seconds: 5));
+        sleep(const Duration(seconds: 5));
         FlutterBackground.disableBackgroundExecution();
       }
     });
@@ -196,11 +174,9 @@ class _TimerPageState extends State<TimerPage>
 
   _cancelAlarm() {
     if (Platform.isAndroid) {
-      AndroidAlarmManager.cancel(ALARM_ID);
+      AndroidAlarmManager.cancel(alarmId);
     }
-    if (alertTimer != null) {
-      alertTimer.cancel();
-    }
+    alertTimer?.cancel();
   }
 
   _startPauseNext() {
@@ -218,7 +194,7 @@ class _TimerPageState extends State<TimerPage>
             // need to save one higher because the next infusion is already started
             PersistenceService.saveSession(widget.tea, currentInfusion + 1);
             _animationController.reset();
-            remainingMs = _animationController.duration.inMilliseconds;
+            remainingMs = _animationController.duration!.inMilliseconds;
             // if the last infusion is started, delete the saved info
             if (currentInfusion == widget.tea.infusions.length) {
               PersistenceService.deleteSession(widget.tea);
@@ -235,7 +211,7 @@ class _TimerPageState extends State<TimerPage>
           }
           // starting the beginning or resuming from pause
           remainingMs = ((1 - _animationController.value) *
-                  _animationController.duration.inMilliseconds)
+                  _animationController.duration!.inMilliseconds)
               .round();
         }
         // all cases
@@ -256,7 +232,7 @@ class _TimerPageState extends State<TimerPage>
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    sessionKey = SESSION_SAVE_PREFIX + widget.tea.id.toString();
+    sessionKey = sessionSavePrefix + widget.tea.id.toString();
 
     _animationController = AnimationController(
       vsync: this,
@@ -277,7 +253,7 @@ class _TimerPageState extends State<TimerPage>
         (MediaQuery.of(context).size.height) * 0.4;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tea Timer"),
+        title: const Text("Tea Timer"),
       ),
       body: Align(
         alignment: Alignment.topCenter,
@@ -324,7 +300,7 @@ class _TimerPageState extends State<TimerPage>
                                 ),
                               ),
                             ),
-                            Container(
+                            SizedBox(
                               height: progressIndicatorDiameter,
                               width: progressIndicatorDiameter,
                               child: IconButton(
@@ -360,7 +336,7 @@ class _TimerPageState extends State<TimerPage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                      icon: Icon(Icons.skip_previous),
+                      icon: const Icon(Icons.skip_previous),
                       iconSize: progressIndicatorDiameter * 0.15,
                       onPressed:
                           currentInfusion == 1 ? null : _skipBackwardIteration),
@@ -369,7 +345,7 @@ class _TimerPageState extends State<TimerPage>
                     style: TextStyle(fontSize: progressIndicatorDiameter * 0.1),
                   ),
                   IconButton(
-                      icon: Icon(Icons.skip_next),
+                      icon: const Icon(Icons.skip_next),
                       iconSize: progressIndicatorDiameter * 0.15,
                       onPressed: currentInfusion == widget.tea.infusions.length
                           ? null
@@ -390,11 +366,11 @@ class _TimerPageState extends State<TimerPage>
         // the timer animation will pause if the application is paused or whatever by android so the state must be corrected when resumed
         if (_animationController.isAnimating) {
           Duration remainingDuration =
-              infusionFinishTime.difference(DateTime.now());
+              infusionFinishTime!.difference(DateTime.now());
           _animationController.value =
-              (_animationController.duration - remainingDuration)
+              (_animationController.duration! - remainingDuration)
                       .inMilliseconds /
-                  _animationController.duration.inMilliseconds;
+                  _animationController.duration!.inMilliseconds;
           _animationController.forward();
         }
       });
@@ -416,12 +392,8 @@ class _TimerPageState extends State<TimerPage>
     WidgetsBinding.instance.removeObserver(this);
     _cancelAlarm();
     // cancel any "finished" notification
-    flutterLocalNotificationsPlugin.cancel(PROGRESS_NOTIFICATION_ID);
+    flutterLocalNotificationsPlugin.cancel(progressNotificationId);
     _stopDisplayingProgressNotification();
-    if (audioFile != null) {
-      // no need to await
-      audioFile.delete();
-    }
     _animationController.dispose();
     super.dispose();
   }

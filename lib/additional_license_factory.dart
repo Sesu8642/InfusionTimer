@@ -7,7 +7,7 @@ class AdditionalLicenseFactory {
     yield AdditionalLicense([
       'hand-bell-ringing-sound'
     ], [
-      LicenseParagraph(""""Free Sounds Library"
+      const LicenseParagraph(""""Free Sounds Library"
 
 
 Free Sound Effects Site.
@@ -27,8 +27,11 @@ converted to wav by Sesu8642 using ffmpeg""", 0)
 }
 
 class AdditionalLicense extends LicenseEntry {
-  final packages;
-  final paragraphs;
+  @override
+  final Iterable<String> packages;
+
+  @override
+  final Iterable<LicenseParagraph> paragraphs;
 
   AdditionalLicense(this.packages, this.paragraphs);
 }

@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:infusion_timer/persistence_service.dart';
 
 class DataBackupDialog extends StatelessWidget {
-  DataBackupDialog();
+  const DataBackupDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +24,12 @@ class DataBackupDialog extends StatelessWidget {
               readOnly: true,
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: new TextButton(
+              padding: const EdgeInsets.only(top: 10),
+              child: TextButton(
                 onPressed: () {
                   Clipboard.setData(ClipboardData(
                       text: jsonEncode(PersistenceService.getBackupData())));
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text("Copied to clipboard."),
                   ));
                 },
@@ -40,7 +40,7 @@ class DataBackupDialog extends StatelessWidget {
         ),
       ),
       actions: <Widget>[
-        new TextButton(
+        TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('OK'),
         ),

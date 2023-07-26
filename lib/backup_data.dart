@@ -2,7 +2,7 @@
 
 import 'package:infusion_timer/tea.dart';
 
-const int _DATA_SCHEMA_VERSION = 1;
+const int _dataSchemaVersion = 1;
 
 class BackupData {
   final int _teaVesselSizeMlPref;
@@ -12,51 +12,39 @@ class BackupData {
   BackupData(this._teaVesselSizeMlPref, this._teas, this._savedSessions);
 
   BackupData.fromJson(Map<String, dynamic> json)
-      : this._teaVesselSizeMlPref = json['teaVesselSizeMlPref'],
-        this._teas = List<Tea>.from(json['teas'].map((i) => Tea.fromJson(i))),
-        this._savedSessions = Map<double, int>.from(json['savedSessions']
+      : _teaVesselSizeMlPref = json['teaVesselSizeMlPref'],
+        _teas = List<Tea>.from(json['teas'].map((i) => Tea.fromJson(i))),
+        _savedSessions = Map<double, int>.from(json['savedSessions']
             .map((key, val) => MapEntry<double, int>(double.parse(key), val)));
 
   Map toJson() => {
-        'version': _DATA_SCHEMA_VERSION,
+        'version': _dataSchemaVersion,
         'teaVesselSizeMlPref': _teaVesselSizeMlPref,
         'teas': _teas,
-        'savedSessions': _savedSessions
-            .map((key, value) => new MapEntry(key.toString(), value))
+        'savedSessions':
+            _savedSessions.map((key, value) => MapEntry(key.toString(), value))
       };
 
   validate() {
-    if (_teaVesselSizeMlPref == null) {
-      throw FormatException("teaVesselSizeMlPref is required.");
-    }
-    if (_teas == null) {
-      throw FormatException("teas is required.");
-    }
-    if (_savedSessions == null) {
-      throw FormatException("savedSessions is required.");
-    }
-    _teas.forEach((tea) {
+    for (var tea in _teas) {
       tea.validate();
-    });
+    }
     if (_teas.map((tea) => tea.id).toSet().length < _teas.length) {
-      throw FormatException("Tea IDs are not unique.");
+      throw const FormatException("Tea IDs are not unique.");
     }
     _savedSessions.forEach((key, value) {
-      if (key == null || value == null) {
-        throw FormatException("savedSessions contains a null value.");
-      }
       if (value <= 1) {
-        throw FormatException(
+        throw const FormatException(
             "savedSessions contains a too small infusion index.");
       }
       try {
         Tea matchingTea = _teas.firstWhere((tea) => tea.id == key);
         if (value > matchingTea.infusions.length) {
-          throw FormatException(
+          throw const FormatException(
               "savedSessions contains a session that is too large.");
         }
-      } on StateError catch (e) {
-        throw FormatException(
+      } on StateError {
+        throw const FormatException(
             "savedSessions contains a session for a nonexistent tea.");
       }
     });

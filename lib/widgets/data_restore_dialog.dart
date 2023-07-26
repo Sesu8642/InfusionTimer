@@ -11,7 +11,7 @@ import 'package:infusion_timer/widgets/confirm_dialog.dart';
 class DataRestoreDialog extends StatelessWidget {
   final TextEditingController textController = TextEditingController();
 
-  DataRestoreDialog();
+  DataRestoreDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +27,10 @@ class DataRestoreDialog extends StatelessWidget {
               maxLines: 5,
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: new TextButton(
+              padding: const EdgeInsets.only(top: 10),
+              child: TextButton(
                 onPressed: () async => textController.text =
-                    (await Clipboard.getData("text/plain")).text,
+                    (await Clipboard.getData("text/plain"))?.text ?? "",
                 child: const Text('Paste from clipboard'),
               ),
             ),
@@ -38,24 +38,27 @@ class DataRestoreDialog extends StatelessWidget {
         ),
       ),
       actions: <Widget>[
-        new TextButton(
+        TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
-        new TextButton(
+        TextButton(
           onPressed: () => showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (BuildContext context) => new ConfirmDialog(
-                "Are you sure?",
+            builder: (BuildContext context) => ConfirmDialog("Are you sure?",
                 "Your current tea collection will be lost and replaced by the backup.",
-                () async {
+                () {
               Navigator.of(context).pop();
               try {
                 var backup =
                     BackupData.fromJson(jsonDecode(textController.text));
-                await PersistenceService.restoreFomBackup(backup);
-                Navigator.of(context).pop();
+                PersistenceService.restoreFomBackup(backup)
+                    .then((value) => Navigator.of(context).pop())
+                    .onError((e, stackTrace) =>
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(e.toString()),
+                        )));
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(e.toString()),

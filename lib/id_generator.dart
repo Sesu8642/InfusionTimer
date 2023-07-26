@@ -3,7 +3,7 @@
 import 'dart:math';
 
 class IdGenerator {
-  static Random _random = new Random();
+  static final Random _random = Random();
 
   static double nextdouble() {
     // good enough for this
