@@ -256,7 +256,7 @@ class CollectionPageState extends State<CollectionPage> {
                   context: context,
                   barrierDismissible: false,
                   builder: (BuildContext context) => TeaInputDialog(
-                    Tea.withGeneratedId(null, null, null, [], null),
+                    Tea.withGeneratedId(null, null, null, [], null, 0),
                     (tea) {
                       setState(
                         () {

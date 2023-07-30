@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:infusion_timer/tea.dart';
+import 'package:infusion_timer/widgets/star_rating_form_field.dart';
 
 class TeaInputDialog extends StatefulWidget {
   final Tea tea;
@@ -43,6 +44,15 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Row(children: [
+                const Text("Rating "),
+                StarRatingFormField(
+                  initialValue: widget.tea.rating ?? 0,
+                  onSaved: (value) {
+                    widget.tea.rating = value == 0 ? null : value;
+                  },
+                ),
+              ]),
               TextFormField(
                 initialValue: widget.tea.name,
                 decoration: const InputDecoration(hintText: 'Name'),

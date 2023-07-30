@@ -33,18 +33,41 @@ class TeaCard extends StatelessWidget {
                       ? null
                       : Center(child: Text(tea.notes!)),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Wrap(
+                  alignment: WrapAlignment.center,
                   children: <Widget>[
-                    const Icon(Icons.thermostat_outlined),
-                    Text("${tea.temperature} °C"),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.grass),
-                    Text(
-                        "${((tea.gPer100Ml! * teaVesselSize).round() / 100).toString()} g/ ${teaVesselSize.toString()}ml"),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.repeat),
-                    Text("${tea.infusions.length} infusions"),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.thermostat_outlined),
+                        Text("${tea.temperature} °C"),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.grass),
+                        Text(
+                            "${((tea.gPer100Ml! * teaVesselSize).round() / 100).toString()} g/ ${teaVesselSize.toString()}ml"),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.repeat),
+                        Text("${tea.infusions.length} infusions"),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.star_outline_rounded),
+                        Text("${tea.rating ?? '-'}/5"),
+                      ],
+                    ),
                   ],
                 ),
                 Row(
@@ -52,8 +75,11 @@ class TeaCard extends StatelessWidget {
                   children: infusionOfActiveSession == null
                       ? []
                       : [
-                          Text(
-                              "Current brew: ${tea.infusions.length - infusionOfActiveSession! + 1} more infusion(s) remaining.")
+                          Expanded(
+                            child: Text(
+                                textAlign: TextAlign.center,
+                                "Current brew: ${tea.infusions.length - infusionOfActiveSession! + 1} more infusion(s) remaining."),
+                          ),
                         ],
                 ),
               ],
