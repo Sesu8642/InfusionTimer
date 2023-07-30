@@ -5,9 +5,9 @@ import 'package:infusion_timer/tea.dart';
 const int _dataSchemaVersion = 1;
 
 class BackupData {
-  final int _teaVesselSizeMlPref;
-  final List<Tea> _teas;
-  final Map<double, int> _savedSessions;
+  final int? _teaVesselSizeMlPref;
+  final List<Tea>? _teas;
+  final Map<double, int>? _savedSessions;
 
   BackupData(this._teaVesselSizeMlPref, this._teas, this._savedSessions);
 
@@ -22,23 +22,32 @@ class BackupData {
         'teaVesselSizeMlPref': _teaVesselSizeMlPref,
         'teas': _teas,
         'savedSessions':
-            _savedSessions.map((key, value) => MapEntry(key.toString(), value))
+            _savedSessions!.map((key, value) => MapEntry(key.toString(), value))
       };
 
   validate() {
-    for (var tea in _teas) {
+    if (_teaVesselSizeMlPref == null) {
+      throw const FormatException("teaVesselSizeMlPref is required.");
+    }
+    if (_teas == null) {
+      throw const FormatException("teas is required.");
+    }
+    if (_savedSessions == null) {
+      throw const FormatException("savedSessions is required.");
+    }
+    for (var tea in _teas!) {
       tea.validate();
     }
-    if (_teas.map((tea) => tea.id).toSet().length < _teas.length) {
+    if (_teas!.map((tea) => tea.id).toSet().length < _teas!.length) {
       throw const FormatException("Tea IDs are not unique.");
     }
-    _savedSessions.forEach((key, value) {
+    _savedSessions!.forEach((key, value) {
       if (value <= 1) {
         throw const FormatException(
             "savedSessions contains a too small infusion index.");
       }
       try {
-        Tea matchingTea = _teas.firstWhere((tea) => tea.id == key);
+        Tea matchingTea = _teas!.firstWhere((tea) => tea.id == key);
         if (value > matchingTea.infusions.length) {
           throw const FormatException(
               "savedSessions contains a session that is too large.");
@@ -51,14 +60,14 @@ class BackupData {
   }
 
   int get teaVesselSizeMlPref {
-    return _teaVesselSizeMlPref;
+    return _teaVesselSizeMlPref!;
   }
 
   List<Tea> get teas {
-    return _teas;
+    return _teas!;
   }
 
   Map<double, int> get savedSessions {
-    return _savedSessions;
+    return _savedSessions!;
   }
 }
