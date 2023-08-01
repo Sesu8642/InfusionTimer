@@ -16,7 +16,12 @@ jobs:
       env:
         ANDROID_HOME: /opt/android-sdk
       steps:
-        - uses: subosito/flutter-action@v2
+
+        - name: Install Flutter Dependencies
+          run: sudo apt install jq
+
+        - name: Install Flutter
+          uses: subosito/flutter-action@v2
           with:
             flutter-version: '3.10.5'
             channel: 'stable'
