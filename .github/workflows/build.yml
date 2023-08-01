@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  flutter-base: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+  flutter-bin: '${{ flutter-base }}/bin/flutter'
+
 jobs:
 
   build_android:
@@ -30,14 +34,17 @@ jobs:
             channel: 'stable'
             cache: true
             cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
-        - run: flutter config --no-analytics
-        - run: flutter --version
+            cache-path: '${{ flutter-base }}'
+
+        - run: ${{ flutter-bin }} config --no-analytics
+
+        - run: ${{ flutter-bin }} --version
 
         - name: Check out repository code
           uses: actions/checkout@v3
 
         - name: Build Android APK
-          run: flutter build apk
+          run: ${{ flutter-bin }} build apk
 
         - name: Upload Android apk
           uses: actions/upload-artifact@v3
