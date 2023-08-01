@@ -7,8 +7,9 @@ on:
     branches: [ "master" ]
 
 env:
-  flutter-base: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
-  flutter-bin: '${{ flutter-base }}/bin/flutter'
+  RUNNER_CONTEXT: ${{ toJson(runner) }}
+  FLUTTER_BASE: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+  FLUTTER_BIN: '${{ flutter-base }}/bin/flutter'
 
 jobs:
 
@@ -34,17 +35,17 @@ jobs:
             channel: 'stable'
             cache: true
             cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
-            cache-path: '${{ flutter-base }}'
+            cache-path: '${{ FLUTTER_BASE }}'
 
-        - run: ${{ flutter-bin }} config --no-analytics
+        - run: ${{ FLUTTER_BIN }} config --no-analytics
 
-        - run: ${{ flutter-bin }} --version
+        - run: ${{ FLUTTER_BIN }} --version
 
         - name: Check out repository code
           uses: actions/checkout@v3
 
         - name: Build Android APK
-          run: ${{ flutter-bin }} build apk
+          run: ${{ FLUTTER_BIN }} build apk
 
         - name: Upload Android apk
           uses: actions/upload-artifact@v3
