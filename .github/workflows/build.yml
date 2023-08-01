@@ -1,7 +1,10 @@
 name: Build
 
 on:
-  workflow_dispatch
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
 
@@ -17,6 +20,7 @@ jobs:
           with:
             flutter-version: '3.10.5'
             channel: 'stable'
+        - run: flutter config --no-analytics
         - run: flutter --version
 
         - name: Check out repository code
