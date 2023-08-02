@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 env:
-  FLUTTER_BIN: '/tmp/flutter/bin/flutter/bin/flutter'
+  FLUTTER_BIN: '/tmp/flutter/flutter'
 
 jobs:
 
@@ -19,8 +19,6 @@ jobs:
       env:
         ANDROID_HOME: /opt/android-sdk
       steps:
-
-        - run: ls -l ${{ env.RUNNER_TEMP }}
 
         - name: apt update
           run: sudo apt update
@@ -35,6 +33,10 @@ jobs:
             channel: 'stable'
             cache: true
             cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+
+        - run: echo ${{ env.RUNNER_TEMP }}
+
+        - run: ls -l ${{ env.RUNNER_TEMP }}
 
         - run: ${{ env.FLUTTER_BIN }} config --no-analytics
 
