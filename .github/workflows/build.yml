@@ -32,7 +32,7 @@ jobs:
             flutter-version: '3.10.5'
             channel: 'stable'
             cache: true
-            cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash
+            cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash'
 
         - run: git config --global --add safe.directory ${{ env.FLUTTER_ROOT }}
 
