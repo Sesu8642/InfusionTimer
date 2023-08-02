@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 env:
-  FLUTTER_BIN: '{{ env.FLUTTER_ROOT }}/bin/flutter'
+  FLUTTER_BIN_REL: '/bin/flutter'
 
 jobs:
 
@@ -34,19 +34,17 @@ jobs:
             cache: true
             cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
 
-        - run: echo ${{ env.FLUTTER_ROOT }}
+        - run: echo ${{ env.FLUTTER_ROOT }}${{ FLUTTER_BIN_REL }}
 
-        - run: ls -l ${{ env.FLUTTER_ROOT }}
+        - run: ${{ env.FLUTTER_ROOT }}${{ FLUTTER_BIN_REL }} config --no-analytics
 
-        - run: ${{ env.FLUTTER_BIN }} config --no-analytics
-
-        - run: ${{ env.FLUTTER_BIN }} --version
+        - run: ${{ env.FLUTTER_ROOT }}${{ FLUTTER_BIN_REL }} --version
 
         - name: Check out repository code
           uses: actions/checkout@v3
 
         - name: Build Android APK
-          run: ${{ env.FLUTTER_BIN }} build apk
+          run: ${{ env.FLUTTER_ROOT }}${{ FLUTTER_BIN_REL }} build apk
 
         - name: Upload Android apk
           uses: actions/upload-artifact@v3
