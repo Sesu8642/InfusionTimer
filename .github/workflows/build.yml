@@ -8,8 +8,7 @@ on:
 
 env:
   RUNNER_CONTEXT: ${{ toJson(runner) }}
-  FLUTTER_BASE: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
-  FLUTTER_BIN: '${{ flutter-base }}/bin/flutter'
+  FLUTTER_BIN: '${{ steps.flutter-action.outputs.CACHE-PATH }}/bin/flutter/bin/flutter'
 
 jobs:
 
@@ -35,7 +34,6 @@ jobs:
             channel: 'stable'
             cache: true
             cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
-            cache-path: '${{ FLUTTER_BASE }}'
 
         - run: ${{ FLUTTER_BIN }} config --no-analytics
 
