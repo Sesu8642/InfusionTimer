@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "master" ]
 
-env:
-  FLUTTER_BIN_REL: '/bin/flutter'
-
 jobs:
 
   build_android:
@@ -35,21 +32,19 @@ jobs:
             flutter-version: '3.10.5'
             channel: 'stable'
             cache: true
-            cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+            cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash
 
-        - run: ls -l ${{ env.FLUTTER_ROOT }}
+        - run: git config --global --add safe.directory ${{ env.FLUTTER_ROOT }}
 
-        - run: echo ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }}
+        - run: flutter config --no-analytics
 
-        - run: ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }} config --no-analytics
-
-        - run: ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }} --version
+        - run: flutter --version
 
         - name: Check out repository code
           uses: actions/checkout@v3
 
         - name: Build Android APK
-          run: ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }} build apk
+          run: flutter build apk
 
         - name: Upload Android apk
           uses: actions/upload-artifact@v3
