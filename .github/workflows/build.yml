@@ -26,6 +26,9 @@ jobs:
         - name: Install jq
           run: sudo apt install jq
 
+        - name: Install xz-utils
+          run: sudo apt install xz-utils
+
         - name: Install Flutter
           uses: subosito/flutter-action@v2
           with:
