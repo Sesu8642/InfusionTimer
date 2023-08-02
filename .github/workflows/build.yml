@@ -34,17 +34,17 @@ jobs:
             cache: true
             cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
 
-        - run: echo ${{ env.FLUTTER_ROOT }}${{ FLUTTER_BIN_REL }}
+        - run: echo ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }}
 
-        - run: ${{ env.FLUTTER_ROOT }}${{ FLUTTER_BIN_REL }} config --no-analytics
+        - run: ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }} config --no-analytics
 
-        - run: ${{ env.FLUTTER_ROOT }}${{ FLUTTER_BIN_REL }} --version
+        - run: ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }} --version
 
         - name: Check out repository code
           uses: actions/checkout@v3
 
         - name: Build Android APK
-          run: ${{ env.FLUTTER_ROOT }}${{ FLUTTER_BIN_REL }} build apk
+          run: ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }} build apk
 
         - name: Upload Android apk
           uses: actions/upload-artifact@v3
