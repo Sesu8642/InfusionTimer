@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 env:
-  FLUTTER_BIN: '${{ env.RUNNER_TEMP }}/bin/flutter/bin/flutter'
+  FLUTTER_BIN: '/tmp/flutter/bin/flutter/bin/flutter'
 
 jobs:
 
