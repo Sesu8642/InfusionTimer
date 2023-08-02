@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 env:
-  FLUTTER_BIN: '${{ steps.flutter-action.outputs.CACHE-PATH }}/bin/flutter/bin/flutter'
+  FLUTTER_BIN: '${{ env.RUNNER_TEMP }}/bin/flutter/bin/flutter'
 
 jobs:
 
@@ -19,6 +19,8 @@ jobs:
       env:
         ANDROID_HOME: /opt/android-sdk
       steps:
+
+        - run: ls -l ${{ env.RUNNER_TEMP }}
 
         - name: apt update
           run: sudo apt update
