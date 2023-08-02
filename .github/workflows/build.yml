@@ -34,6 +34,8 @@ jobs:
             cache: true
             cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
 
+        - run: ls -l ${{ env.FLUTTER_ROOT }}
+
         - run: echo ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }}
 
         - run: ${{ env.FLUTTER_ROOT }}${{ env.FLUTTER_BIN_REL }} config --no-analytics
