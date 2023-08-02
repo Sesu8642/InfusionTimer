@@ -36,15 +36,15 @@ jobs:
             cache: true
             cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
 
-        - run: ${{ FLUTTER_BIN }} config --no-analytics
+        - run: ${{ env.FLUTTER_BIN }} config --no-analytics
 
-        - run: ${{ FLUTTER_BIN }} --version
+        - run: ${{ env.FLUTTER_BIN }} --version
 
         - name: Check out repository code
           uses: actions/checkout@v3
 
         - name: Build Android APK
-          run: ${{ FLUTTER_BIN }} build apk
+          run: ${{ env.FLUTTER_BIN }} build apk
 
         - name: Upload Android apk
           uses: actions/upload-artifact@v3
