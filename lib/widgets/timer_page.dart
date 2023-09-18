@@ -382,7 +382,11 @@ class TimerPageState extends State<TimerPage>
       // start the background running things
       if (_animationController.isAnimating &&
           !FlutterBackground.isBackgroundExecutionEnabled) {
-        FlutterBackground.enableBackgroundExecution();
+        FlutterBackground.hasPermissions.then((hasPermissions) => (value) {
+              if (hasPermissions) {
+                FlutterBackground.enableBackgroundExecution();
+              }
+            });
       }
     }
   }

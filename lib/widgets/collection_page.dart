@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:infusion_timer/persistence_service.dart';
 import 'package:infusion_timer/tea.dart';
 import 'package:infusion_timer/widgets/preferences_page.dart';
@@ -39,7 +40,7 @@ class CollectionPageState extends State<CollectionPage> {
     super.initState();
     PackageInfo.fromPlatform().then((value) => _versionName = value.version);
 
-    // initialize FlutterBackground plugin
+    // ask for permissions
     const flutterBackgroundAndroidConfig = FlutterBackgroundAndroidConfig(
       notificationTitle: "Infusion Tea Timer",
       notificationText: "Infusion Tea Timer is running in the background.",
@@ -58,7 +59,7 @@ class CollectionPageState extends State<CollectionPage> {
             builder: (BuildContext context) => AlertDialog(
               title: const Text('Permission needed'),
               content: const Text(
-                  'Please allow this app to run in the background for accurate timing. It will only do so while a timer is running.'),
+                  'Please grant this app the following permissions if propted:\n\n1) Display notifications: for accurate timing and visible brewing progress while in the background\n\n2) Run in the background: for accurate timing. It will only do so while a timer is running.'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -67,17 +68,27 @@ class CollectionPageState extends State<CollectionPage> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context, 'OK');
+                    // permission to run in background
                     FlutterBackground.initialize(
                         androidConfig: flutterBackgroundAndroidConfig);
+                    // init a second time because of this bug: https://github.com/JulianAssmann/flutter_background/issues/76
+                    FlutterBackground.initialize(
+                        androidConfig: flutterBackgroundAndroidConfig);
+
+                    // permission to display notifications
+                    FlutterLocalNotificationsPlugin
+                        flutterLocalNotificationsPlugin =
+                        FlutterLocalNotificationsPlugin();
+                    flutterLocalNotificationsPlugin
+                        .resolvePlatformSpecificImplementation<
+                            AndroidFlutterLocalNotificationsPlugin>()!
+                        .requestPermission();
                   },
                   child: const Text('OK'),
                 ),
               ],
             ),
           );
-        } else {
-          FlutterBackground.initialize(
-              androidConfig: flutterBackgroundAndroidConfig);
         }
       });
     }
