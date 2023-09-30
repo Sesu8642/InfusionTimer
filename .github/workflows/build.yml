@@ -1,0 +1,55 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build_android:
+      runs-on: ubuntu-latest
+      container:
+        # trying to be close to the f-droid build to detect failures early
+        image: registry.gitlab.com/fdroid/fdroidserver:buildserver-bullseye
+      env:
+        ANDROID_HOME: /opt/android-sdk
+      steps:
+
+        - name: apt update
+          run: sudo apt update
+
+        - name: Install jq
+          run: sudo apt install jq
+
+        - name: Install xz-utils
+          run: sudo apt install xz-utils
+
+        - name: Install Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.10.5'
+            channel: 'stable'
+            cache: true
+            cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash'
+
+        - run: git config --global --add safe.directory ${{ env.FLUTTER_ROOT }}
+
+        - run: flutter config --no-analytics
+
+        - run: flutter --version
+
+        - name: Check out repository code
+          uses: actions/checkout@v3
+
+        - name: Build Android APK
+          env:
+            SIGNING_KEY_PWD: ${{ secrets.SIGNING_KEY_PWD }}
+          run: flutter build apk --flavor ci
+
+        - name: Upload Android apk
+          uses: actions/upload-artifact@v3
+          with:
+            name: Android apk
+            path: ./build/app/outputs/flutter-apk/app-ci-release.apk
