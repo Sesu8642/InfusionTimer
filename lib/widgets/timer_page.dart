@@ -55,6 +55,7 @@ class TimerPageState extends State<TimerPage>
     }
   }
 
+  @pragma('vm:entry-point')
   static _ring() async {
     await _audioPlayer.play(AssetSource(audioResourceName));
   }
