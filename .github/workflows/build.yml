@@ -44,10 +44,10 @@ jobs:
           uses: actions/checkout@v3
 
         - name: Build Android APK
-          run: flutter build apk
+          run: flutter build apk --flavor ci
 
         - name: Upload Android apk
           uses: actions/upload-artifact@v3
           with:
             name: Android apk
-            path: ./build/app/outputs/flutter-apk/app-release.apk
+            path: ./build/app/outputs/flutter-apk/app-ci-release.apk
