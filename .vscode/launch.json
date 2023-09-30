@@ -8,19 +8,22 @@
             "name": "infusion_timer (debug mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "debug"
+            "flutterMode": "debug",
+            "args": ["--flavor", "ci"]
         },
         {
             "name": "infusion_timer (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": ["--flavor", "ci"]
         },
         {
             "name": "infusion_timer (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": ["--flavor", "prod"]
         }
     ]
 }
