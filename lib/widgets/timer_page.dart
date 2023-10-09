@@ -192,14 +192,15 @@ class TimerPageState extends State<TimerPage>
           } else {
             // starting next iteration
             _skipForwardIteration();
-            // need to save one higher because the next infusion is already started
-            PersistenceService.saveSession(widget.tea, currentInfusion + 1);
+            if (currentInfusion == widget.tea.infusions.length) {
+              // if the last infusion is started, delete the saved info
+              PersistenceService.deleteSession(widget.tea);
+            } else {
+              // need to save one higher because the next infusion is already started
+              PersistenceService.saveSession(widget.tea, currentInfusion + 1);
+            }
             _animationController.reset();
             remainingMs = _animationController.duration!.inMilliseconds;
-            // if the last infusion is started, delete the saved info
-            if (currentInfusion == widget.tea.infusions.length) {
-              PersistenceService.deleteSession(widget.tea);
-            }
           }
         } else {
           if (_animationController.isDismissed) {
