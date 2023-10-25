@@ -42,8 +42,8 @@ class CollectionPageState extends State<CollectionPage> {
 
     // ask for permissions
     const flutterBackgroundAndroidConfig = FlutterBackgroundAndroidConfig(
-      notificationTitle: "Infusion Tea Timer",
-      notificationText: "Infusion Tea Timer is running in the background.",
+      notificationTitle: "Enthusiast Tea Timer",
+      notificationText: "Enthusiast Tea Timer is running in the background.",
       notificationImportance: AndroidNotificationImportance.Default,
       notificationIcon:
           AndroidResource(name: 'notification_icon', defType: 'drawable'),
@@ -112,7 +112,7 @@ class CollectionPageState extends State<CollectionPage> {
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.secondary),
                 child: const Text(
-                  "Infusion Tea Timer",
+                  "Enthusiast Tea Timer",
                   style: TextStyle(fontSize: 24, color: Colors.white),
                 ),
               ),

@@ -1,1 +1,1 @@
-Tea timer app with support for multiple infusions.
+Tea timer for Gong Fu and western style brewing for true enthusiasts.

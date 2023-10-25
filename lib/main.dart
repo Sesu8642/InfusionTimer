@@ -52,7 +52,7 @@ class AppState extends State<InfusionTimer> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Infusion Tea Timer',
+      title: 'Enthusiast Tea Timer',
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),

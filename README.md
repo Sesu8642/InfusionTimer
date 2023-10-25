@@ -1,6 +1,6 @@
-# Infusion Tea Timer
+# Enthusiast Tea Timer
 
-Tea timer app made with Flutter. Its unique feature is that it supports multiple infusions. The app comes with a default list of teas, but you can also add your own. Many thanks to [Mei Leaf](https://meileaf.com/) for their permission to include default data from their brewing guide!
+Effortlessly organize your tea collection, complete with infusion times and brewing instructions tailored to your taste - whether you prefer Gong Fu Cha or Western style. Enjoy handy presets for popular tea varieties. Take tasting notes, and give star ratings to your teas. Best of all, it's free, open-source, and designed with your privacy in mind - no ads, no data collection. Cheers to your perfect cup!
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
