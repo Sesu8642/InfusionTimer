@@ -13,4 +13,4 @@ http://www.freesoundslibrary.com
 https://www.freesoundslibrary.com/hand-bell-ringing-sound/
 BY SPANAC
 
-converted to wav by Sesu8642 using ffmpeg
+converted to wav and cut by Sesu8642 using ffmpeg
