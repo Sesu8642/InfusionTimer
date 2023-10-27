@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Enthusiast Tea Timer
+Comment=Tea timer for Gong Fu and western style brewing for true enthusiasts.
+Comment[de]=Tee-Timer-App für Gong Fu oder westliche Teezubereitung für echte Enthusiasten.
+Icon=de.sesu8642.infusion_timer
+Exec=infusion_timer
+Categories=Utility;Clock;
+Keywords=Utility;Tea Timer
+Keywords[de]=Utility;Tee-Timer

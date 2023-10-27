@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2023 Sesu8642 -->
+<component type="desktop-application">
+  <id>de.sesu8642.infusion_timer</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Enthusiast Tea Timer</name>
+
+  <developer_name>Sesu8642</developer_name>
+  <update_contact>contact_AT_sesu8642.de</update_contact>
+
+  <summary>Tea timer for Gong Fu and western style brewing for true enthusiasts.</summary>
+  <summary xml:lang="de">Tee-Timer für Gong Fu oder westliche Teezubereitung für echte Enthusiasten.</summary>
+
+  <description>
+    <p>Effortlessly organize your tea collection, complete with infusion times and brewing
+      instructions tailored to your taste - whether you prefer Gong Fu Cha or Western style. Enjoy
+      handy presets for popular tea varieties. Take tasting notes, and give star ratings to your
+      teas. Best of all, it's free, open-source, and designed with your privacy in mind - no ads, no
+      data collection. Cheers to your perfect cup!</p>
+  </description>
+  <description xml:lang="de">
+    <p>Verwalte bequem Deine Teesammlung. Füge ganz nach Deinem Geschmack Aufgusszeiten und
+      Zubereitungsanweisungen hinzu - sei es Gong Fu Cha oder westliche Teezubereitung. Für die
+      gängigsten Teesorten gibt es praktische Voreinstellungen. Halte deine Erfahrungen beim
+      Teegenuss in Verkostungsnotizen fest und vergib Sternebewertungen. Das Beste daran: Es ist
+      Frei, Open Source und von Grund auf privatsphärefreundlich konzipiert. Keine Werbung, keine
+      Datensammlung. Auf die perfekte Tasse Tee!</p>
+  </description>
+
+  <launchable type="desktop-id">de.sesu8642.infusion_timer.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>
+        https://raw.githubusercontent.com/sesu8642/InfusionTimer/master/metadata/en-US/images/featureGraphic.png</image>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/sesu8642/InfusionTimer/master/metadata/en-US/images/sevenInchScreenshots/1.png</image>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/sesu8642/InfusionTimer/master/metadata/en-US/images/sevenInchScreenshots/2.png</image>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/sesu8642/InfusionTimer/master/metadata/en-US/images/sevenInchScreenshots/3.png</image>
+    </screenshot>
+  </screenshots>
+
+  <content_rating type="oars-1.1" />
+
+  <url type="homepage">https://github.com/Sesu8642/InfusionTimer</url>
+  <url type="bugtracker">https://github.com/Sesu8642/InfusionTimer/issues</url>
+
+  <releases>
+    <release version="1.3.0" date="2022-05-27">
+      <url>
+        https://raw.githubusercontent.com/Sesu8642/InfusionTimer/master/metadata/en-US/changelogs/110.txt</url>
+    </release>
+  </releases>
+</component>
