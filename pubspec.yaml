@@ -18,7 +18,7 @@ dependencies:
   android_alarm_manager_plus: ^3.0.1
   flutter_launcher_icons: ^0.13.1
   path_provider: ^2.0.1
-  package_info_plus: ^4.0.2
+  package_info_plus: ^4.2.0
   flutter_local_notifications: ^15.1.1
   flutter_background: ^1.1.0
 
