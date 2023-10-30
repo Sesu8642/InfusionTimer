@@ -82,7 +82,7 @@ class CollectionPageState extends State<CollectionPage> {
                     flutterLocalNotificationsPlugin
                         .resolvePlatformSpecificImplementation<
                             AndroidFlutterLocalNotificationsPlugin>()!
-                        .requestPermission();
+                        .requestNotificationsPermission();
                   },
                   child: const Text('OK'),
                 ),
