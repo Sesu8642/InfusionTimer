@@ -14,7 +14,7 @@ dependencies:
   shared_preferences: ^2.0.5
   liquid_progress_indicator_v2: ^0.5.0
   cupertino_icons: ^1.0.2
-  audioplayers: ^4.1.0
+  audioplayers: ^5.2.0
   android_alarm_manager_plus: ^3.0.1
   flutter_launcher_icons: ^0.13.1
   path_provider: ^2.0.1
