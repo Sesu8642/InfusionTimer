@@ -24,7 +24,7 @@ void main() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings(notificationIconName);
   const LinuxInitializationSettings initializationSettingsLinux =
-      LinuxInitializationSettings(defaultActionName: 'Test');
+      LinuxInitializationSettings(defaultActionName: 'OK');
   const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       linux: initializationSettingsLinux);
