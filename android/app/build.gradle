@@ -95,4 +95,7 @@ flutter {
 dependencies {
     // for flutter_local_notifications
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
+    // workaround for Flutter crash issue when using desugaring, see https://github.com/flutter/flutter/issues/110658
+    implementation "androidx.window:window:1.0.0-rc01"
+    implementation "androidx.window:window-java:1.0.0-rc01"
 }
