@@ -81,6 +81,9 @@ class TimerPageState extends State<TimerPage>
             importance: Importance.low,
             priority: Priority.defaultPriority,
             enableVibration: false,
+            playSound: false,
+            enableLights: false,
+            onlyAlertOnce: true,
             autoCancel: false,
             showProgress: true,
             progress:
