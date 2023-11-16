@@ -47,7 +47,7 @@
         </receiver-->
         <!-- service for flutter background -->
         <service android:name="de.julianassmann.flutter_background.IsolateHolderService"
-            android:exported="false" />
+            android:exported="true" />
     </application>
     <!-- permissions for android alarm manager-->
     <!--uses-permission

@@ -66,13 +66,13 @@ class CollectionPageState extends State<CollectionPage> {
                   child: const Text('Cancel'),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.pop(context, 'OK');
                     // permission to run in background
-                    FlutterBackground.initialize(
+                    await FlutterBackground.initialize(
                         androidConfig: flutterBackgroundAndroidConfig);
                     // init a second time because of this bug: https://github.com/JulianAssmann/flutter_background/issues/76
-                    FlutterBackground.initialize(
+                    await FlutterBackground.initialize(
                         androidConfig: flutterBackgroundAndroidConfig);
 
                     // permission to display notifications
@@ -89,6 +89,9 @@ class CollectionPageState extends State<CollectionPage> {
               ],
             ),
           );
+        } else {
+          FlutterBackground.initialize(
+              androidConfig: flutterBackgroundAndroidConfig);
         }
       });
     }

@@ -176,9 +176,9 @@ class TimerPageState extends State<TimerPage>
     });
   }
 
-  _cancelAlarm() {
+  _cancelAlarm() async {
     if (Platform.isAndroid) {
-      AndroidAlarmManager.cancel(alarmId);
+      await AndroidAlarmManager.cancel(alarmId);
     }
     alertTimer?.cancel();
   }
@@ -365,34 +365,47 @@ class TimerPageState extends State<TimerPage>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      setState(() {
-        // the timer animation will pause if the application is paused or whatever by android so the state must be corrected when resumed
-        if (_animationController.isAnimating) {
-          Duration remainingDuration =
-              infusionFinishTime!.difference(DateTime.now());
-          _animationController.value =
-              (_animationController.duration! - remainingDuration)
-                      .inMilliseconds /
-                  _animationController.duration!.inMilliseconds;
-          _animationController.forward();
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        setState(() {
+          // the timer animation will pause if the application is paused or whatever by android so the state must be corrected when resumed
+          if (_animationController.isAnimating) {
+            Duration remainingDuration =
+                infusionFinishTime!.difference(DateTime.now());
+            _animationController.value =
+                (_animationController.duration! - remainingDuration)
+                        .inMilliseconds /
+                    _animationController.duration!.inMilliseconds;
+            _animationController.forward();
+          }
+        });
+        // stop the background running things
+        if (FlutterBackground.isBackgroundExecutionEnabled) {
+          FlutterBackground.disableBackgroundExecution();
         }
-      });
-      // stop the background running things
-      if (FlutterBackground.isBackgroundExecutionEnabled) {
-        FlutterBackground.disableBackgroundExecution();
-      }
-    } else {
-      // start the background running things
-      if (_animationController.isAnimating &&
-          !FlutterBackground.isBackgroundExecutionEnabled) {
-        FlutterBackground.hasPermissions.then((hasPermissions) => (value) {
-              if (hasPermissions) {
-                FlutterBackground.enableBackgroundExecution();
-              }
-            });
-      }
+        break;
+      case AppLifecycleState.detached:
+        // app removed from recents, try to cancel the alarm but only works when the app is not killed too fast
+        await _cancelAlarm();
+        break;
+      case AppLifecycleState.paused:
+        // app in background, start the background running things
+        if (_animationController.isAnimating &&
+            !FlutterBackground.isBackgroundExecutionEnabled) {
+          bool hasPermissions = await FlutterBackground.hasPermissions;
+          if (hasPermissions) {
+            try {
+              await FlutterBackground.enableBackgroundExecution();
+            } on Exception {
+              // if half way initialized, FlutterBackground might throw an exception
+              print("Background execution could not be enabled.");
+            }
+          }
+        }
+        break;
+      default:
+      // nothing to do
     }
   }
 
