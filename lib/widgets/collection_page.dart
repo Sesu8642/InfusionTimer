@@ -57,7 +57,7 @@ class CollectionPageState extends State<CollectionPage> {
           showDialog<String>(
             context: context,
             builder: (BuildContext context) => AlertDialog(
-              title: const Text('Permission needed'),
+              title: const Text('Permissions needed'),
               content: const Text(
                   'Please grant this app the following permissions if propted:\n\n1) Display notifications: for accurate timing and visible brewing progress while in the background\n\n2) Run in the background: for accurate timing. It will only do so while a timer is running.'),
               actions: <Widget>[
