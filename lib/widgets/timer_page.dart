@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
@@ -399,7 +400,7 @@ class TimerPageState extends State<TimerPage>
               await FlutterBackground.enableBackgroundExecution();
             } on Exception {
               // if half way initialized, FlutterBackground might throw an exception
-              print("Background execution could not be enabled.");
+              log("Background execution could not be enabled.");
             }
           }
         }
