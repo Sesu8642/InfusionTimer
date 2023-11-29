@@ -55,6 +55,7 @@ class AppState extends State<InfusionTimer> {
       title: 'Enthusiast Tea Timer',
       theme: ThemeData(
         primarySwatch: Colors.teal,
+        useMaterial3: false,
       ),
       home: const CollectionPage(),
     );
