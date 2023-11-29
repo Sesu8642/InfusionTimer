@@ -162,8 +162,7 @@ class TimerPageState extends State<TimerPage>
     }
     alertTimer =
         Timer(infusionFinishTime!.difference(DateTime.now()), () async {
-      if (Platform.isLinux) {
-        // on Linux, this timer is reliable so we can trigger the ringing with it
+      if (Platform.isLinux || Platform.isWindows) {
         _updateProgressNotification();
         _ring();
       } else if (Platform.isAndroid &&
