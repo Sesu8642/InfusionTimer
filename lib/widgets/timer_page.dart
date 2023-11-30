@@ -164,9 +164,12 @@ class TimerPageState extends State<TimerPage>
         Timer(infusionFinishTime!.difference(DateTime.now()), () async {
       if (Platform.isLinux || Platform.isWindows) {
         // on Desktop, this timer is reliable so we can trigger the ringing with it
-        _updateProgressNotification();
         _ring();
-      } else if (Platform.isAndroid &&
+      }
+      if (Platform.isLinux) {
+        _updateProgressNotification();
+      }
+      if (Platform.isAndroid &&
           FlutterBackground.isBackgroundExecutionEnabled) {
         // on Android, we need to stop running in the background after the ringing has happened; this is only possible in this context and not in the alarm manager context
         // stop the background running things
@@ -414,8 +417,10 @@ class TimerPageState extends State<TimerPage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _cancelAlarm();
-    // cancel any "finished" notification
-    flutterLocalNotificationsPlugin.cancel(progressNotificationId);
+    if (Platform.isAndroid | Platform.isLinux) {
+      // cancel any "finished" notification
+      flutterLocalNotificationsPlugin.cancel(progressNotificationId);
+    }
     _stopDisplayingProgressNotification();
     _animationController.dispose();
     super.dispose();
