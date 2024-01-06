@@ -3,7 +3,7 @@ flutter_launcher_icons:
   ios: false
   windows:
       generate: true
-      image_path: "assets/icon_simple.png"
+      image_path: "assets/icon_simple_colored_512.png"
       icon_size: 48
   image_path: "assets/icon_simple.png"
   adaptive_icon_foreground: "assets/icon_simple_padding.png"
