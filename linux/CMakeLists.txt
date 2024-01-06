@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "infusion_timer")
+set(BINARY_NAME "enthusiast_tea_timer")
 set(APPLICATION_ID "com.sesu8642.infusion_timer")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
