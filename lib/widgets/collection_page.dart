@@ -138,7 +138,7 @@ class CollectionPageState extends State<CollectionPage> {
                   height: IconTheme.of(context).resolve(context).size,
                   width: IconTheme.of(context).resolve(context).size,
                   child: Image.asset(
-                    "assets/icon_simple.png",
+                    "assets/icon_simple_512.png",
                     color: Theme.of(context).primaryColorDark,
                   ),
                 ),

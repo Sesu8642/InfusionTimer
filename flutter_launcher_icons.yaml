@@ -5,6 +5,6 @@ flutter_launcher_icons:
       generate: true
       image_path: "assets/icon_simple_colored_512.png"
       icon_size: 48
-  image_path: "assets/icon_simple.png"
-  adaptive_icon_foreground: "assets/icon_simple_padding.png"
+  image_path: "assets/icon_simple_512.png"
+  adaptive_icon_foreground: "assets/icon_simple_512_extra_padding.png"
   adaptive_icon_background: "#009688"
