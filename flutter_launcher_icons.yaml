@@ -1,0 +1,10 @@
+flutter_launcher_icons:
+  android: true
+  ios: false
+  windows:
+      generate: true
+      image_path: "assets/icon_simple.png"
+      icon_size: 48
+  image_path: "assets/icon_simple.png"
+  adaptive_icon_foreground: "assets/icon_simple_padding.png"
+  adaptive_icon_background: "#009688"
