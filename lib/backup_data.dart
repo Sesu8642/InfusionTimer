@@ -35,19 +35,19 @@ class BackupData {
     if (_savedSessions == null) {
       throw const FormatException("savedSessions is required.");
     }
-    for (var tea in _teas!) {
+    for (var tea in _teas) {
       tea.validate();
     }
-    if (_teas!.map((tea) => tea.id).toSet().length < _teas!.length) {
+    if (_teas.map((tea) => tea.id).toSet().length < _teas.length) {
       throw const FormatException("Tea IDs are not unique.");
     }
-    _savedSessions!.forEach((key, value) {
+    _savedSessions.forEach((key, value) {
       if (value <= 1) {
         throw const FormatException(
             "savedSessions contains a too small infusion index.");
       }
       try {
-        Tea matchingTea = _teas!.firstWhere((tea) => tea.id == key);
+        Tea matchingTea = _teas.firstWhere((tea) => tea.id == key);
         if (value > matchingTea.infusions.length) {
           throw const FormatException(
               "savedSessions contains a session that is too large.");
