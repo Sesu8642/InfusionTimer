@@ -12,8 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-		with:
-		  submodules: recursive
+        with:
+          submodules: recursive
 
       - run: ./flutter/bin/flutter --version
 
