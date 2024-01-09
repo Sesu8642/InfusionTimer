@@ -26,14 +26,12 @@ jobs:
         - name: Install xz-utils
           run: sudo apt install xz-utils
 
-        - run: git config --global --add safe.directory ${{ env.FLUTTER_ROOT }}
-
+        - name: Check out repository code
+          uses: actions/checkout@v3
+          
         - run: ./flutter/bin/flutter config --no-analytics
 
         - run: ./flutter/bin/flutter --version
-
-        - name: Check out repository code
-          uses: actions/checkout@v3
 
         - name: Build Android APK
           env:
