@@ -12,20 +12,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.5'
-          channel: 'stable'
-      - run: flutter --version
+          submodules: recursive
+
+      # Tags are required for Flutter to know its own version and check constraints
+      - run: git -C ./flutter fetch --tags
+
+      - run: ./flutter/bin/flutter config --no-analytics
 
       - name: Install dependencies
-        run: flutter pub get
+        run: ./flutter/bin/flutter pub get
 
       - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed .
+        run: ./flutter/bin/dart format --output=none --set-exit-if-changed ./lib
 
       - name: Analyze project source
-        run: flutter analyze
+        run: ./flutter/bin/flutter analyze ./lib
 
       - name: Run tests
-        run: flutter test -v
+        run: ./flutter/bin/flutter test -v
