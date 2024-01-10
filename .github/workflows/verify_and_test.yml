@@ -15,6 +15,7 @@ jobs:
         with:
           submodules: recursive
 
+      # Tags are required for Flutter to know its own version and check constraints
       - run: git -C ./flutter fetch --tags
 
       - run: ./flutter/bin/flutter config --no-analytics
