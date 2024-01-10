@@ -17,6 +17,8 @@ jobs:
 
       - run: git -C ./flutter fetch --tags
 
+      - run: ./flutter/bin/flutter config --no-analytics
+
       - name: Install dependencies
         run: ./flutter/bin/flutter pub get
 
