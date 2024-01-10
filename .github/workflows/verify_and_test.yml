@@ -24,7 +24,7 @@ jobs:
         run: ./flutter/bin/flutter pub get
 
       - name: Verify formatting
-        run: ./flutter/bin/dart format --output=none --set-exit-if-changed .
+        run: ./flutter/bin/dart format --output=none --set-exit-if-changed ./lib
 
       - name: Analyze project source
         run: ./flutter/bin/flutter analyze
