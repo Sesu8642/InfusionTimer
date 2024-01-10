@@ -18,7 +18,7 @@ jobs:
 
       - run: git config --global --add safe.directory ./flutter
 
-      - run: git -C ./flutter tag
+      - run: git -C ./flutter tag | cat
 
       - run: ./flutter/bin/flutter --version
 
