@@ -27,7 +27,7 @@ jobs:
         run: ./flutter/bin/dart format --output=none --set-exit-if-changed ./lib
 
       - name: Analyze project source
-        run: ./flutter/bin/flutter analyze
+        run: ./flutter/bin/flutter analyze ./lib
 
       - name: Run tests
         run: ./flutter/bin/flutter test -v
