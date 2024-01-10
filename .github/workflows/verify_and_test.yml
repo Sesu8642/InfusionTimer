@@ -14,15 +14,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-          fetch-tags: true
-
-      - run: git config --global --add safe.directory ./flutter
 
       - run: git -C ./flutter fetch --tags
-
-      - run: git -C ./flutter tag | cat
-
-      - run: ./flutter/bin/flutter --version
 
       - name: Install dependencies
         run: ./flutter/bin/flutter pub get
