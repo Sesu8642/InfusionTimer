@@ -15,7 +15,7 @@ jobs:
         with:
           submodules: recursive
 
-      - run: git -v
+      - run: git config --global --add safe.directory ./flutter
 
       - run: ./flutter/bin/flutter --version
 
