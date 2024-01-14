@@ -1,6 +1,6 @@
 #!/bin/bash
 
-flutterBin=~/Tools/flutter/bin/flutter
+flutterBin=flutter/bin/flutter
 
 mkdir -p ./release
 $flutterBin clean
