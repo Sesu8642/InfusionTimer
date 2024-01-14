@@ -1,0 +1,2 @@
+added star rating for teas
+improved support for newer Android versions
