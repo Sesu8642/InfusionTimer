@@ -1,2 +1,3 @@
+renamed to "Enthusiast Tea Timer"
 added star rating for teas
 improved support for newer Android versions
