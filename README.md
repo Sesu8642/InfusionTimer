@@ -42,5 +42,9 @@ Assets in this repository are licensed under various other licenses:
 ## Creating Release Artifacts
 ### Android
 - create a file key.properties in /android/key.properties (template should be there)
-- modify flutter path in build_release.sh
-- run build_release.sh
+- run build_release_android.sh
+
+### Windows
+- see [the official instructions](https://docs.flutter.dev/get-started/install/windows/desktop)
+- install legacy media player feature if you have the N version of Windows
+- run build_release_windows.bat
