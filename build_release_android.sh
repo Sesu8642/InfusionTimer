@@ -7,3 +7,4 @@ $flutterBin clean
 
 $flutterBin build appbundle --flavor prod
 $flutterBin build apk --flavor prod --split-per-abi
+$flutterBin build apk --flavor prod
