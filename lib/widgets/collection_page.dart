@@ -23,6 +23,7 @@ class CollectionPage extends StatefulWidget {
 
 class CollectionPageState extends State<CollectionPage> {
   final searchController = TextEditingController();
+  final FocusNode searchFocusNode = FocusNode();
   String _versionName = "";
   bool searchBarShown = false;
 
@@ -158,29 +159,23 @@ class CollectionPageState extends State<CollectionPage> {
         body: Column(
           children: [
             searchBarShown
-                ? Row(
-                    children: [
-                      Flexible(
-                        child: TextField(
-                          controller: searchController,
-                          autofocus: true,
-                          onChanged: (value) {
-                            setState(() {});
+                ? SearchBar(
+                    controller: searchController,
+                    focusNode: searchFocusNode,
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                    hintText: 'Search for a tea',
+                    leading: const Icon(Icons.search),
+                    trailing: [
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              searchBarShown = false;
+                              searchController.text = "";
+                            });
                           },
-                          decoration: InputDecoration(
-                            hintText: 'Search for a tea',
-                            prefixIcon: const Icon(Icons.search),
-                            suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    searchBarShown = false;
-                                    searchController.text = "";
-                                  });
-                                },
-                                icon: const Icon(Icons.close)),
-                          ),
-                        ),
-                      ),
+                          icon: const Icon(Icons.close))
                     ],
                   )
                 : const SizedBox(),
@@ -257,6 +252,7 @@ class CollectionPageState extends State<CollectionPage> {
                       onPressed: () {
                         setState(() {
                           searchBarShown = true;
+                          searchFocusNode.requestFocus();
                         });
                       },
                       tooltip: 'Search Collection',
