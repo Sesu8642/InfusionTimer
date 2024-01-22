@@ -54,8 +54,12 @@ class AppState extends State<InfusionTimer> {
     return MaterialApp(
       title: 'Enthusiast Tea Timer',
       theme: ThemeData(
-        primarySwatch: Colors.teal,
-        useMaterial3: false,
+        colorScheme: const ColorScheme.light(
+            primary: Colors.teal,
+            secondary: Colors.teal,
+            tertiary: Colors.teal),
+        dialogTheme: const DialogTheme(surfaceTintColor: Colors.white),
+        useMaterial3: true,
       ),
       home: const CollectionPage(),
     );

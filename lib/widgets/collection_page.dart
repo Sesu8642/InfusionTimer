@@ -108,53 +108,50 @@ class CollectionPageState extends State<CollectionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text("Tea Collection")),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary),
-                child: const Text(
-                  "Enthusiast Tea Timer",
-                  style: TextStyle(fontSize: 24, color: Colors.white),
+        drawer: NavigationDrawer(
+          children: <Widget>[
+            DrawerHeader(
+              decoration:
+                  BoxDecoration(color: Theme.of(context).colorScheme.secondary),
+              child: const Text(
+                "Enthusiast Tea Timer",
+                style: TextStyle(fontSize: 24, color: Colors.white),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text("Preferences"),
+              onTap: () async {
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const PreferencesPage(key: null)));
+                // when returning from preferences, update vessel size
+                setState(() {});
+              },
+            ),
+            AboutListTile(
+              icon: const Icon(Icons.favorite),
+              applicationIcon: SizedBox(
+                height: IconTheme.of(context).resolve(context).size,
+                width: IconTheme.of(context).resolve(context).size,
+                child: Image.asset(
+                  "assets/icon_simple_512.png",
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text("Preferences"),
-                onTap: () async {
-                  await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const PreferencesPage(key: null)));
-                  // when returning from preferences, update vessel size
-                  setState(() {});
-                },
-              ),
-              AboutListTile(
-                icon: const Icon(Icons.favorite),
-                applicationIcon: SizedBox(
-                  height: IconTheme.of(context).resolve(context).size,
-                  width: IconTheme.of(context).resolve(context).size,
-                  child: Image.asset(
-                    "assets/icon_simple_512.png",
-                    color: Theme.of(context).primaryColorDark,
-                  ),
-                ),
-                applicationVersion: _versionName,
-                applicationLegalese:
-                    "Copyright (c) 2021 Sesu8642\n\nhttps://github.com/Sesu8642/InfusionTimer",
-                aboutBoxChildren: const [
-                  Text(
-                    "\nMany thanks to Mei Leaf (meileaf.com) for their permission to include data from their brewing guide!",
-                    style: TextStyle(fontSize: 14),
-                  )
-                ],
-              )
-            ],
-          ),
+              applicationVersion: _versionName,
+              applicationLegalese:
+                  "Copyright (c) 2021 Sesu8642\n\nhttps://github.com/Sesu8642/InfusionTimer",
+              aboutBoxChildren: const [
+                Text(
+                  "\nMany thanks to Mei Leaf (meileaf.com) for their permission to include data from their brewing guide!",
+                  style: TextStyle(fontSize: 14),
+                )
+              ],
+            )
+          ],
         ),
         body: Column(
           children: [

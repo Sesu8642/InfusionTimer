@@ -289,6 +289,8 @@ class TimerPageState extends State<TimerPage>
                       borderColor: Theme.of(context).colorScheme.secondary,
                       borderWidth: 5.0,
                       direction: Axis.vertical,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.tertiary.withAlpha(80),
                       center: FittedBox(
                         child: Stack(
                           alignment: _animationController.isAnimating
