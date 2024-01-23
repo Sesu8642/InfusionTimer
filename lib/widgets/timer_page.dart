@@ -238,6 +238,38 @@ class TimerPageState extends State<TimerPage>
     });
   }
 
+  Future<void> _onPopInvoked(bool didPop) async {
+    // confirm cancelling infusion if going back to collection page
+    if (didPop) {
+      return;
+    }
+    final bool? shouldDiscard = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Go back to tea collection?'),
+          content: const Text(
+              'You will lose the progress of your ongoing infusion. Are you sure?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text('Yes'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('No'),
+            ),
+          ],
+        );
+      },
+    );
+    if ((shouldDiscard ?? false) && context.mounted) {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -260,114 +292,124 @@ class TimerPageState extends State<TimerPage>
     final percentage = _animationController.value * 100;
     final progressIndicatorDiameter =
         (MediaQuery.of(context).size.height) * 0.4;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Tea Timer"),
-      ),
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: SingleChildScrollView(
-          // reverse to hide the tea card on top by default
-          reverse: true,
-          child: Column(
-            children: [
-              TeaCard(widget.tea, null, null,
-                  PersistenceService.teaVesselSizeMlPref, null),
-              Container(
-                margin: EdgeInsets.only(
-                    left: progressIndicatorDiameter * 0.08,
-                    right: progressIndicatorDiameter * 0.08,
-                    top: progressIndicatorDiameter * 0.08,
-                    bottom: progressIndicatorDiameter * 0.05),
-                width: progressIndicatorDiameter,
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: LiquidCircularProgressIndicator(
-                      value: _animationController.value,
-                      borderColor: Theme.of(context).colorScheme.secondary,
-                      borderWidth: 5.0,
-                      direction: Axis.vertical,
-                      backgroundColor:
-                          Theme.of(context).colorScheme.tertiary.withAlpha(80),
-                      center: FittedBox(
-                        child: Stack(
-                          alignment: _animationController.isAnimating
-                              ? Alignment.center
-                              : Alignment.bottomCenter,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                  bottom: _animationController.isAnimating
-                                      ? 0
-                                      : progressIndicatorDiameter * 0.06),
-                              child: Text(
-                                "${(widget.tea.infusions[currentInfusion - 1].duration - widget.tea.infusions[currentInfusion - 1].duration * percentage / 100).toStringAsFixed(0)}\u200As",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontSize: progressIndicatorDiameter * 0.2,
+    return PopScope(
+        canPop:
+            _animationController.isCompleted || _animationController.value == 0,
+        onPopInvoked: _onPopInvoked,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text("Tea Timer"),
+          ),
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+              // reverse to hide the tea card on top by default
+              reverse: true,
+              child: Column(
+                children: [
+                  TeaCard(widget.tea, null, null,
+                      PersistenceService.teaVesselSizeMlPref, null),
+                  Container(
+                    margin: EdgeInsets.only(
+                        left: progressIndicatorDiameter * 0.08,
+                        right: progressIndicatorDiameter * 0.08,
+                        top: progressIndicatorDiameter * 0.08,
+                        bottom: progressIndicatorDiameter * 0.05),
+                    width: progressIndicatorDiameter,
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: LiquidCircularProgressIndicator(
+                          value: _animationController.value,
+                          borderColor: Theme.of(context).colorScheme.secondary,
+                          borderWidth: 5.0,
+                          direction: Axis.vertical,
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .tertiary
+                              .withAlpha(80),
+                          center: FittedBox(
+                            child: Stack(
+                              alignment: _animationController.isAnimating
+                                  ? Alignment.center
+                                  : Alignment.bottomCenter,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(
+                                      bottom: _animationController.isAnimating
+                                          ? 0
+                                          : progressIndicatorDiameter * 0.06),
+                                  child: Text(
+                                    "${(widget.tea.infusions[currentInfusion - 1].duration - widget.tea.infusions[currentInfusion - 1].duration * percentage / 100).toStringAsFixed(0)}\u200As",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: progressIndicatorDiameter * 0.2,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                SizedBox(
+                                  height: progressIndicatorDiameter,
+                                  width: progressIndicatorDiameter,
+                                  child: IconButton(
+                                    // didnt find a proper way to remove the splash effect
+                                    splashRadius: 0.0001,
+                                    icon: Icon(() {
+                                      if (_animationController.isCompleted) {
+                                        if (currentInfusion ==
+                                            widget.tea.infusions.length) {
+                                          return Icons.arrow_back;
+                                        } else {
+                                          return Icons.skip_next;
+                                        }
+                                      } else if (_animationController
+                                          .isAnimating) {
+                                        return null;
+                                      } else {
+                                        return Icons.play_arrow;
+                                      }
+                                    }()),
+                                    color: Colors.white.withOpacity(0.5),
+                                    onPressed: _startPauseNext,
+                                    iconSize: progressIndicatorDiameter * 0.65,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              height: progressIndicatorDiameter,
-                              width: progressIndicatorDiameter,
-                              child: IconButton(
-                                // didnt find a proper way to remove the splash effect
-                                splashRadius: 0.0001,
-                                icon: Icon(() {
-                                  if (_animationController.isCompleted) {
-                                    if (currentInfusion ==
-                                        widget.tea.infusions.length) {
-                                      return Icons.arrow_back;
-                                    } else {
-                                      return Icons.skip_next;
-                                    }
-                                  } else if (_animationController.isAnimating) {
-                                    return null;
-                                  } else {
-                                    return Icons.play_arrow;
-                                  }
-                                }()),
-                                color: Colors.white.withOpacity(0.5),
-                                onPressed: _startPauseNext,
-                                iconSize: progressIndicatorDiameter * 0.65,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                      icon: const Icon(Icons.skip_previous),
-                      iconSize: progressIndicatorDiameter * 0.15,
-                      onPressed:
-                          currentInfusion == 1 ? null : _skipBackwardIteration),
-                  Text(
-                    "Infusion $currentInfusion/${widget.tea.infusions.length}",
-                    style: TextStyle(fontSize: progressIndicatorDiameter * 0.1),
-                  ),
-                  IconButton(
-                      icon: const Icon(Icons.skip_next),
-                      iconSize: progressIndicatorDiameter * 0.15,
-                      onPressed: currentInfusion == widget.tea.infusions.length
-                          ? null
-                          : _skipForwardIteration)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                          icon: const Icon(Icons.skip_previous),
+                          iconSize: progressIndicatorDiameter * 0.15,
+                          onPressed: currentInfusion == 1
+                              ? null
+                              : _skipBackwardIteration),
+                      Text(
+                        "Infusion $currentInfusion/${widget.tea.infusions.length}",
+                        style: TextStyle(
+                            fontSize: progressIndicatorDiameter * 0.1),
+                      ),
+                      IconButton(
+                          icon: const Icon(Icons.skip_next),
+                          iconSize: progressIndicatorDiameter * 0.15,
+                          onPressed:
+                              currentInfusion == widget.tea.infusions.length
+                                  ? null
+                                  : _skipForwardIteration)
+                    ],
+                  )
                 ],
-              )
-            ],
+              ),
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   @override
