@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:infusion_timer/persistence_service.dart';
@@ -153,6 +154,12 @@ class TimerPageState extends State<TimerPage>
     });
     _cancelAlarm();
     _stopDisplayingProgressNotification();
+  }
+
+  _resetIteration() {
+    setState(() {
+      currentInfusion = 1;
+    });
   }
 
   _scheduleAlarm() {
@@ -393,12 +400,20 @@ class TimerPageState extends State<TimerPage>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      IconButton(
-                          icon: const Icon(Icons.skip_previous),
-                          iconSize: progressIndicatorDiameter * 0.15,
-                          onPressed: currentInfusion == 1
-                              ? null
-                              : _skipBackwardIteration),
+                      GestureDetector(
+                        onLongPress: currentInfusion == 1
+                            ? null
+                            : () {
+                                _resetIteration();
+                                HapticFeedback.vibrate();
+                              },
+                        child: IconButton(
+                            icon: const Icon(Icons.skip_previous),
+                            iconSize: progressIndicatorDiameter * 0.15,
+                            onPressed: currentInfusion == 1
+                                ? null
+                                : _skipBackwardIteration),
+                      ),
                       Text(
                         "Infusion $currentInfusion/${widget.tea.infusions.length}",
                         style: TextStyle(
