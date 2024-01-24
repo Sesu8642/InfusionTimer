@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_background/flutter_background.dart';
+import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:infusion_timer/persistence_service.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
@@ -217,6 +218,13 @@ class TimerPageState extends State<TimerPage>
             } else {
               PersistenceService.saveSession(widget.tea, currentInfusion + 1);
             }
+            FlutterVolumeController.getVolume().then((value) {
+              if (value == 0) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Device is muted and won't ring!"),
+                ));
+              }
+            });
           }
           // starting the beginning or resuming from pause
           remainingMs = ((1 - _animationController.value) *
