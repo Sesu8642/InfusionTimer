@@ -159,7 +159,13 @@ class TimerPageState extends State<TimerPage>
   _resetIteration() {
     setState(() {
       currentInfusion = 1;
+      PersistenceService.deleteSession(widget.tea);
+      _animationController.duration =
+          Duration(seconds: widget.tea.infusions[0].duration);
+      _animationController.reset();
     });
+    _cancelAlarm();
+    _stopDisplayingProgressNotification();
   }
 
   _scheduleAlarm() {
