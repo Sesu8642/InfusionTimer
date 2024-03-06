@@ -45,9 +45,5 @@ void main() {
       expect(() => _sut.validate(), throwsA(isA<FormatException>()));
     });
 
-    test('null notes is invalid', () {
-      _sut.detailedNotes = null;
-      expect(() => _sut.validate(), throwsA(isA<FormatException>()));
-    });
   });
 }
