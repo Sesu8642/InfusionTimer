@@ -114,14 +114,14 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                 },
               ),
               TextFormField(
-                initialValue: widget.tea.notes,
+                initialValue: widget.tea.subtitle,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 decoration: const InputDecoration(
-                  hintText: 'Notes',
+                  hintText: 'Subtitle',
                 ),
                 onSaved: (value) {
-                  widget.tea.notes = value ?? "";
+                  widget.tea.subtitle = value ?? "";
                 },
               ),
               Text(

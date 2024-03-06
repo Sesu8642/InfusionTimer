@@ -8,13 +8,14 @@ class Tea {
   int? temperature;
   double? gPer100Ml;
   List<Infusion> infusions;
-  String? notes;
+  String? subtitle;
+  String? detailedNotes;
 
   Tea(this.id, this.name, this.temperature, this.gPer100Ml, this.infusions,
-      this.notes, this.rating);
+      this.subtitle, this.detailedNotes, this.rating);
 
   Tea.withGeneratedId(this.name, this.temperature, this.gPer100Ml,
-      this.infusions, this.notes, this.rating)
+      this.infusions, this.subtitle, this.rating)
       : id = IdGenerator.nextdouble();
 
   Tea.fromJson(Map<String, dynamic> json)
@@ -28,7 +29,9 @@ class Tea {
         infusions = List<Infusion>.from(
             json['infusions']?.map((i) => Infusion.fromJson(i)) ??
                 List.empty()),
-        notes = json['notes'];
+        // subtitle used to be called notes
+        subtitle = json['notes'] ?? json['subtitle'],
+        detailedNotes = json['detailedNotes'];
 
   Map toJson() => {
         'id': id,
@@ -37,7 +40,8 @@ class Tea {
         'temperature': temperature,
         'gPer100Ml': gPer100Ml,
         'infusions': infusions,
-        'notes': notes
+        'subtitle': subtitle,
+        'detailedNotes': detailedNotes
       };
 
   validate() {
@@ -62,8 +66,8 @@ class Tea {
             "Tea '$name' has an infusion with invalid duration.");
       }
     }
-    if (notes == null) {
-      throw FormatException("Tea '$name' has no notes.");
+    if (subtitle == null) {
+      throw FormatException("Tea '$name' has no subtitle.");
     }
   }
 }

@@ -324,8 +324,6 @@ class TimerPageState extends State<TimerPage>
           body: Align(
             alignment: Alignment.topCenter,
             child: SingleChildScrollView(
-              // reverse to hide the tea card on top by default
-              reverse: true,
               child: Column(
                 children: [
                   TeaCard(widget.tea, null, null,
@@ -433,6 +431,34 @@ class TimerPageState extends State<TimerPage>
                                   ? null
                                   : _skipForwardIteration)
                     ],
+                  ),
+                  Container(
+                    margin:
+                        EdgeInsets.only(top: progressIndicatorDiameter * 0.08),
+                    child: Card(
+                      child: Column(
+                        children: [
+                          const ListTile(
+                            title: Center(child: Text("Notes")),
+                          ),
+                          TextFormField(
+                            initialValue: widget.tea.detailedNotes,
+                            maxLines: 8,
+                            // using collapsed to hide black line on the bottom
+                            decoration: const InputDecoration.collapsed(
+                              hintText: 'Enter your notes here',
+                            ),
+                            onChanged: (value) {
+                              widget.tea.detailedNotes = value;
+                              PersistenceService.updateTea(widget.tea);
+                            },
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                          ),
+                        ],
+                      ),
+                    ),
                   )
                 ],
               ),

@@ -29,9 +29,9 @@ class TeaCard extends StatelessWidget {
               children: <Widget>[
                 ListTile(
                   title: Center(child: Text(tea.name!)),
-                  subtitle: tea.notes!.isEmpty
+                  subtitle: tea.subtitle!.isEmpty
                       ? null
-                      : Center(child: Text(tea.notes!)),
+                      : Center(child: Text(tea.subtitle!)),
                 ),
                 Wrap(
                   alignment: WrapAlignment.center,

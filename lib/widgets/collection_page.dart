@@ -32,7 +32,7 @@ class CollectionPageState extends State<CollectionPage> {
         .where((tea) => tea.name!.toLowerCase().contains(filterText))
         .followedBy(PersistenceService.teas.where((tea) =>
             !tea.name!.toLowerCase().contains(filterText) &&
-            tea.notes!.toLowerCase().contains(filterText)))
+            tea.subtitle!.toLowerCase().contains(filterText)))
         .toList();
   }
 

@@ -7,7 +7,7 @@ void main() {
   setUp(() {
     // start with a valid tea
     _sut = Tea(0.012345, "Some Tea", 10, 1, [Infusion(60)],
-        "This is just some tea", 2);
+        "This is just some tea", "Notes...", 2);
   });
 
   group('Validation', () {
@@ -40,8 +40,13 @@ void main() {
       expect(() => _sut.validate(), throwsA(isA<FormatException>()));
     });
 
+    test('null subtitle is invalid', () {
+      _sut.subtitle = null;
+      expect(() => _sut.validate(), throwsA(isA<FormatException>()));
+    });
+
     test('null notes is invalid', () {
-      _sut.notes = null;
+      _sut.detailedNotes = null;
       expect(() => _sut.validate(), throwsA(isA<FormatException>()));
     });
   });
