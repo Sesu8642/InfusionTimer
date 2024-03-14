@@ -6,6 +6,7 @@
     "configurations": [
         {
             "name": "infusion_timer (debug mode)",
+            "program": "lib/main.dart",
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
@@ -13,6 +14,7 @@
         },
         {
             "name": "infusion_timer (profile mode)",
+            "program": "lib/main.dart",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile",
@@ -20,6 +22,7 @@
         },
         {
             "name": "infusion_timer (release mode)",
+            "program": "lib/main.dart",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",

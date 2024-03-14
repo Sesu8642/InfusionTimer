@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:infusion_timer/persistence_service.dart';
+import 'package:infusion_timer/widgets/notes_page.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:infusion_timer/tea.dart';
@@ -314,157 +315,148 @@ class TimerPageState extends State<TimerPage>
     final progressIndicatorDiameter =
         (MediaQuery.of(context).size.height) * 0.4;
     return PopScope(
-        canPop:
-            _animationController.isCompleted || _animationController.value == 0,
-        onPopInvoked: _onPopInvoked,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text("Tea Timer"),
-          ),
-          body: Align(
-            alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TeaCard(widget.tea, null, null,
-                      PersistenceService.teaVesselSizeMlPref, null),
-                  Container(
-                    margin: EdgeInsets.only(
-                        left: progressIndicatorDiameter * 0.08,
-                        right: progressIndicatorDiameter * 0.08,
-                        top: progressIndicatorDiameter * 0.08,
-                        bottom: progressIndicatorDiameter * 0.05),
-                    width: progressIndicatorDiameter,
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: LiquidCircularProgressIndicator(
-                          value: _animationController.value,
-                          borderColor: Theme.of(context).colorScheme.secondary,
-                          borderWidth: 5.0,
-                          direction: Axis.vertical,
-                          backgroundColor: Theme.of(context)
-                              .colorScheme
-                              .tertiary
-                              .withAlpha(80),
-                          center: FittedBox(
-                            child: Stack(
-                              alignment: _animationController.isAnimating
-                                  ? Alignment.center
-                                  : Alignment.bottomCenter,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      bottom: _animationController.isAnimating
-                                          ? 0
-                                          : progressIndicatorDiameter * 0.06),
-                                  child: Text(
-                                    "${(widget.tea.infusions[currentInfusion - 1].duration - widget.tea.infusions[currentInfusion - 1].duration * percentage / 100).toStringAsFixed(0)}\u200As",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontSize: progressIndicatorDiameter * 0.2,
-                                    ),
+      canPop:
+          _animationController.isCompleted || _animationController.value == 0,
+      onPopInvoked: _onPopInvoked,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Tea Timer"),
+        ),
+        body: Align(
+          alignment: Alignment.topCenter,
+          child: SingleChildScrollView(
+            // reverse to hide the tea card on top by default
+            reverse: true,
+            child: Column(
+              children: [
+                TeaCard(widget.tea, null, null,
+                    PersistenceService.teaVesselSizeMlPref, null),
+                Container(
+                  margin: EdgeInsets.only(
+                      left: progressIndicatorDiameter * 0.08,
+                      right: progressIndicatorDiameter * 0.08,
+                      top: progressIndicatorDiameter * 0.08,
+                      bottom: progressIndicatorDiameter * 0.05),
+                  width: progressIndicatorDiameter,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: LiquidCircularProgressIndicator(
+                        value: _animationController.value,
+                        borderColor: Theme.of(context).colorScheme.secondary,
+                        borderWidth: 5.0,
+                        direction: Axis.vertical,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .tertiary
+                            .withAlpha(80),
+                        center: FittedBox(
+                          child: Stack(
+                            alignment: _animationController.isAnimating
+                                ? Alignment.center
+                                : Alignment.bottomCenter,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.only(
+                                    bottom: _animationController.isAnimating
+                                        ? 0
+                                        : progressIndicatorDiameter * 0.06),
+                                child: Text(
+                                  "${(widget.tea.infusions[currentInfusion - 1].duration - widget.tea.infusions[currentInfusion - 1].duration * percentage / 100).toStringAsFixed(0)}\u200As",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: progressIndicatorDiameter * 0.2,
                                   ),
                                 ),
-                                SizedBox(
-                                  height: progressIndicatorDiameter,
-                                  width: progressIndicatorDiameter,
-                                  child: IconButton(
-                                    // didnt find a proper way to remove the splash effect
-                                    splashRadius: 0.0001,
-                                    icon: Icon(() {
-                                      if (_animationController.isCompleted) {
-                                        if (currentInfusion ==
-                                            widget.tea.infusions.length) {
-                                          return Icons.arrow_back;
-                                        } else {
-                                          return Icons.skip_next;
-                                        }
-                                      } else if (_animationController
-                                          .isAnimating) {
-                                        return null;
+                              ),
+                              SizedBox(
+                                height: progressIndicatorDiameter,
+                                width: progressIndicatorDiameter,
+                                child: IconButton(
+                                  // didnt find a proper way to remove the splash effect
+                                  splashRadius: 0.0001,
+                                  icon: Icon(() {
+                                    if (_animationController.isCompleted) {
+                                      if (currentInfusion ==
+                                          widget.tea.infusions.length) {
+                                        return Icons.arrow_back;
                                       } else {
-                                        return Icons.play_arrow;
+                                        return Icons.skip_next;
                                       }
-                                    }()),
-                                    color: Colors.white.withOpacity(0.5),
-                                    onPressed: _startPauseNext,
-                                    iconSize: progressIndicatorDiameter * 0.65,
-                                  ),
+                                    } else if (_animationController
+                                        .isAnimating) {
+                                      return null;
+                                    } else {
+                                      return Icons.play_arrow;
+                                    }
+                                  }()),
+                                  color: Colors.white.withOpacity(0.5),
+                                  onPressed: _startPauseNext,
+                                  iconSize: progressIndicatorDiameter * 0.65,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onLongPress: currentInfusion == 1
-                            ? null
-                            : () {
-                                _resetIteration();
-                                HapticFeedback.vibrate();
-                              },
-                        child: IconButton(
-                            icon: const Icon(Icons.skip_previous),
-                            iconSize: progressIndicatorDiameter * 0.15,
-                            onPressed: currentInfusion == 1
-                                ? null
-                                : _skipBackwardIteration),
-                      ),
-                      Text(
-                        "Infusion $currentInfusion/${widget.tea.infusions.length}",
-                        style: TextStyle(
-                            fontSize: progressIndicatorDiameter * 0.1),
-                      ),
-                      IconButton(
-                          icon: const Icon(Icons.skip_next),
-                          iconSize: progressIndicatorDiameter * 0.15,
-                          onPressed:
-                              currentInfusion == widget.tea.infusions.length
-                                  ? null
-                                  : _skipForwardIteration)
-                    ],
-                  ),
-                  Container(
-                    margin:
-                        EdgeInsets.only(top: progressIndicatorDiameter * 0.08),
-                    child: Card(
-                      child: Column(
-                        children: [
-                          const ListTile(
-                            title: Center(child: Text("Notes")),
-                          ),
-                          TextFormField(
-                            initialValue: widget.tea.detailedNotes,
-                            maxLines: 8,
-                            // using collapsed to hide black line on the bottom
-                            decoration: const InputDecoration.collapsed(
-                              hintText: 'Enter your notes here',
-                            ),
-                            onChanged: (value) {
-                              widget.tea.detailedNotes = value;
-                              PersistenceService.updateTea(widget.tea);
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onLongPress: currentInfusion == 1
+                          ? null
+                          : () {
+                              _resetIteration();
+                              HapticFeedback.vibrate();
                             },
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 10),
-                          ),
-                        ],
-                      ),
+                      child: IconButton(
+                          icon: const Icon(Icons.skip_previous),
+                          iconSize: progressIndicatorDiameter * 0.15,
+                          onPressed: currentInfusion == 1
+                              ? null
+                              : _skipBackwardIteration),
                     ),
-                  )
-                ],
-              ),
+                    Text(
+                      "Infusion $currentInfusion/${widget.tea.infusions.length}",
+                      style:
+                          TextStyle(fontSize: progressIndicatorDiameter * 0.1),
+                    ),
+                    IconButton(
+                        icon: const Icon(Icons.skip_next),
+                        iconSize: progressIndicatorDiameter * 0.15,
+                        onPressed:
+                            currentInfusion == widget.tea.infusions.length
+                                ? null
+                                : _skipForwardIteration)
+                  ],
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              heroTag: "FloatingActionButtonTeaNotes",
+              onPressed: () async {
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NotesPage(tea: widget.tea)));
+              },
+              tooltip: 'Show Notes',
+              child: const Icon(Icons.notes),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
