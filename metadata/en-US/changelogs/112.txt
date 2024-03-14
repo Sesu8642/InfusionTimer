@@ -1,0 +1,5 @@
+switched to Material Design 3
+added confirmation dialog before cancelling infusions
+added warning when phone is muted
+added ability to quickly reset brewing session
+added detailed notes for teas
