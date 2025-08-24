@@ -198,17 +198,38 @@ class CollectionPageState extends State<CollectionPage> {
                 return TeaCard(
                   _getFilteredTeas(searchController.text)[i],
                   (tea) async {
-                    var future = Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TimerPage(tea: tea),
-                      ),
-                    );
-                    PersistenceService.bringTeaToFirstPosition(tea);
-                    await future;
-                    setState(() {
-                      // update session info
-                    });
+                    if (PersistenceService.savedSessions[_getFilteredTeas(
+                          searchController.text,
+                        )[i].id] !=
+                        null) {
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Continue previous session?'),
+                            content: const Text(
+                              'There is a saved brewing session. Do you want to continue it?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('Continue'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  await PersistenceService.deleteSession(tea);
+                                },
+                                child: const Text('Start fresh'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                    await _transitionToTimerPage(context, tea);
                   },
                   (tea) => {
                     showModalBottomSheet(
@@ -244,20 +265,20 @@ class CollectionPageState extends State<CollectionPage> {
                             ),
                           ),
                         },
-                            (tea) => {
+                        (tea) => {
                           showDialog(
                             context: context,
                             barrierDismissible: false,
                             builder: (BuildContext context) => TeaInputDialog(
                               Tea.copyWithGeneratedId(tea),
-                                  (tea) {
+                              (tea) {
                                 PersistenceService.addTea(tea).then((value) {
                                   setState(() {});
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
                                 });
                               },
-                                  (tea) {
+                              (tea) {
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pop();
                               },
@@ -326,5 +347,17 @@ class CollectionPageState extends State<CollectionPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _transitionToTimerPage(BuildContext context, Tea tea) async {
+    var future = Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TimerPage(tea: tea)),
+    );
+    PersistenceService.bringTeaToFirstPosition(tea);
+    await future;
+    setState(() {
+      // update session info
+    });
   }
 }
