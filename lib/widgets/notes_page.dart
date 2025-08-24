@@ -116,6 +116,7 @@ class NotesPageState extends State<NotesPage> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
+                      SizedBox(height: MediaQuery.of(context).systemGestureInsets.bottom)
                     ],
                   ),
                 ),
