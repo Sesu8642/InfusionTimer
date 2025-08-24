@@ -44,6 +44,14 @@ class Tea {
         'detailedNotes': detailedNotes
       };
 
+  String toSharableString() => 'Name: $name'
+      '${subtitle != null && subtitle!.isNotEmpty ? '\nSubtitle: $subtitle' : ''}'
+      '${rating != null ? '\nRating: $rating/5' : ''}'
+      '\nTemperature: $temperature°C'
+      '\nAmount: $gPer100Ml g/100 ml'
+      '\nInfusions: ${infusions.map((infusion) => "${infusion.duration}" "s").join(", ")}'
+      '${detailedNotes != null && detailedNotes!.isNotEmpty ? '\nNotes: $detailedNotes' : ''}';
+
   validate() {
     if (name == null) {
       throw const FormatException("Tea has no name.");

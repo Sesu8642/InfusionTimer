@@ -13,6 +13,7 @@ import 'package:infusion_timer/widgets/tea_card.dart';
 import 'package:infusion_timer/widgets/tea_input_dialog.dart';
 import 'package:infusion_timer/widgets/timer_page.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CollectionPage extends StatefulWidget {
   const CollectionPage({Key? key}) : super(key: key);
@@ -199,6 +200,14 @@ class CollectionPageState extends State<CollectionPage> {
                                 builder: (BuildContext context) =>
                                     TeaActionsBottomSheet(
                                         tea,
+                                            (tea) async {
+                                              await SharePlus.instance.share(
+                                                  ShareParams(
+                                                    text: tea.toSharableString(),
+                                                    subject: tea.name,
+                                                    title: tea.name
+                                                  ));
+                                        },
                                         (tea) => {
                                               showDialog(
                                                 context: context,

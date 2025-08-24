@@ -6,16 +6,21 @@ import 'package:infusion_timer/widgets/confirm_dialog.dart';
 
 class TeaActionsBottomSheet extends StatelessWidget {
   final Tea tea;
+  final Function(Tea) shareCallback;
   final Function(Tea) editCallback;
   final Function(Tea) deleteCallback;
 
-  const TeaActionsBottomSheet(this.tea, this.editCallback, this.deleteCallback,
+  const TeaActionsBottomSheet(this.tea, this.shareCallback, this.editCallback, this.deleteCallback,
       {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
       children: <Widget>[
+        ListTile(
+            leading: const Icon(Icons.share),
+            title: const Text("Share"),
+            onTap: () => shareCallback(tea)),
         ListTile(
             leading: const Icon(Icons.edit),
             title: const Text("Edit"),
