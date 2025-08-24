@@ -45,7 +45,7 @@ class CollectionPageState extends State<CollectionPage> {
     const flutterBackgroundAndroidConfig = FlutterBackgroundAndroidConfig(
       notificationTitle: "Enthusiast Tea Timer",
       notificationText: "Enthusiast Tea Timer is running in the background.",
-      notificationImportance: AndroidNotificationImportance.Default,
+      //notificationImportance: AndroidNotificationImportance.Default,
       notificationIcon:
           AndroidResource(name: 'notification_icon', defType: 'drawable'),
       enableWifiLock: false,

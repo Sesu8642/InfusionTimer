@@ -35,6 +35,7 @@ class TimerPage extends StatefulWidget {
   TimerPageState createState() => TimerPageState();
 }
 
+@pragma('vm:entry-point')
 class TimerPageState extends State<TimerPage>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   int currentInfusion = 1;

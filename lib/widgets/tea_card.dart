@@ -18,6 +18,7 @@ class TeaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Card(
+        surfaceTintColor: Theme.of(context).colorScheme.secondary,
         child: GestureDetector(
           child: InkWell(
             onTap: tapCallback == null ? null : () => tapCallback!(tea),

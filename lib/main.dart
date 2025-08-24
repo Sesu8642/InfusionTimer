@@ -58,7 +58,6 @@ class AppState extends State<InfusionTimer> {
             primary: Colors.teal,
             secondary: Colors.teal,
             tertiary: Colors.teal),
-        dialogTheme: const DialogTheme(surfaceTintColor: Colors.white),
         useMaterial3: true,
       ),
       home: const CollectionPage(),
