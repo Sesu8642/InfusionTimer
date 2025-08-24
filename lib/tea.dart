@@ -18,6 +18,15 @@ class Tea {
       this.infusions, this.subtitle, this.rating)
       : id = IdGenerator.nextdouble();
 
+  Tea.copyWithGeneratedId(Tea original)
+      : id = IdGenerator.nextdouble(),
+    name = original.name,
+    temperature = original.temperature,
+    gPer100Ml = original.gPer100Ml,
+    infusions = List.from(original.infusions),
+    subtitle = original.subtitle,
+    rating = original.rating;
+
   Tea.fromJson(Map<String, dynamic> json)
       : id = json.containsKey('id') ? json['id'] : IdGenerator.nextdouble(),
         name = json['name'],

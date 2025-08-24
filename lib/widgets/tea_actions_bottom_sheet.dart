@@ -8,23 +8,37 @@ class TeaActionsBottomSheet extends StatelessWidget {
   final Tea tea;
   final Function(Tea) shareCallback;
   final Function(Tea) editCallback;
+  final Function(Tea) copyCallback;
   final Function(Tea) deleteCallback;
 
-  const TeaActionsBottomSheet(this.tea, this.shareCallback, this.editCallback, this.deleteCallback,
-      {super.key});
+  const TeaActionsBottomSheet(
+    this.tea,
+    this.shareCallback,
+    this.editCallback,
+    this.copyCallback,
+    this.deleteCallback, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
       children: <Widget>[
         ListTile(
-            leading: const Icon(Icons.share),
-            title: const Text("Share"),
-            onTap: () => shareCallback(tea)),
+          leading: const Icon(Icons.share),
+          title: const Text("Share"),
+          onTap: () => shareCallback(tea),
+        ),
         ListTile(
-            leading: const Icon(Icons.edit),
-            title: const Text("Edit"),
-            onTap: () => editCallback(tea)),
+          leading: const Icon(Icons.edit),
+          title: const Text("Edit"),
+          onTap: () => editCallback(tea),
+        ),
+        ListTile(
+          leading: const Icon(Icons.copy),
+          title: const Text("Copy"),
+          onTap: () => copyCallback(tea),
+        ),
         ListTile(
           leading: const Icon(Icons.delete),
           title: const Text("Delete"),
@@ -32,15 +46,19 @@ class TeaActionsBottomSheet extends StatelessWidget {
             showDialog<void>(
               context: context,
               builder: (BuildContext context) {
-                return ConfirmDialog("Are you sure?",
-                    '"${tea.name}" will be deleted permanently.', () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                  deleteCallback(tea);
-                }, () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                });
+                return ConfirmDialog(
+                  "Are you sure?",
+                  '"${tea.name}" will be deleted permanently.',
+                  () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    deleteCallback(tea);
+                  },
+                  () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                );
               },
             );
           },

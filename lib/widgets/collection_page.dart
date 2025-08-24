@@ -31,9 +31,13 @@ class CollectionPageState extends State<CollectionPage> {
   List<Tea> _getFilteredTeas(String filterText) {
     return PersistenceService.teas
         .where((tea) => tea.name!.toLowerCase().contains(filterText))
-        .followedBy(PersistenceService.teas.where((tea) =>
-            !tea.name!.toLowerCase().contains(filterText) &&
-            tea.subtitle!.toLowerCase().contains(filterText)))
+        .followedBy(
+          PersistenceService.teas.where(
+            (tea) =>
+                !tea.name!.toLowerCase().contains(filterText) &&
+                tea.subtitle!.toLowerCase().contains(filterText),
+          ),
+        )
         .toList();
   }
 
@@ -47,8 +51,10 @@ class CollectionPageState extends State<CollectionPage> {
       notificationTitle: "Enthusiast Tea Timer",
       notificationText: "Enthusiast Tea Timer is running in the background.",
       //notificationImportance: AndroidNotificationImportance.Default,
-      notificationIcon:
-          AndroidResource(name: 'notification_icon', defType: 'drawable'),
+      notificationIcon: AndroidResource(
+        name: 'notification_icon',
+        defType: 'drawable',
+      ),
       enableWifiLock: false,
       showBadge: false,
     );
@@ -61,7 +67,8 @@ class CollectionPageState extends State<CollectionPage> {
             builder: (BuildContext context) => AlertDialog(
               title: const Text('Permissions needed'),
               content: const Text(
-                  'Please grant this app the following permissions if propted:\n\n1) Display notifications: for accurate timing and visible brewing progress while in the background\n\n2) Run in the background: for accurate timing. It will only do so while a timer is running.'),
+                'Please grant this app the following permissions if propted:\n\n1) Display notifications: for accurate timing and visible brewing progress while in the background\n\n2) Run in the background: for accurate timing. It will only do so while a timer is running.',
+              ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -72,18 +79,21 @@ class CollectionPageState extends State<CollectionPage> {
                     Navigator.pop(context, 'OK');
                     // permission to run in background
                     await FlutterBackground.initialize(
-                        androidConfig: flutterBackgroundAndroidConfig);
+                      androidConfig: flutterBackgroundAndroidConfig,
+                    );
                     // init a second time because of this bug: https://github.com/JulianAssmann/flutter_background/issues/76
                     await FlutterBackground.initialize(
-                        androidConfig: flutterBackgroundAndroidConfig);
+                      androidConfig: flutterBackgroundAndroidConfig,
+                    );
 
                     // permission to display notifications
                     FlutterLocalNotificationsPlugin
-                        flutterLocalNotificationsPlugin =
+                    flutterLocalNotificationsPlugin =
                         FlutterLocalNotificationsPlugin();
                     flutterLocalNotificationsPlugin
                         .resolvePlatformSpecificImplementation<
-                            AndroidFlutterLocalNotificationsPlugin>()!
+                          AndroidFlutterLocalNotificationsPlugin
+                        >()!
                         .requestNotificationsPermission();
                   },
                   child: const Text('OK'),
@@ -93,7 +103,8 @@ class CollectionPageState extends State<CollectionPage> {
           );
         } else {
           FlutterBackground.initialize(
-              androidConfig: flutterBackgroundAndroidConfig);
+            androidConfig: flutterBackgroundAndroidConfig,
+          );
         }
       });
     }
@@ -108,85 +119,90 @@ class CollectionPageState extends State<CollectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Tea Collection")),
-        drawer: NavigationDrawer(
-          children: <Widget>[
-            DrawerHeader(
-              decoration:
-                  BoxDecoration(color: Theme.of(context).colorScheme.secondary),
-              child: const Text(
-                "Enthusiast Tea Timer",
-                style: TextStyle(fontSize: 24, color: Colors.white),
-              ),
+      appBar: AppBar(title: const Text("Tea Collection")),
+      drawer: NavigationDrawer(
+        children: <Widget>[
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
             ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text("Preferences"),
-              onTap: () async {
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            const PreferencesPage(key: null)));
-                // when returning from preferences, update vessel size
-                setState(() {});
-              },
+            child: const Text(
+              "Enthusiast Tea Timer",
+              style: TextStyle(fontSize: 24, color: Colors.white),
             ),
-            AboutListTile(
-              icon: const Icon(Icons.favorite),
-              applicationIcon: SizedBox(
-                height: IconTheme.of(context).resolve(context).size,
-                width: IconTheme.of(context).resolve(context).size,
-                child: Image.asset(
-                  "assets/icon_simple_512.png",
-                  color: Theme.of(context).primaryColor,
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text("Preferences"),
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PreferencesPage(key: null),
                 ),
+              );
+              // when returning from preferences, update vessel size
+              setState(() {});
+            },
+          ),
+          AboutListTile(
+            icon: const Icon(Icons.favorite),
+            applicationIcon: SizedBox(
+              height: IconTheme.of(context).resolve(context).size,
+              width: IconTheme.of(context).resolve(context).size,
+              child: Image.asset(
+                "assets/icon_simple_512.png",
+                color: Theme.of(context).primaryColor,
               ),
-              applicationVersion: _versionName,
-              applicationLegalese:
-                  "Copyright (c) 2021 Sesu8642\n\nhttps://github.com/Sesu8642/InfusionTimer",
-              aboutBoxChildren: const [
-                Text(
-                  "\nMany thanks to Mei Leaf (meileaf.com) for their permission to include data from their brewing guide!",
-                  style: TextStyle(fontSize: 14),
+            ),
+            applicationVersion: _versionName,
+            applicationLegalese:
+                "Copyright (c) 2021 Sesu8642\n\nhttps://github.com/Sesu8642/InfusionTimer",
+            aboutBoxChildren: const [
+              Text(
+                "\nMany thanks to Mei Leaf (meileaf.com) for their permission to include data from their brewing guide!",
+                style: TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          searchBarShown
+              ? SearchBar(
+                  controller: searchController,
+                  focusNode: searchFocusNode,
+                  onChanged: (value) {
+                    setState(() {});
+                  },
+                  hintText: 'Search for a tea',
+                  leading: const Icon(Icons.search),
+                  trailing: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          searchBarShown = false;
+                          searchController.text = "";
+                        });
+                      },
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
                 )
-              ],
-            )
-          ],
-        ),
-        body: Column(
-          children: [
-            searchBarShown
-                ? SearchBar(
-                    controller: searchController,
-                    focusNode: searchFocusNode,
-                    onChanged: (value) {
-                      setState(() {});
-                    },
-                    hintText: 'Search for a tea',
-                    leading: const Icon(Icons.search),
-                    trailing: [
-                      IconButton(
-                          onPressed: () {
-                            setState(() {
-                              searchBarShown = false;
-                              searchController.text = "";
-                            });
-                          },
-                          icon: const Icon(Icons.close))
-                    ],
-                  )
-                : const SizedBox(),
-            Flexible(
-              child: ListView.builder(
-                itemCount: _getFilteredTeas(searchController.text).length,
-                itemBuilder: (context, i) {
-                  return TeaCard(_getFilteredTeas(searchController.text)[i],
-                      (tea) async {
+              : const SizedBox(),
+          Flexible(
+            child: ListView.builder(
+              itemCount: _getFilteredTeas(searchController.text).length,
+              itemBuilder: (context, i) {
+                return TeaCard(
+                  _getFilteredTeas(searchController.text)[i],
+                  (tea) async {
                     var future = Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => TimerPage(tea: tea)),
+                        builder: (context) => TimerPage(tea: tea),
+                      ),
                     );
                     PersistenceService.bringTeaToFirstPosition(tea);
                     await future;
@@ -194,103 +210,121 @@ class CollectionPageState extends State<CollectionPage> {
                       // update session info
                     });
                   },
-                      (tea) => {
-                            showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    TeaActionsBottomSheet(
-                                        tea,
-                                            (tea) async {
-                                              await SharePlus.instance.share(
-                                                  ShareParams(
-                                                    text: tea.toSharableString(),
-                                                    subject: tea.name,
-                                                    title: tea.name
-                                                  ));
-                                        },
-                                        (tea) => {
-                                              showDialog(
-                                                context: context,
-                                                barrierDismissible: false,
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        TeaInputDialog(
-                                                  tea,
-                                                  (tea) {
-                                                    PersistenceService
-                                                            .updateTea(tea)
-                                                        .then((value) {
-                                                      setState(() {});
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    });
-                                                  },
-                                                  (tea) {
-                                                    Navigator.of(context).pop();
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
-                                              )
-                                            }, (tea) async {
-                                      await PersistenceService.deleteTea(tea);
-                                      setState(() {});
-                                    }))
-                          },
-                      PersistenceService.teaVesselSizeMlPref,
-                      PersistenceService.savedSessions[
-                          _getFilteredTeas(searchController.text)[i].id]);
-                },
-              ),
-            ),
-          ],
-        ),
-        floatingActionButton: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            searchBarShown
-                ? const SizedBox()
-                : Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: FloatingActionButton(
-                      heroTag: "FloatingActionButtonSearchCollection",
-                      onPressed: () {
-                        setState(() {
-                          searchBarShown = true;
-                          searchFocusNode.requestFocus();
-                        });
-                      },
-                      tooltip: 'Search Collection',
-                      child: const Icon(Icons.search),
-                    ),
-                  ),
-            FloatingActionButton(
-              heroTag: "FloatingActionButtonAddTea",
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext context) => TeaInputDialog(
-                    Tea.withGeneratedId(null, null, null, [], null, 0),
-                    (tea) {
-                      setState(
-                        () {
-                          PersistenceService.addTea(tea);
+                  (tea) => {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) => TeaActionsBottomSheet(
+                        tea,
+                        (tea) async {
+                          await SharePlus.instance.share(
+                            ShareParams(
+                              text: tea.toSharableString(),
+                              subject: tea.name,
+                              title: tea.name,
+                            ),
+                          );
                         },
-                      );
-                      Navigator.of(context).pop();
-                    },
-                    (tea) {
-                      Navigator.of(context).pop();
-                    },
-                  ),
+                        (tea) => {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) => TeaInputDialog(
+                              tea,
+                              (tea) {
+                                PersistenceService.updateTea(tea).then((value) {
+                                  setState(() {});
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                });
+                              },
+                              (tea) {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ),
+                        },
+                            (tea) => {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) => TeaInputDialog(
+                              Tea.copyWithGeneratedId(tea),
+                                  (tea) {
+                                PersistenceService.addTea(tea).then((value) {
+                                  setState(() {});
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                });
+                              },
+                                  (tea) {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ),
+                        },
+                        (tea) async {
+                          await PersistenceService.deleteTea(tea);
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                  },
+                  PersistenceService.teaVesselSizeMlPref,
+                  PersistenceService.savedSessions[_getFilteredTeas(
+                    searchController.text,
+                  )[i].id],
                 );
               },
-              tooltip: 'Add Tea',
-              child: const Icon(Icons.add),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          searchBarShown
+              ? const SizedBox()
+              : Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: FloatingActionButton(
+                    heroTag: "FloatingActionButtonSearchCollection",
+                    onPressed: () {
+                      setState(() {
+                        searchBarShown = true;
+                        searchFocusNode.requestFocus();
+                      });
+                    },
+                    tooltip: 'Search Collection',
+                    child: const Icon(Icons.search),
+                  ),
+                ),
+          FloatingActionButton(
+            heroTag: "FloatingActionButtonAddTea",
+            onPressed: () {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) => TeaInputDialog(
+                  Tea.withGeneratedId(null, null, null, [], null, 0),
+                  (tea) {
+                    setState(() {
+                      PersistenceService.addTea(tea);
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  (tea) {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              );
+            },
+            tooltip: 'Add Tea',
+            child: const Icon(Icons.add),
+          ),
+        ],
+      ),
+    );
   }
 }
