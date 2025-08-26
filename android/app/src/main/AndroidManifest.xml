@@ -47,8 +47,10 @@
             </intent-filter>
         </receiver-->
         <!-- service for flutter background -->
-        <service android:name="de.julianassmann.flutter_background.IsolateHolderService"
-            android:exported="true" />
+        <service
+                android:name="de.julianassmann.flutter_background.IsolateHolderService"
+                android:exported="false"
+                android:foregroundServiceType="mediaPlayback" />
     </application>
     <!-- permissions for android alarm manager-->
     <!--uses-permission
@@ -58,7 +60,7 @@
     <!-- flutter_background permissions -->
     <!--uses-permission
     android:name="android.permission.WAKE_LOCK" /-->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
