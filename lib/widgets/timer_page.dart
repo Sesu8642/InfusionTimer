@@ -172,7 +172,7 @@ class TimerPageState extends State<TimerPage>
 
   _scheduleAlarm() {
     if (Platform.isAndroid) {
-      // on Android, the alarm manager with all those accurary options needs to be used + disables battery optimization + show notification + CPU wakelock
+      // on Android, the alarm manager with all those accuracy options needs to be used + disables battery optimization + show notification + CPU wakelock
       AndroidAlarmManager.oneShotAt(infusionFinishTime!, alarmId, _ring,
           allowWhileIdle: true, exact: true, wakeup: true);
     }
