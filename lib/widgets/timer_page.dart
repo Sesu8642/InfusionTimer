@@ -6,16 +6,17 @@ import 'dart:io';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background/flutter_background.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:infusion_timer/persistence_service.dart';
-import 'package:infusion_timer/widgets/notes_page.dart';
-import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
-import 'package:flutter/material.dart';
 import 'package:infusion_timer/tea.dart';
+import 'package:infusion_timer/widgets/notes_page.dart';
 import 'package:infusion_timer/widgets/tea_card.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 
 const String androidProgressNotificationChannelId = "brewingProgress";
 const String androidProgressNotificationChannelName = "Brewing Progress";
@@ -108,7 +109,7 @@ class TimerPageState extends State<TimerPage>
   }
 
   _startDisplayingProgressNotification() {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       if (!(_notificationUpdateTimer?.isActive ?? false)) {
         // if the timer is null or canceled, we need a new one
         _notificationUpdateTimer = Timer.periodic(
@@ -119,7 +120,7 @@ class TimerPageState extends State<TimerPage>
   }
 
   _stopDisplayingProgressNotification() {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       _notificationUpdateTimer?.cancel();
     }
   }
@@ -171,7 +172,7 @@ class TimerPageState extends State<TimerPage>
   }
 
   _scheduleAlarm() {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       // on Android, the alarm manager with all those accuracy options needs to be used + disables battery optimization + show notification + CPU wakelock
       AndroidAlarmManager.oneShotAt(infusionFinishTime!, alarmId, _ring,
           allowWhileIdle: true, exact: true, wakeup: true);
@@ -182,10 +183,11 @@ class TimerPageState extends State<TimerPage>
         // on Desktop, this timer is reliable so we can trigger the ringing with it
         _ring();
       }
-      if (Platform.isLinux) {
+      if (!kIsWeb && Platform.isLinux) {
         _updateProgressNotification();
       }
-      if (Platform.isAndroid &&
+      if (!kIsWeb &&
+          Platform.isAndroid &&
           FlutterBackground.isBackgroundExecutionEnabled) {
         // on Android, we need to stop running in the background after the ringing has happened; this is only possible in this context and not in the alarm manager context
         // stop the background running things
@@ -197,7 +199,7 @@ class TimerPageState extends State<TimerPage>
   }
 
   _cancelAlarm() async {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       await AndroidAlarmManager.cancel(alarmId);
     }
     alertTimer?.cancel();
@@ -233,13 +235,17 @@ class TimerPageState extends State<TimerPage>
             } else {
               PersistenceService.saveSession(widget.tea, currentInfusion + 1);
             }
-            FlutterVolumeController.getVolume().then((value) {
-              if (value == 0) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("Device is muted and won't ring!"),
-                ));
-              }
-            });
+            if (!kIsWeb) {
+              FlutterVolumeController.getVolume().then((value) {
+                if (value == 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Device is muted and won't ring!"),
+                    ),
+                  );
+                }
+              });
+            }
           }
           // starting the beginning or resuming from pause
           remainingMs = ((1 - _animationController.value) *
@@ -509,7 +515,7 @@ class TimerPageState extends State<TimerPage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _cancelAlarm();
-    if (Platform.isAndroid | Platform.isLinux) {
+    if (!kIsWeb && (Platform.isAndroid | Platform.isLinux)) {
       // cancel any "finished" notification
       flutterLocalNotificationsPlugin.cancel(progressNotificationId);
     }

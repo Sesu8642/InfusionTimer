@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -59,7 +60,7 @@ class CollectionPageState extends State<CollectionPage> {
       showBadge: false,
     );
 
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       FlutterBackground.hasPermissions.then((hasPermissions) {
         if (!hasPermissions) {
           showDialog<String>(
@@ -300,6 +301,17 @@ class CollectionPageState extends State<CollectionPage> {
               },
             ),
           ),
+          kIsWeb
+              ? Container(
+                  color: Colors.yellowAccent,
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                    child: Text(
+                      "All data is saved locally and will be lost if you clear your browsing data.",
+                    ),
+                  ),
+                )
+              : Container(),
         ],
       ),
       floatingActionButton: Column(
