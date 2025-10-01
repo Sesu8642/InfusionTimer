@@ -30,7 +30,7 @@ const String sessionSavePrefix = "session:";
 class TimerPage extends StatefulWidget {
   final Tea tea;
 
-  const TimerPage({Key? key, required this.tea}) : super(key: key);
+  const TimerPage({super.key, required this.tea});
 
   @override
   TimerPageState createState() => TimerPageState();
@@ -253,7 +253,7 @@ class TimerPageState extends State<TimerPage>
             }
             if (!kIsWeb) {
               FlutterVolumeController.getVolume().then((value) {
-                if (value == 0) {
+                if (value == 0 && mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text("Device is muted and won't ring!"),
@@ -285,7 +285,7 @@ class TimerPageState extends State<TimerPage>
     });
   }
 
-  Future<void> _onPopInvoked(bool didPop) async {
+  Future<void> _onPopInvoked(bool didPop, dynamic result) async {
     // confirm cancelling infusion if going back to collection page
     if (didPop) {
       return;
@@ -313,7 +313,7 @@ class TimerPageState extends State<TimerPage>
         );
       },
     );
-    if ((shouldDiscard ?? false) && context.mounted) {
+    if ((shouldDiscard ?? false) && mounted) {
       Navigator.pop(context);
     }
   }
@@ -344,7 +344,7 @@ class TimerPageState extends State<TimerPage>
     return PopScope(
       canPop:
           _animationController.isCompleted || _animationController.value == 0,
-      onPopInvoked: _onPopInvoked,
+      onPopInvokedWithResult: _onPopInvoked,
       child: Scaffold(
         appBar: AppBar(title: const Text("Tea Timer")),
         body: Align(
@@ -423,7 +423,7 @@ class TimerPageState extends State<TimerPage>
                                       return Icons.play_arrow;
                                     }
                                   }()),
-                                  color: Colors.white.withOpacity(0.5),
+                                  color: Colors.white.withValues(alpha: 0.5),
                                   onPressed: _startPauseNext,
                                   iconSize: progressIndicatorDiameter * 0.65,
                                 ),

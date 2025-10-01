@@ -5,14 +5,11 @@ import 'package:flutter/material.dart';
 class StarRatingFormField extends FormField<int> {
   StarRatingFormField({
     super.key,
-    FormFieldSetter<int>? onSaved,
-    FormFieldValidator<int>? validator,
-    int initialValue = 0,
+    super.onSaved,
+    super.validator,
+    int super.initialValue = 0,
     AutovalidateMode autovalidate = AutovalidateMode.disabled,
   }) : super(
-         onSaved: onSaved,
-         validator: validator,
-         initialValue: initialValue,
          autovalidateMode: autovalidate,
          builder: (FormFieldState<int> state) {
            return Row(

@@ -56,12 +56,18 @@ class DataRestoreDialog extends StatelessWidget {
                     jsonDecode(textController.text),
                   );
                   PersistenceService.restoreFomBackup(backup)
-                      .then((value) => Navigator.of(context).pop())
-                      .onError(
-                        (e, stackTrace) => ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(e.toString()))),
-                      );
+                      .then((value) {
+                        if (context.mounted) {
+                          return Navigator.of(context).pop();
+                        }
+                      })
+                      .onError((e, stackTrace) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.toString())));
+                        }
+                      });
                 } catch (e) {
                   ScaffoldMessenger.of(
                     context,

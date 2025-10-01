@@ -7,7 +7,7 @@ import 'package:infusion_timer/widgets/data_backup_dialog.dart';
 import 'package:infusion_timer/widgets/data_restore_dialog.dart';
 
 class PreferencesPage extends StatefulWidget {
-  const PreferencesPage({Key? key}) : super(key: key);
+  const PreferencesPage({super.key});
 
   @override
   PreferencesPageState createState() => PreferencesPageState();

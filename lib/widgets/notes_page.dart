@@ -9,7 +9,7 @@ import 'package:infusion_timer/tea.dart';
 class NotesPage extends StatefulWidget {
   final Tea tea;
 
-  const NotesPage({Key? key, required this.tea}) : super(key: key);
+  const NotesPage({super.key, required this.tea});
 
   @override
   NotesPageState createState() => NotesPageState();
@@ -19,7 +19,7 @@ class NotesPageState extends State<NotesPage> {
   final _formKey = GlobalKey<FormState>();
   bool _hasUnsavedChanges = false;
 
-  Future<void> _onPopInvoked(bool didPop) async {
+  Future<void> _onPopInvoked(bool didPop, dynamic result) async {
     // confirm cancelling infusion if going back to collection page
     if (didPop) {
       return;
@@ -53,12 +53,12 @@ class NotesPageState extends State<NotesPage> {
       case 0:
         _formKey.currentState!.save();
         PersistenceService.updateTea(widget.tea);
-        if (context.mounted) {
+        if (mounted) {
           Navigator.pop(context);
         }
         break;
       case 1:
-        if (context.mounted) {
+        if (mounted) {
           Navigator.pop(context);
         }
         break;
@@ -72,7 +72,7 @@ class NotesPageState extends State<NotesPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: !_hasUnsavedChanges,
-      onPopInvoked: _onPopInvoked,
+      onPopInvokedWithResult: _onPopInvoked,
       child: Scaffold(
         appBar: AppBar(title: const Text("Notes")),
         body: Form(

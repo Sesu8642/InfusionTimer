@@ -17,7 +17,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 
 class CollectionPage extends StatefulWidget {
-  const CollectionPage({Key? key}) : super(key: key);
+  const CollectionPage({super.key});
 
   @override
   CollectionPageState createState() => CollectionPageState();
@@ -62,7 +62,7 @@ class CollectionPageState extends State<CollectionPage> {
 
     if (!kIsWeb && Platform.isAndroid) {
       FlutterBackground.hasPermissions.then((hasPermissions) {
-        if (!hasPermissions) {
+        if (!hasPermissions && mounted) {
           showDialog<String>(
             context: context,
             builder: (BuildContext context) => AlertDialog(
@@ -230,7 +230,9 @@ class CollectionPageState extends State<CollectionPage> {
                         },
                       );
                     }
-                    await _transitionToTimerPage(context, tea);
+                    if (context.mounted) {
+                      await _transitionToTimerPage(context, tea);
+                    }
                   },
                   (tea) => {
                     showModalBottomSheet(
@@ -255,8 +257,10 @@ class CollectionPageState extends State<CollectionPage> {
                               (tea) {
                                 PersistenceService.updateTea(tea).then((value) {
                                   setState(() {});
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  }
                                 });
                               },
                               (tea) {
@@ -275,8 +279,10 @@ class CollectionPageState extends State<CollectionPage> {
                               (tea) {
                                 PersistenceService.addTea(tea).then((value) {
                                   setState(() {});
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  }
                                 });
                               },
                               (tea) {
