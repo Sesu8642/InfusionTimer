@@ -9,29 +9,26 @@ class ConfirmDialog extends StatelessWidget {
   final Function() cancelCallback;
 
   const ConfirmDialog(
-      this.title, this.confirmText, this.okCallback, this.cancelCallback,
-      {super.key});
+    this.title,
+    this.confirmText,
+    this.okCallback,
+    this.cancelCallback, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(title),
       content: SingleChildScrollView(
-        child: ListBody(
-          children: <Widget>[
-            Text(confirmText),
-          ],
-        ),
+        child: ListBody(children: <Widget>[Text(confirmText)]),
       ),
       actions: <Widget>[
         TextButton(
           onPressed: () => cancelCallback(),
           child: const Text('Cancel'),
         ),
-        TextButton(
-          onPressed: () => okCallback(),
-          child: const Text('OK'),
-        ),
+        TextButton(onPressed: () => okCallback(), child: const Text('OK')),
       ],
     );
   }

@@ -46,8 +46,10 @@ class TimerPageState extends State<TimerPage>
   static final AudioPlayer _audioPlayer = AudioPlayer();
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
   // for correcting the animation status when the app was in the background + notification progress
   DateTime? infusionFinishTime;
+
   // timer for scheduling an alert and doing cleanup (on android only used for cleanup)
   Timer? alertTimer;
 
@@ -67,8 +69,9 @@ class TimerPageState extends State<TimerPage>
   }
 
   _updateProgressNotification() async {
-    int remainingDurationMs =
-        infusionFinishTime!.difference(DateTime.now()).inMilliseconds;
+    int remainingDurationMs = infusionFinishTime!
+        .difference(DateTime.now())
+        .inMilliseconds;
     bool finished = remainingDurationMs <= 0;
     if (finished) {
       // stop updating the notification when done so the user can dismiss it without it reappearing again instantly
@@ -81,31 +84,35 @@ class TimerPageState extends State<TimerPage>
     // but when the brewing is finished, it should stay for a while so the user can still see it
     int timeout = finished ? const Duration(minutes: 30).inMilliseconds : 1000;
     AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(androidProgressNotificationChannelId,
-            androidProgressNotificationChannelName,
-            channelDescription: androidProgressNotificationChannelDescripion,
-            importance: Importance.low,
-            priority: Priority.defaultPriority,
-            enableVibration: false,
-            playSound: false,
-            enableLights: false,
-            onlyAlertOnce: true,
-            autoCancel: false,
-            showProgress: true,
-            progress:
-                widget.tea.infusions[currentInfusion - 1].duration * 1000 -
-                    remainingDurationMs,
-            timeoutAfter: timeout,
-            maxProgress:
-                widget.tea.infusions[currentInfusion - 1].duration * 1000);
-    NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+        AndroidNotificationDetails(
+          androidProgressNotificationChannelId,
+          androidProgressNotificationChannelName,
+          channelDescription: androidProgressNotificationChannelDescripion,
+          importance: Importance.low,
+          priority: Priority.defaultPriority,
+          enableVibration: false,
+          playSound: false,
+          enableLights: false,
+          onlyAlertOnce: true,
+          autoCancel: false,
+          showProgress: true,
+          progress:
+              widget.tea.infusions[currentInfusion - 1].duration * 1000 -
+              remainingDurationMs,
+          timeoutAfter: timeout,
+          maxProgress:
+              widget.tea.infusions[currentInfusion - 1].duration * 1000,
+        );
+    NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
     await flutterLocalNotificationsPlugin.show(
-        progressNotificationId,
-        'Brewing ${widget.tea.name}, Infusion $currentInfusion',
-        remainingDurationText,
-        platformChannelSpecifics,
-        payload: widget.tea.name);
+      progressNotificationId,
+      'Brewing ${widget.tea.name}, Infusion $currentInfusion',
+      remainingDurationText,
+      platformChannelSpecifics,
+      payload: widget.tea.name,
+    );
   }
 
   _startDisplayingProgressNotification() {
@@ -113,8 +120,9 @@ class TimerPageState extends State<TimerPage>
       if (!(_notificationUpdateTimer?.isActive ?? false)) {
         // if the timer is null or canceled, we need a new one
         _notificationUpdateTimer = Timer.periodic(
-            const Duration(milliseconds: 500),
-            (Timer t) => _updateProgressNotification());
+          const Duration(milliseconds: 500),
+          (Timer t) => _updateProgressNotification(),
+        );
       }
     }
   }
@@ -132,8 +140,9 @@ class TimerPageState extends State<TimerPage>
     setState(() {
       currentInfusion++;
       PersistenceService.saveSession(widget.tea, currentInfusion);
-      _animationController.duration =
-          Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
+      _animationController.duration = Duration(
+        seconds: widget.tea.infusions[currentInfusion - 1].duration,
+      );
       _animationController.reset();
     });
     _cancelAlarm();
@@ -151,8 +160,9 @@ class TimerPageState extends State<TimerPage>
       } else {
         PersistenceService.saveSession(widget.tea, currentInfusion);
       }
-      _animationController.duration =
-          Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration);
+      _animationController.duration = Duration(
+        seconds: widget.tea.infusions[currentInfusion - 1].duration,
+      );
       _animationController.reset();
     });
     _cancelAlarm();
@@ -163,8 +173,9 @@ class TimerPageState extends State<TimerPage>
     setState(() {
       currentInfusion = 1;
       PersistenceService.deleteSession(widget.tea);
-      _animationController.duration =
-          Duration(seconds: widget.tea.infusions[0].duration);
+      _animationController.duration = Duration(
+        seconds: widget.tea.infusions[0].duration,
+      );
       _animationController.reset();
     });
     _cancelAlarm();
@@ -174,12 +185,17 @@ class TimerPageState extends State<TimerPage>
   _scheduleAlarm() {
     if (!kIsWeb && Platform.isAndroid) {
       // on Android, the alarm manager with all those accuracy options needs to be used + disables battery optimization + show notification + CPU wakelock
-      AndroidAlarmManager.oneShotAt(infusionFinishTime!, alarmId, _ring,
-          allowWhileIdle: true, exact: true, wakeup: true);
+      AndroidAlarmManager.oneShotAt(
+        infusionFinishTime!,
+        alarmId,
+        _ring,
+        allowWhileIdle: true,
+        exact: true,
+        wakeup: true,
+      );
     }
-    alertTimer =
-        Timer(infusionFinishTime!.difference(DateTime.now()), () async {
-      if (Platform.isLinux || Platform.isWindows) {
+    alertTimer = Timer(infusionFinishTime!.difference(DateTime.now()), () async {
+      if (kIsWeb || Platform.isLinux || Platform.isWindows) {
         // on Desktop, this timer is reliable so we can trigger the ringing with it
         _ring();
       }
@@ -248,15 +264,17 @@ class TimerPageState extends State<TimerPage>
             }
           }
           // starting the beginning or resuming from pause
-          remainingMs = ((1 - _animationController.value) *
-                  _animationController.duration!.inMilliseconds)
-              .round();
+          remainingMs =
+              ((1 - _animationController.value) *
+                      _animationController.duration!.inMilliseconds)
+                  .round();
         }
         // all cases
         _animationController.forward();
         _startDisplayingProgressNotification();
-        infusionFinishTime =
-            DateTime.now().add(Duration(milliseconds: remainingMs));
+        infusionFinishTime = DateTime.now().add(
+          Duration(milliseconds: remainingMs),
+        );
         _scheduleAlarm();
       } else {
         // pausing
@@ -278,7 +296,8 @@ class TimerPageState extends State<TimerPage>
         return AlertDialog(
           title: const Text('Go back to tea collection?'),
           content: const Text(
-              'You will lose the progress of your ongoing infusion. Are you sure?'),
+            'You will lose the progress of your ongoing infusion. Are you sure?',
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -304,13 +323,14 @@ class TimerPageState extends State<TimerPage>
     WidgetsBinding.instance.addObserver(this);
     sessionKey = sessionSavePrefix + widget.tea.id.toString();
 
-    _animationController = AnimationController(
-      vsync: this,
-    );
+    _animationController = AnimationController(vsync: this);
 
     // would be better to do before initializing the animation controller but cannot be awaited here
-    _loadSession().then((value) => _animationController.duration =
-        Duration(seconds: widget.tea.infusions[currentInfusion - 1].duration));
+    _loadSession().then(
+      (value) => _animationController.duration = Duration(
+        seconds: widget.tea.infusions[currentInfusion - 1].duration,
+      ),
+    );
 
     _animationController.addListener(() => setState(() {}));
     super.initState();
@@ -326,9 +346,7 @@ class TimerPageState extends State<TimerPage>
           _animationController.isCompleted || _animationController.value == 0,
       onPopInvoked: _onPopInvoked,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Tea Timer"),
-        ),
+        appBar: AppBar(title: const Text("Tea Timer")),
         body: Align(
           alignment: Alignment.topCenter,
           child: SingleChildScrollView(
@@ -336,14 +354,20 @@ class TimerPageState extends State<TimerPage>
             reverse: true,
             child: Column(
               children: [
-                TeaCard(widget.tea, null, null,
-                    PersistenceService.teaVesselSizeMlPref, null),
+                TeaCard(
+                  widget.tea,
+                  null,
+                  null,
+                  PersistenceService.teaVesselSizeMlPref,
+                  null,
+                ),
                 Container(
                   margin: EdgeInsets.only(
-                      left: progressIndicatorDiameter * 0.08,
-                      right: progressIndicatorDiameter * 0.08,
-                      top: progressIndicatorDiameter * 0.08,
-                      bottom: progressIndicatorDiameter * 0.05),
+                    left: progressIndicatorDiameter * 0.08,
+                    right: progressIndicatorDiameter * 0.08,
+                    top: progressIndicatorDiameter * 0.08,
+                    bottom: progressIndicatorDiameter * 0.05,
+                  ),
                   width: progressIndicatorDiameter,
                   child: Align(
                     alignment: Alignment.topCenter,
@@ -354,10 +378,9 @@ class TimerPageState extends State<TimerPage>
                         borderColor: Theme.of(context).colorScheme.secondary,
                         borderWidth: 5.0,
                         direction: Axis.vertical,
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .tertiary
-                            .withAlpha(80),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.tertiary.withAlpha(80),
                         center: FittedBox(
                           child: Stack(
                             alignment: _animationController.isAnimating
@@ -366,9 +389,10 @@ class TimerPageState extends State<TimerPage>
                             children: [
                               Container(
                                 padding: EdgeInsets.only(
-                                    bottom: _animationController.isAnimating
-                                        ? 0
-                                        : progressIndicatorDiameter * 0.06),
+                                  bottom: _animationController.isAnimating
+                                      ? 0
+                                      : progressIndicatorDiameter * 0.06,
+                                ),
                                 child: Text(
                                   "${(widget.tea.infusions[currentInfusion - 1].duration - widget.tea.infusions[currentInfusion - 1].duration * percentage / 100).toStringAsFixed(0)}\u200As",
                                   style: TextStyle(
@@ -422,24 +446,26 @@ class TimerPageState extends State<TimerPage>
                               HapticFeedback.vibrate();
                             },
                       child: IconButton(
-                          icon: const Icon(Icons.skip_previous),
-                          iconSize: progressIndicatorDiameter * 0.15,
-                          onPressed: currentInfusion == 1
-                              ? null
-                              : _skipBackwardIteration),
+                        icon: const Icon(Icons.skip_previous),
+                        iconSize: progressIndicatorDiameter * 0.15,
+                        onPressed: currentInfusion == 1
+                            ? null
+                            : _skipBackwardIteration,
+                      ),
                     ),
                     Text(
                       "Infusion $currentInfusion/${widget.tea.infusions.length}",
-                      style:
-                          TextStyle(fontSize: progressIndicatorDiameter * 0.1),
+                      style: TextStyle(
+                        fontSize: progressIndicatorDiameter * 0.1,
+                      ),
                     ),
                     IconButton(
-                        icon: const Icon(Icons.skip_next),
-                        iconSize: progressIndicatorDiameter * 0.15,
-                        onPressed:
-                            currentInfusion == widget.tea.infusions.length
-                                ? null
-                                : _skipForwardIteration)
+                      icon: const Icon(Icons.skip_next),
+                      iconSize: progressIndicatorDiameter * 0.15,
+                      onPressed: currentInfusion == widget.tea.infusions.length
+                          ? null
+                          : _skipForwardIteration,
+                    ),
                   ],
                 ),
               ],
@@ -453,9 +479,11 @@ class TimerPageState extends State<TimerPage>
               heroTag: "FloatingActionButtonTeaNotes",
               onPressed: () async {
                 await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NotesPage(tea: widget.tea)));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotesPage(tea: widget.tea),
+                  ),
+                );
               },
               tooltip: 'Show Notes',
               child: const Icon(Icons.notes),
@@ -473,12 +501,13 @@ class TimerPageState extends State<TimerPage>
         setState(() {
           // the timer animation will pause if the application is paused or whatever by android so the state must be corrected when resumed
           if (_animationController.isAnimating) {
-            Duration remainingDuration =
-                infusionFinishTime!.difference(DateTime.now());
+            Duration remainingDuration = infusionFinishTime!.difference(
+              DateTime.now(),
+            );
             _animationController.value =
                 (_animationController.duration! - remainingDuration)
-                        .inMilliseconds /
-                    _animationController.duration!.inMilliseconds;
+                    .inMilliseconds /
+                _animationController.duration!.inMilliseconds;
             _animationController.forward();
           }
         });

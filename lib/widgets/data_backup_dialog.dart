@@ -27,11 +27,14 @@ class DataBackupDialog extends StatelessWidget {
               padding: const EdgeInsets.only(top: 10),
               child: TextButton(
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(
-                      text: jsonEncode(PersistenceService.getBackupData())));
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Copied to clipboard."),
-                  ));
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: jsonEncode(PersistenceService.getBackupData()),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Copied to clipboard.")),
+                  );
                 },
                 child: const Text('Copy to clipboard'),
               ),

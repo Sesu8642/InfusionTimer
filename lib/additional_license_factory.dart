@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 
 class AdditionalLicenseFactory {
   static Stream<LicenseEntry> create() async* {
-    yield AdditionalLicense([
-      'hand-bell-ringing-sound'
-    ], [
-      const LicenseParagraph(""""Free Sounds Library"
+    yield AdditionalLicense(
+      ['hand-bell-ringing-sound'],
+      [
+        const LicenseParagraph(""""Free Sounds Library"
 
 
 Free Sound Effects Site.
@@ -21,8 +21,9 @@ http://www.freesoundslibrary.com
 https://www.freesoundslibrary.com/hand-bell-ringing-sound/
 BY SPANAC
 
-converted to wav by Sesu8642 using ffmpeg""", 0)
-    ]);
+converted to wav by Sesu8642 using ffmpeg""", 0),
+      ],
+    );
   }
 }
 

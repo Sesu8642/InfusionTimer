@@ -2,8 +2,8 @@
 
 import 'dart:async';
 
-import 'package:infusion_timer/persistence_service.dart';
 import 'package:flutter/material.dart';
+import 'package:infusion_timer/persistence_service.dart';
 import 'package:infusion_timer/tea.dart';
 
 class NotesPage extends StatefulWidget {
@@ -18,6 +18,7 @@ class NotesPage extends StatefulWidget {
 class NotesPageState extends State<NotesPage> {
   final _formKey = GlobalKey<FormState>();
   bool _hasUnsavedChanges = false;
+
   Future<void> _onPopInvoked(bool didPop) async {
     // confirm cancelling infusion if going back to collection page
     if (didPop) {
@@ -73,9 +74,7 @@ class NotesPageState extends State<NotesPage> {
       canPop: !_hasUnsavedChanges,
       onPopInvoked: _onPopInvoked,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Notes"),
-        ),
+        appBar: AppBar(title: const Text("Notes")),
         body: Form(
           key: _formKey,
           child: Column(
@@ -84,9 +83,7 @@ class NotesPageState extends State<NotesPage> {
                 child: Card(
                   child: Column(
                     children: [
-                      ListTile(
-                        title: Center(child: Text(widget.tea.name!)),
-                      ),
+                      ListTile(title: Center(child: Text(widget.tea.name!))),
                       Expanded(
                         child: TextFormField(
                           minLines: 15,
@@ -116,7 +113,11 @@ class NotesPageState extends State<NotesPage> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      SizedBox(height: MediaQuery.of(context).systemGestureInsets.bottom)
+                      SizedBox(
+                        height: MediaQuery.of(
+                          context,
+                        ).systemGestureInsets.bottom,
+                      ),
                     ],
                   ),
                 ),

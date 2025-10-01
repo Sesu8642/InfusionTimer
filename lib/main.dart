@@ -18,7 +18,7 @@ void main() async {
 
   const String notificationIconName = 'notification_icon';
 
-// initialize FlutterLocalNotificationsPlugin
+  // initialize FlutterLocalNotificationsPlugin
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -26,8 +26,9 @@ void main() async {
   const LinuxInitializationSettings initializationSettingsLinux =
       LinuxInitializationSettings(defaultActionName: 'OK');
   const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      linux: initializationSettingsLinux);
+    android: initializationSettingsAndroid,
+    linux: initializationSettingsLinux,
+  );
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   // register additional licenses
@@ -55,9 +56,10 @@ class AppState extends State<InfusionTimer> {
       title: 'Enthusiast Tea Timer',
       theme: ThemeData(
         colorScheme: const ColorScheme.light(
-            primary: Colors.teal,
-            secondary: Colors.teal,
-            tertiary: Colors.teal),
+          primary: Colors.teal,
+          secondary: Colors.teal,
+          tertiary: Colors.teal,
+        ),
         useMaterial3: true,
       ),
       home: const CollectionPage(),

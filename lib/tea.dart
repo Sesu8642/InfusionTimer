@@ -11,54 +11,69 @@ class Tea {
   String? subtitle;
   String? detailedNotes;
 
-  Tea(this.id, this.name, this.temperature, this.gPer100Ml, this.infusions,
-      this.subtitle, this.detailedNotes, this.rating);
+  Tea(
+    this.id,
+    this.name,
+    this.temperature,
+    this.gPer100Ml,
+    this.infusions,
+    this.subtitle,
+    this.detailedNotes,
+    this.rating,
+  );
 
-  Tea.withGeneratedId(this.name, this.temperature, this.gPer100Ml,
-      this.infusions, this.subtitle, this.rating)
-      : id = IdGenerator.nextdouble();
+  Tea.withGeneratedId(
+    this.name,
+    this.temperature,
+    this.gPer100Ml,
+    this.infusions,
+    this.subtitle,
+    this.rating,
+  ) : id = IdGenerator.nextdouble();
 
   Tea.copyWithGeneratedId(Tea original)
-      : id = IdGenerator.nextdouble(),
-    name = original.name,
-    temperature = original.temperature,
-    gPer100Ml = original.gPer100Ml,
-    infusions = List.from(original.infusions),
-    subtitle = original.subtitle,
-    rating = original.rating;
+    : id = IdGenerator.nextdouble(),
+      name = original.name,
+      temperature = original.temperature,
+      gPer100Ml = original.gPer100Ml,
+      infusions = List.from(original.infusions),
+      subtitle = original.subtitle,
+      rating = original.rating;
 
   Tea.fromJson(Map<String, dynamic> json)
-      : id = json.containsKey('id') ? json['id'] : IdGenerator.nextdouble(),
-        name = json['name'],
-        rating = json['rating'],
-        temperature = json['temperature'],
-        gPer100Ml = json['gPer100Ml'] is double
-            ? json['gPer100Ml']
-            : double.parse(json['gPer100Ml'].toString()),
-        infusions = List<Infusion>.from(
-            json['infusions']?.map((i) => Infusion.fromJson(i)) ??
-                List.empty()),
-        // subtitle used to be called notes
-        subtitle = json['notes'] ?? json['subtitle'],
-        detailedNotes = json['detailedNotes'];
+    : id = json.containsKey('id') ? json['id'] : IdGenerator.nextdouble(),
+      name = json['name'],
+      rating = json['rating'],
+      temperature = json['temperature'],
+      gPer100Ml = json['gPer100Ml'] is double
+          ? json['gPer100Ml']
+          : double.parse(json['gPer100Ml'].toString()),
+      infusions = List<Infusion>.from(
+        json['infusions']?.map((i) => Infusion.fromJson(i)) ?? List.empty(),
+      ),
+      // subtitle used to be called notes
+      subtitle = json['notes'] ?? json['subtitle'],
+      detailedNotes = json['detailedNotes'];
 
   Map toJson() => {
-        'id': id,
-        'name': name,
-        'rating': rating,
-        'temperature': temperature,
-        'gPer100Ml': gPer100Ml,
-        'infusions': infusions,
-        'subtitle': subtitle,
-        'detailedNotes': detailedNotes
-      };
+    'id': id,
+    'name': name,
+    'rating': rating,
+    'temperature': temperature,
+    'gPer100Ml': gPer100Ml,
+    'infusions': infusions,
+    'subtitle': subtitle,
+    'detailedNotes': detailedNotes,
+  };
 
-  String toSharableString() => 'Name: $name'
+  String toSharableString() =>
+      'Name: $name'
       '${subtitle != null && subtitle!.isNotEmpty ? '\nSubtitle: $subtitle' : ''}'
       '${rating != null ? '\nRating: $rating/5' : ''}'
       '\nTemperature: $temperature°C'
       '\nAmount: $gPer100Ml g/100 ml'
-      '\nInfusions: ${infusions.map((infusion) => "${infusion.duration}" " s").join(", ")}'
+      '\nInfusions: ${infusions.map((infusion) => "${infusion.duration}"
+          " s").join(", ")}'
       '${detailedNotes != null && detailedNotes!.isNotEmpty ? '\nNotes: $detailedNotes' : ''}'
       '\n\nShared from Enthusiast Tea Timer.';
 
@@ -81,7 +96,8 @@ class Tea {
     for (var infusion in infusions) {
       if (infusion.duration.isNegative) {
         throw FormatException(
-            "Tea '$name' has an infusion with invalid duration.");
+          "Tea '$name' has an infusion with invalid duration.",
+        );
       }
     }
     if (subtitle == null) {

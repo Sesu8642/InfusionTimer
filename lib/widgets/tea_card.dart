@@ -10,9 +10,14 @@ class TeaCard extends StatelessWidget {
   final int teaVesselSize;
   final int? infusionOfActiveSession;
 
-  const TeaCard(this.tea, this.tapCallback, this.longPressCallback,
-      this.teaVesselSize, this.infusionOfActiveSession,
-      {super.key});
+  const TeaCard(
+    this.tea,
+    this.tapCallback,
+    this.longPressCallback,
+    this.teaVesselSize,
+    this.infusionOfActiveSession, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +55,8 @@ class TeaCard extends StatelessWidget {
                       children: [
                         const Icon(Icons.grass),
                         Text(
-                            "${((tea.gPer100Ml! * teaVesselSize).round() / 100).toString()} g/ ${teaVesselSize.toString()}ml"),
+                          "${((tea.gPer100Ml! * teaVesselSize).round() / 100).toString()} g/ ${teaVesselSize.toString()}ml",
+                        ),
                         const SizedBox(width: 8),
                       ],
                     ),
@@ -78,8 +84,9 @@ class TeaCard extends StatelessWidget {
                       : [
                           Expanded(
                             child: Text(
-                                textAlign: TextAlign.center,
-                                "Current brew: ${tea.infusions.length - infusionOfActiveSession! + 1} more infusion(s) remaining."),
+                              textAlign: TextAlign.center,
+                              "Current brew: ${tea.infusions.length - infusionOfActiveSession! + 1} more infusion(s) remaining.",
+                            ),
                           ),
                         ],
                 ),

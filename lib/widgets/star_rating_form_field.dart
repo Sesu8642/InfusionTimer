@@ -10,20 +10,25 @@ class StarRatingFormField extends FormField<int> {
     int initialValue = 0,
     AutovalidateMode autovalidate = AutovalidateMode.disabled,
   }) : super(
-            onSaved: onSaved,
-            validator: validator,
-            initialValue: initialValue,
-            autovalidateMode: autovalidate,
-            builder: (FormFieldState<int> state) {
-              return Row(children: [
-                for (int i = 1; i <= 5; i++)
-                  InkWell(
-                    onTap: () => state.didChange(i),
-                    borderRadius: BorderRadius.circular(10),
-                    child: Icon(state.value! >= i
-                        ? Icons.star_rounded
-                        : Icons.star_outline_rounded),
-                  ),
-              ]);
-            });
+         onSaved: onSaved,
+         validator: validator,
+         initialValue: initialValue,
+         autovalidateMode: autovalidate,
+         builder: (FormFieldState<int> state) {
+           return Row(
+             children: [
+               for (int i = 1; i <= 5; i++)
+                 InkWell(
+                   onTap: () => state.didChange(i),
+                   borderRadius: BorderRadius.circular(10),
+                   child: Icon(
+                     state.value! >= i
+                         ? Icons.star_rounded
+                         : Icons.star_outline_rounded,
+                   ),
+                 ),
+             ],
+           );
+         },
+       );
 }

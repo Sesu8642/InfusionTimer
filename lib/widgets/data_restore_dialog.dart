@@ -46,25 +46,30 @@ class DataRestoreDialog extends StatelessWidget {
           onPressed: () => showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (BuildContext context) => ConfirmDialog("Are you sure?",
-                "Your current tea collection will be lost and replaced by the backup.",
-                () {
-              Navigator.of(context).pop();
-              try {
-                var backup =
-                    BackupData.fromJson(jsonDecode(textController.text));
-                PersistenceService.restoreFomBackup(backup)
-                    .then((value) => Navigator.of(context).pop())
-                    .onError((e, stackTrace) =>
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(e.toString()),
-                        )));
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(e.toString()),
-                ));
-              }
-            }, () => Navigator.of(context).pop()),
+            builder: (BuildContext context) => ConfirmDialog(
+              "Are you sure?",
+              "Your current tea collection will be lost and replaced by the backup.",
+              () {
+                Navigator.of(context).pop();
+                try {
+                  var backup = BackupData.fromJson(
+                    jsonDecode(textController.text),
+                  );
+                  PersistenceService.restoreFomBackup(backup)
+                      .then((value) => Navigator.of(context).pop())
+                      .onError(
+                        (e, stackTrace) => ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(e.toString()))),
+                      );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(e.toString())));
+                }
+              },
+              () => Navigator.of(context).pop(),
+            ),
           ),
           child: const Text('Restore'),
         ),

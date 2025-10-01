@@ -10,8 +10,12 @@ class TeaInputDialog extends StatefulWidget {
   final Function(Tea) saveCallback;
   final Function(Tea) cancelCallback;
 
-  const TeaInputDialog(this.tea, this.saveCallback, this.cancelCallback,
-      {super.key});
+  const TeaInputDialog(
+    this.tea,
+    this.saveCallback,
+    this.cancelCallback, {
+    super.key,
+  });
 
   @override
   TeaInputFormFormState createState() {
@@ -44,15 +48,17 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Row(children: [
-                const Text("Rating "),
-                StarRatingFormField(
-                  initialValue: widget.tea.rating ?? 0,
-                  onSaved: (value) {
-                    widget.tea.rating = value == 0 ? null : value;
-                  },
-                ),
-              ]),
+              Row(
+                children: [
+                  const Text("Rating "),
+                  StarRatingFormField(
+                    initialValue: widget.tea.rating ?? 0,
+                    onSaved: (value) {
+                      widget.tea.rating = value == 0 ? null : value;
+                    },
+                  ),
+                ],
+              ),
               TextFormField(
                 initialValue: widget.tea.name,
                 decoration: const InputDecoration(hintText: 'Name'),
@@ -72,9 +78,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                     ? ""
                     : widget.tea.temperature.toString(),
                 keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Enter the brewing temperature";
@@ -109,17 +113,16 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   hintText: 'Amount in g/100ml',
                 ),
                 onSaved: (value) {
-                  widget.tea.gPer100Ml =
-                      double.parse(value?.replaceAll(',', '.') ?? '');
+                  widget.tea.gPer100Ml = double.parse(
+                    value?.replaceAll(',', '.') ?? '',
+                  );
                 },
               ),
               TextFormField(
                 initialValue: widget.tea.subtitle,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
-                decoration: const InputDecoration(
-                  hintText: 'Subtitle',
-                ),
+                decoration: const InputDecoration(hintText: 'Subtitle'),
                 onSaved: (value) {
                   widget.tea.subtitle = value ?? "";
                 },
@@ -131,17 +134,20 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
               ...widget.tea.infusions.map(
                 (infusion) => ListTile(
                   trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      splashRadius: Material.defaultSplashRadius / 1.5,
-                      tooltip: 'delete',
-                      onPressed: () {
-                        setState(() {
-                          widget.tea.infusions
-                              .removeAt(widget.tea.infusions.indexOf(infusion));
-                        });
-                      }),
+                    icon: const Icon(Icons.delete),
+                    splashRadius: Material.defaultSplashRadius / 1.5,
+                    tooltip: 'delete',
+                    onPressed: () {
+                      setState(() {
+                        widget.tea.infusions.removeAt(
+                          widget.tea.infusions.indexOf(infusion),
+                        );
+                      });
+                    },
+                  ),
                   title: Text(
-                      "${widget.tea.infusions.indexOf(infusion) + 1}.   ${infusion.duration}s"),
+                    "${widget.tea.infusions.indexOf(infusion) + 1}.   ${infusion.duration}s",
+                  ),
                   contentPadding: const EdgeInsets.all(0),
                 ),
               ),

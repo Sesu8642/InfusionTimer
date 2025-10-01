@@ -22,7 +22,8 @@ class PreferencesPageState extends State<PreferencesPage> {
     super.initState();
     setState(() {
       _vesselSizeController.value = TextEditingValue(
-          text: PersistenceService.teaVesselSizeMlPref.toString());
+        text: PersistenceService.teaVesselSizeMlPref.toString(),
+      );
     });
   }
 
@@ -44,8 +45,9 @@ class PreferencesPageState extends State<PreferencesPage> {
                 ),
                 TextFormField(
                   controller: _vesselSizeController,
-                  decoration:
-                      const InputDecoration(icon: Icon(Icons.free_breakfast)),
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.free_breakfast),
+                  ),
                   keyboardType: TextInputType.number,
                   maxLength: 5,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -59,7 +61,8 @@ class PreferencesPageState extends State<PreferencesPage> {
                   onChanged: (value) async {
                     if (_formKey.currentState!.validate()) {
                       await PersistenceService.setTeaVesselSizeMlPref(
-                          int.parse(value));
+                        int.parse(value),
+                      );
                     }
                   },
                 ),
@@ -68,31 +71,34 @@ class PreferencesPageState extends State<PreferencesPage> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) =>
-                                const DataBackupDialog(),
-                          );
-                        },
-                        child: const Text("Data Backup"))),
-                ElevatedButton(
-                    onPressed: () async {
-                      await showDialog(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (BuildContext context) => DataRestoreDialog(),
+                        builder: (BuildContext context) =>
+                            const DataBackupDialog(),
                       );
-                      setState(() {
-                        _vesselSizeController.value = TextEditingValue(
-                            text: PersistenceService.teaVesselSizeMlPref
-                                .toString());
-                      });
                     },
-                    child: const Text("Data Restore")),
+                    child: const Text("Data Backup"),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) => DataRestoreDialog(),
+                    );
+                    setState(() {
+                      _vesselSizeController.value = TextEditingValue(
+                        text: PersistenceService.teaVesselSizeMlPref.toString(),
+                      );
+                    });
+                  },
+                  child: const Text("Data Restore"),
+                ),
               ],
             ),
           ),

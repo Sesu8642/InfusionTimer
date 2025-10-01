@@ -2,10 +2,10 @@
 
 import 'dart:convert';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:infusion_timer/backup_data.dart';
 import 'package:infusion_timer/tea.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 const String _teaVesselSizeSaveKey = "tea_vessel_size";
 const String _teasSaveKey = "teas";
@@ -31,8 +31,9 @@ class PersistenceService {
     var savedTeasJson = _prefs.getStringList(_teasSaveKey);
     if (savedTeasJson == null) {
       // if there in no saved data, load the default included teas
-      var defaultTeasJson =
-          (await rootBundle.loadString('assets/default_data.json'));
+      var defaultTeasJson = (await rootBundle.loadString(
+        'assets/default_data.json',
+      ));
       var teasJson = json.decode(defaultTeasJson) as List;
       _teas = teasJson.map((jsonTea) => Tea.fromJson(jsonTea)).toList();
     } else {
@@ -57,7 +58,7 @@ class PersistenceService {
     return _teaVesselSizeMlPref;
   }
 
-// cannot use regular setter because this must be async
+  // cannot use regular setter because this must be async
   static Future<void> setTeaVesselSizeMlPref(int teaVesselSizeMl) async {
     _teaVesselSizeMlPref = teaVesselSizeMl;
     await _prefs.setInt(_teaVesselSizeSaveKey, teaVesselSizeMl);
@@ -67,7 +68,7 @@ class PersistenceService {
     return _teas;
   }
 
-// cannot use regular setter because this must be async
+  // cannot use regular setter because this must be async
   static setTeas(List<Tea> teas) async {
     _teas = teas;
     await _saveTeas();
@@ -75,7 +76,9 @@ class PersistenceService {
 
   static Future<void> _saveTeas() async {
     await _prefs.setStringList(
-        _teasSaveKey, _teas.map((tea) => jsonEncode(tea)).toList());
+      _teasSaveKey,
+      _teas.map((tea) => jsonEncode(tea)).toList(),
+    );
   }
 
   static Future<void> addTea(Tea tea) async {
@@ -106,7 +109,7 @@ class PersistenceService {
     await _saveTeas();
   }
 
-// cannot use regular setter because this must be async
+  // cannot use regular setter because this must be async
   static setSavedSessions(Map<double, int> savedSessions) async {
     _savedSessions = savedSessions;
     savedSessions.forEach((key, value) async {
