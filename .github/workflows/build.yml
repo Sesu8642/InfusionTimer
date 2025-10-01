@@ -44,7 +44,7 @@ jobs:
           run: ./flutter/bin/flutter build apk --flavor ci
 
         - name: Upload Android apk
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: Android apk
             path: ./build/app/outputs/flutter-apk/app-ci-release.apk
