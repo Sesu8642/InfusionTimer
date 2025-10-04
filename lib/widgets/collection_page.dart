@@ -60,7 +60,25 @@ class CollectionPageState extends State<CollectionPage> {
       showBadge: false,
     );
 
-    if (!kIsWeb && Platform.isAndroid) {
+    if (kIsWeb) {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Warning'),
+          content: const Text(
+            'All data is saved locally and will be lost if you clear your browsing data.'
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context, 'OK');
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else if (Platform.isAndroid) {
       FlutterBackground.hasPermissions.then((hasPermissions) {
         if (!hasPermissions && mounted) {
           showDialog<String>(
@@ -307,17 +325,6 @@ class CollectionPageState extends State<CollectionPage> {
               },
             ),
           ),
-          kIsWeb
-              ? Container(
-                  color: Colors.yellowAccent,
-                  width: MediaQuery.of(context).size.width,
-                  child: Center(
-                    child: Text(
-                      "All data is saved locally and will be lost if you clear your browsing data.",
-                    ),
-                  ),
-                )
-              : Container(),
         ],
       ),
       floatingActionButton: Column(
