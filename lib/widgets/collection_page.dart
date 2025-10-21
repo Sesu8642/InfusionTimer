@@ -45,7 +45,10 @@ class CollectionPageState extends State<CollectionPage> {
   @override
   void initState() {
     super.initState();
-    PackageInfo.fromPlatform().then((value) => _versionName = value.version);
+    PackageInfo.fromPlatform().then((value) {
+      _versionName = value.version;
+      setState(() {});
+    });
 
     // ask for permissions
     const flutterBackgroundAndroidConfig = FlutterBackgroundAndroidConfig(
