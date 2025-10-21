@@ -49,8 +49,9 @@ class CollectionPageState extends State<CollectionPage> {
 
     // ask for permissions
     const flutterBackgroundAndroidConfig = FlutterBackgroundAndroidConfig(
-      notificationTitle: "Enthusiast Tea Timer",
-      notificationText: "Enthusiast Tea Timer is running in the background.",
+      notificationTitle: "Background Notification",
+      notificationText:
+          "You can disable this notification in your phone's settings.",
       //notificationImportance: AndroidNotificationImportance.Default,
       notificationIcon: AndroidResource(
         name: 'notification_icon',
