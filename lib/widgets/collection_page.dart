@@ -66,7 +66,7 @@ class CollectionPageState extends State<CollectionPage> {
         builder: (BuildContext context) => AlertDialog(
           title: const Text('Warning'),
           content: const Text(
-            'All data is saved locally and will be lost if you clear your browsing data.'
+            'You are using the web version of Enthusiast Tea Timer. All data is saved locally and will be lost if you clear your browsing data.',
           ),
           actions: <Widget>[
             TextButton(
