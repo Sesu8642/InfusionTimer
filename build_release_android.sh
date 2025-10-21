@@ -7,4 +7,4 @@ $flutterBin clean
 
 $flutterBin build appbundle --release
 $flutterBin build apk --release --split-per-abi
-$flutterBin build apk ---release
+$flutterBin build apk --release
