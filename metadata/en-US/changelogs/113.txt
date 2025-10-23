@@ -1,0 +1,6 @@
+Enthusiast Tea Timer 1.6.0
+
+- new tea sharing feature
+- new option to copy teas
+- edge-to-edge mode on newer Android versions
+- the user is now asked whether to coninue a previous session or not
