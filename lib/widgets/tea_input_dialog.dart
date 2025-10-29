@@ -25,6 +25,7 @@ class TeaInputDialog extends StatefulWidget {
 
 class TeaInputFormFormState extends State<TeaInputDialog> {
   final _formKey = GlobalKey<FormState>();
+  late final _infusions = List.of(widget.tea.infusions);
 
   TextEditingController newInfusionController = TextEditingController();
 
@@ -32,7 +33,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
     setState(() {
       int? parsedInt = int.tryParse(newInfusionController.text);
       if (parsedInt != null) {
-        widget.tea.infusions.add(Infusion(parsedInt));
+        _infusions.add(Infusion(parsedInt));
       }
     });
     newInfusionController.clear();
@@ -131,7 +132,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                 "\nInfusions",
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              ...widget.tea.infusions.map(
+              ..._infusions.map(
                 (infusion) => ListTile(
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
@@ -139,14 +140,12 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                     tooltip: 'delete',
                     onPressed: () {
                       setState(() {
-                        widget.tea.infusions.removeAt(
-                          widget.tea.infusions.indexOf(infusion),
-                        );
+                        _infusions.removeAt(_infusions.indexOf(infusion));
                       });
                     },
                   ),
                   title: Text(
-                    "${widget.tea.infusions.indexOf(infusion) + 1}.   ${infusion.duration}s",
+                    "${_infusions.indexOf(infusion) + 1}.   ${infusion.duration}s",
                   ),
                   contentPadding: const EdgeInsets.all(0),
                 ),
@@ -166,7 +165,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
                   ),
                 ),
                 validator: (value) {
-                  if (widget.tea.infusions.isEmpty) {
+                  if (_infusions.isEmpty) {
                     return "Add at least one infusion";
                   } else {
                     return null;
@@ -190,6 +189,7 @@ class TeaInputFormFormState extends State<TeaInputDialog> {
             setState(() {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
+                widget.tea.infusions = _infusions;
                 widget.saveCallback(widget.tea);
               }
             });
