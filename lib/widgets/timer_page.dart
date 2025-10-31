@@ -323,7 +323,11 @@ class TimerPageState extends State<TimerPage>
     WidgetsBinding.instance.addObserver(this);
     sessionKey = sessionSavePrefix + widget.tea.id.toString();
 
-    _animationController = AnimationController(vsync: this);
+    _animationController = AnimationController(
+      vsync: this,
+      // see https://github.com/flutter/flutter/issues/155048
+      animationBehavior: AnimationBehavior.preserve,
+    );
 
     // would be better to do before initializing the animation controller but cannot be awaited here
     _loadSession().then(
