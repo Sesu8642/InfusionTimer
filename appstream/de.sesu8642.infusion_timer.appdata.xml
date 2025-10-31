@@ -55,6 +55,10 @@
   <url type="bugtracker">https://github.com/Sesu8642/InfusionTimer/issues</url>
 
   <releases>
+    <release version="1.6.1" date="2025-10-31">
+      <url>
+        https://raw.githubusercontent.com/Sesu8642/InfusionTimer/master/metadata/en-US/changelogs/114.txt</url>
+    </release>
     <release version="1.6.0" date="2025-10-23">
       <url>
         https://raw.githubusercontent.com/Sesu8642/InfusionTimer/master/metadata/en-US/changelogs/113.txt</url>
