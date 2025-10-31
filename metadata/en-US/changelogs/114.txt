@@ -1,0 +1,4 @@
+Enthusiast Tea Timer 1.6.1
+
+- fixed infusions not being reset when canceling an edit
+- fixed timer running too fast when animations are off
