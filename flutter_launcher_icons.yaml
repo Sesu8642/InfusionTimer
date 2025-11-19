@@ -1,6 +1,9 @@
 flutter_launcher_icons:
-  android: true
+  android:
+      generate: true
   ios: false
+  web:
+      generate: true
   windows:
       generate: true
       image_path: "assets/icon_simple_colored_512.png"
