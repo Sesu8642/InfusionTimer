@@ -322,6 +322,7 @@ class TimerPageState extends State<TimerPage>
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     sessionKey = sessionSavePrefix + widget.tea.id.toString();
+    _audioPlayer.setReleaseMode(ReleaseMode.stop);
 
     _animationController = AnimationController(
       vsync: this,
