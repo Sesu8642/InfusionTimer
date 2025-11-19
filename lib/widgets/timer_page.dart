@@ -44,6 +44,12 @@ class TimerPageState extends State<TimerPage>
   Timer? _notificationUpdateTimer;
   late String sessionKey;
   static final AudioPlayer _audioPlayer = AudioPlayer();
+  static final AudioContext _audioContext = AudioContext(
+    android: AudioContextAndroid(
+      usageType: AndroidUsageType.media,
+      audioFocus: AndroidAudioFocus.gainTransient,
+    ),
+  );
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -65,7 +71,7 @@ class TimerPageState extends State<TimerPage>
 
   @pragma('vm:entry-point')
   static _ring() async {
-    await _audioPlayer.play(AssetSource(audioResourceName));
+    await _audioPlayer.play(AssetSource(audioResourceName), ctx: _audioContext);
   }
 
   _updateProgressNotification() async {
