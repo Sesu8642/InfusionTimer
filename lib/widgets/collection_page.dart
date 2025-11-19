@@ -64,25 +64,7 @@ class CollectionPageState extends State<CollectionPage> {
       showBadge: false,
     );
 
-    if (kIsWeb) {
-      showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Warning'),
-          content: const Text(
-            'You are using the web version of Enthusiast Tea Timer. All data is saved locally and will be lost if you clear your browsing data.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context, 'OK');
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    } else if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       FlutterBackground.hasPermissions.then((hasPermissions) {
         if (!hasPermissions && mounted) {
           showDialog<String>(
