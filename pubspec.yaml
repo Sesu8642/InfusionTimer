@@ -3,7 +3,7 @@ description: "Enthusiast Tea Timer - Tea timer for Gong Fu and western style bre
 
 publish_to: 'none'
 
-version: 1.6.1+114
+version: 1.6.2+115
 
 environment:
   sdk: ^3.9.0
