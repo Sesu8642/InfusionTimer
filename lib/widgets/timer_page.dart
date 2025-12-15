@@ -71,7 +71,16 @@ class TimerPageState extends State<TimerPage>
 
   @pragma('vm:entry-point')
   static _ring() async {
-    await _audioPlayer.play(AssetSource(audioResourceName), ctx: _audioContext);
+    if (!kIsWeb && Platform.isAndroid) {
+      // resume doesnt seem to do anything on Android for whatever reason...
+      await _audioPlayer.play(
+        AssetSource(audioResourceName),
+        ctx: _audioContext,
+      );
+    } else {
+      // file is already pre-loaded, now resume to play
+      await _audioPlayer.resume();
+    }
   }
 
   _updateProgressNotification() async {
@@ -329,6 +338,8 @@ class TimerPageState extends State<TimerPage>
     WidgetsBinding.instance.addObserver(this);
     sessionKey = sessionSavePrefix + widget.tea.id.toString();
     _audioPlayer.setReleaseMode(ReleaseMode.stop);
+    _audioPlayer.setAudioContext(_audioContext);
+    _audioPlayer.setSource(AssetSource(audioResourceName));
 
     _animationController = AnimationController(
       vsync: this,
