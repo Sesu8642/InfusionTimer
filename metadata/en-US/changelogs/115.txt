@@ -1,0 +1,4 @@
+Enthusiast Tea Timer 1.6.2
+
+- Android: signal to other apps to continue playing after ringing
+- minor improvements for web version
