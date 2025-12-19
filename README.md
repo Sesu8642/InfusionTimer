@@ -14,20 +14,6 @@ Effortlessly organize your tea collection, complete with infusion times and brew
 ![Tea Timer](metadata/en-US/images/phoneScreenshots/2.png)
 ![Preferences](metadata/en-US/images/phoneScreenshots/3.png)
 
-## Troubleshooting
-
-If the countdown is much faster than expected, it's probably connected to a UI speed. It occurred at least with GrapheneOS. Other alternative android builds may be problematic as well.
-
-### 1. Enable Developer mode
-1. Tap on the "Settings" (gear icon) icon to open the setting on your Android device.
-2. On the Android Settings screen, tap on "About phone" option (sometimes also "System" > "Advanced" > "About Phone").
-3. Start tapping on the "Build number" option, and you will see a pop-up message that you are now "X" steps away from being a developer. Continue tapping on the 4. Build number option until you see a screen to Re-enter your password. Once you enter your device password, it will show a message at the bottom of the screen: You are now a developer.
-
-### 2. Fix the UI-related bug
-1. Go to the "Settings" -> "System" -> "Developer options".
-2. Switch the "Window animation scale" and "Transition animation scale" from "Animation off" to "Animation scale 1x," then put them back to "Animation off."
-
-
 ## Licenses
 Copyright (c) 2021-2024 Sesu8642
 
