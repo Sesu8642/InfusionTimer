@@ -11,7 +11,7 @@ import 'package:infusion_timer/tea.dart';
 import 'package:infusion_timer/widgets/preferences_page.dart';
 import 'package:infusion_timer/widgets/tea_actions_bottom_sheet.dart';
 import 'package:infusion_timer/widgets/tea_card.dart';
-import 'package:infusion_timer/widgets/tea_input_dialog.dart';
+import 'package:infusion_timer/widgets/tea_input_page.dart';
 import 'package:infusion_timer/widgets/timer_page.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
@@ -243,6 +243,7 @@ class CollectionPageState extends State<CollectionPage> {
                       context: context,
                       builder: (BuildContext context) => TeaActionsBottomSheet(
                         tea,
+                        // shareCallback
                         (tea) async {
                           await SharePlus.instance.share(
                             ShareParams(
@@ -252,50 +253,45 @@ class CollectionPageState extends State<CollectionPage> {
                             ),
                           );
                         },
-                        (tea) => {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) => TeaInputDialog(
-                              tea,
-                              (tea) {
-                                PersistenceService.updateTea(tea).then((value) {
-                                  setState(() {});
-                                  if (context.mounted) {
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  }
-                                });
-                              },
-                              (tea) {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                              },
+                        // editCallback
+                        (tea) async {
+                          // hide bottom sheet first
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TeaInputPage(
+                                tea: tea,
+                                saveCallback: (tea) {
+                                  PersistenceService.updateTea(tea).then((
+                                    value,
+                                  ) {
+                                    setState(() {});
+                                  });
+                                },
+                              ),
                             ),
-                          ),
+                          );
                         },
-                        (tea) => {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) => TeaInputDialog(
-                              Tea.copyWithGeneratedId(tea),
-                              (tea) {
-                                PersistenceService.addTea(tea).then((value) {
-                                  setState(() {});
-                                  if (context.mounted) {
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  }
-                                });
-                              },
-                              (tea) {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                              },
+                        // copyCallback
+                        (tea) async {
+                          // hide bottom sheet first
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TeaInputPage(
+                                tea: Tea.copyWithGeneratedId(tea),
+                                saveCallback: (tea) {
+                                  PersistenceService.addTea(tea).then((value) {
+                                    setState(() {});
+                                  });
+                                },
+                              ),
                             ),
-                          ),
+                          );
                         },
+                        // deleteCallback
                         (tea) async {
                           await PersistenceService.deleteTea(tea);
                           setState(() {});
@@ -335,20 +331,17 @@ class CollectionPageState extends State<CollectionPage> {
           FloatingActionButton(
             heroTag: "FloatingActionButtonAddTea",
             onPressed: () {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) => TeaInputDialog(
-                  Tea.withGeneratedId(null, null, null, [], null, 0),
-                  (tea) {
-                    setState(() {
-                      PersistenceService.addTea(tea);
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  (tea) {
-                    Navigator.of(context).pop();
-                  },
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TeaInputPage(
+                    tea: Tea.withGeneratedId(null, null, null, [], null, 0),
+                    saveCallback: (tea) {
+                      PersistenceService.addTea(tea).then((value) {
+                        setState(() {});
+                      });
+                    },
+                  ),
                 ),
               );
             },

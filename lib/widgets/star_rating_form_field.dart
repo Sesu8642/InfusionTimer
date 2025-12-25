@@ -13,6 +13,7 @@ class StarRatingFormField extends FormField<int> {
          autovalidateMode: autovalidate,
          builder: (FormFieldState<int> state) {
            return Row(
+             mainAxisAlignment: MainAxisAlignment.center,
              children: [
                for (int i = 1; i <= 5; i++)
                  InkWell(
